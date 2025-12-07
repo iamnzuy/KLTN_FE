@@ -18,7 +18,6 @@ export default function Page() {
 		<div className="container">
 			<div className="grid grid-cols-1 gap-6">
 				<FeaturedProducts />
-				<SpecialOffers products={specialOffers} />
 				<NewArrivals products={newArrivals} />
 				<PopularSneakers products={popularProducts} />
 				<Deals products={limitedDeals} />
