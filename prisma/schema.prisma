@@ -1,0 +1,248 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+// User Modoule
+enum UserStatus {
+  INACTIVE
+  ACTIVE
+  BLOCKED
+}
+
+model User {
+  id              String      @id @default(uuid())
+  email           String      @unique
+  password        String?
+  country         String?
+  timezone        String?
+  name            String?
+  roleId          String
+  status          UserStatus  @default(INACTIVE) // Status of the invitation
+  createdAt       DateTime    @default(now())
+  updatedAt       DateTime    @updatedAt
+  lastSignInAt    DateTime?
+  emailVerifiedAt DateTime?
+  isTrashed       Boolean     @default(false)
+  avatar          String?
+  invitedByUserId String?
+  isProtected     Boolean     @default(false) // Prevents deletion/modification
+  role            UserRole    @relation(fields: [roleId], references: [id])
+  systemLog       SystemLog[]
+  accounts        Account[]
+  Session         Session[]
+
+  // Indexes for efficient querying
+  @@index([invitedByUserId])
+  @@index([roleId])
+  @@index([status])
+}
+
+model UserRole {
+  id              String               @id @default(uuid())
+  slug            String               @unique
+  name            String               @unique
+  description     String?
+  isTrashed       Boolean              @default(false)
+  createdByUserId String?
+  createdAt       DateTime             @default(now())
+  isProtected     Boolean              @default(false)
+  isDefault       Boolean              @default(false)
+  users           User[]
+  permissions     UserRolePermission[]
+}
+
+model UserPermission {
+  id              String               @id @default(uuid())
+  slug            String               @unique
+  name            String
+  description     String?
+  createdByUserId String?
+  createdAt       DateTime             @default(now())
+  roles           UserRolePermission[]
+}
+
+model UserRolePermission {
+  id           String   @id @default(uuid())
+  roleId       String
+  permissionId String
+  assignedAt   DateTime @default(now())
+
+  role       UserRole       @relation(fields: [roleId], references: [id], onDelete: Cascade)
+  permission UserPermission @relation(fields: [permissionId], references: [id], onDelete: Cascade)
+
+  @@unique([roleId, permissionId])
+}
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String? @db.Text
+  access_token      String? @db.Text
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? @db.Text
+  session_state     String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId], name: "provider_providerAccountId")
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+}
+
+model SystemLog {
+  id          String   @id @default(uuid())
+  userId      String
+  createdAt   DateTime @default(now())
+  entityId    String?
+  entityType  String?
+  event       String?
+  description String?
+  ipAddress   String?
+  meta        String?
+
+  user User @relation(fields: [userId], references: [id])
+
+  @@index([userId])
+}
+
+model SystemSetting {
+  id             String  @id @default(uuid())
+  name           String  @default("My Company")
+  logo           String?
+  active         Boolean @default(true)
+  address        String?
+  websiteURL     String?
+  supportEmail   String?
+  supportPhone   String?
+  language       String  @default("en")
+  timezone       String  @default("UTC")
+  currency       String  @default("USD")
+  currencyFormat String  @default("$ {value}")
+
+  socialFacebook  String?
+  socialTwitter   String?
+  socialInstagram String?
+  socialLinkedIn  String?
+  socialPinterest String?
+  socialYoutube   String?
+
+  notifyStockEmail               Boolean  @default(true)
+  notifyStockWeb                 Boolean  @default(true)
+  notifyStockThreshold           Int      @default(10)
+  notifyStockRoleIds             String[]
+  notifyNewOrderEmail            Boolean  @default(true)
+  notifyNewOrderWeb              Boolean  @default(true)
+  notifyNewOrderRoleIds          String[]
+  notifyOrderStatusUpdateEmail   Boolean  @default(true)
+  notifyOrderStatusUpdateWeb     Boolean  @default(true)
+  notifyOrderStatusUpdateRoleIds String[]
+  notifyPaymentFailureEmail      Boolean  @default(true)
+  notifyPaymentFailureWeb        Boolean  @default(true)
+  notifyPaymentFailureRoleIds    String[]
+  notifySystemErrorFailureEmail  Boolean  @default(true)
+  notifySystemErrorWeb           Boolean  @default(true)
+  notifySystemErrorRoleIds       String[]
+}
+
+// ======================================================
+// E-commerce Models
+// ======================================================
+
+model ProductCategory {
+  id        String    @id @default(uuid())
+  name      String
+  slug      String    @unique
+  parentId  String?
+  products  Product[]
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  @@index([parentId])
+}
+
+model Product {
+  id              String   @id @default(uuid())
+  name            String
+  slug            String   @unique
+  description     String?
+  price           Float
+  sku             String?  @unique
+  stockQuantity   Int      @default(0)
+  isPublished     Boolean  @default(false)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  categoryId      String
+  category        ProductCategory @relation(fields: [categoryId], references: [id])
+  images          ProductImage[]
+  variants        ProductVariant[]
+  
+  // Fields for 3D Customization
+  isCustomizable  Boolean         @default(false)
+  modelPath       String?         // Path to the 3D model file (e.g., /models/shoe1.glb)
+  customizableParts CustomizablePart[]
+
+  @@index([categoryId])
+  @@index([isPublished])
+  @@index([isCustomizable])
+}
+
+model ProductImage {
+  id        String   @id @default(uuid())
+  productId String
+  url       String
+  altText   String?
+  order     Int      @default(0)
+  product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+
+  @@index([productId])
+}
+
+model ProductVariant {
+  id            String   @id @default(uuid())
+  productId     String
+  name          String   // e.g., Color, Size
+  value         String   // e.g., Red, 10
+  priceModifier Float    @default(0) // Price difference from base product
+  product       Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  createdAt     DateTime @default(now())
+
+  @@unique([productId, name, value])
+}
+
+model CustomizablePart {
+  id              String   @id @default(uuid())
+  productId       String
+  name            String   // e.g., "Upper", "Sole", "Laces"
+  meshName        String   // The name of the mesh in the 3D model file
+  defaultColor    String?  // Default color hex code
+  product         Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  createdAt       DateTime @default(now())
+
+  @@unique([productId, meshName])
+}
