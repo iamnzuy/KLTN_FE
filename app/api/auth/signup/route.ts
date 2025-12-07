@@ -8,10 +8,9 @@ import {
   getSignupSchema,
   SignupSchemaType,
 } from '@/app/(auth)/forms/signup-schema';
-import { User, UserStatus } from '@/app/models/user';
 
 // Helper function to generate a verification token and send the email.
-async function sendVerificationEmail(user: User) {
+async function sendVerificationEmail(user: any) {
   // Create a new verification token.
   const token = await prisma.verificationToken.create({
     data: {
@@ -82,7 +81,7 @@ export async function POST(req: NextRequest) {
     });
 
     if (existingUser) {
-      if (existingUser.status === UserStatus.INACTIVE) {
+      if (existingUser.status === 'INACTIVE') {
         // Resend verification email for inactive user.
         await prisma.verificationToken.deleteMany({
           where: { identifier: existingUser.id },
@@ -110,7 +109,7 @@ export async function POST(req: NextRequest) {
         email,
         password: hashedPassword,
         name,
-        status: UserStatus.INACTIVE,
+        status: 'INACTIVE',
         role: {
           // Connect to the default "member" role
           connect: {
