@@ -7,13 +7,12 @@ import {
 	Info,
 	NewArrivals,
 	PopularSneakers,
-	SpecialOffers,
 } from './home/components';
 import useSWR from 'swr';
 
 export default function Page() {
-	const { data } = useSWR(`/api/products/homepage?specialOffersLimit=8&newArrivalsLimit=8&popularLimit=8&limitedDealsLimit=8`, configSWR);
-	const {limitedDeals, newArrivals, popularProducts, specialOffers} = data?.data || {};
+	const { data } = useSWR(`/api/products/homepage?newArrivalsLimit=8&popularLimit=8&limitedDealsLimit=8`, configSWR);
+	const {limitedDeals, newArrivals, popularProducts} = data?.data || {};
 	return (
 		<div className="container">
 			<div className="grid grid-cols-1 gap-6">
