@@ -13,15 +13,17 @@ const Model = ({ path, partColors }: { path: string; partColors: Record<string, 
   useMemo(() => {
     console.log("DEBUG: Applying colors. Configured parts:", Object.keys(partColors));
     clonedScene.traverse((child) => {
-      if (child instanceof THREE.Mesh && child.isMesh) {
-        console.log(`DEBUG: Found mesh in 3D model: '${child.name}'`);
-        const color = partColors[child.name];
-        if (color) {
-          console.log(`DEBUG: MATCH! Applying color ${color} to '${child.name}'`);
-          child.material = child.material.clone();
-          (child.material as THREE.MeshStandardMaterial).color.set(color);
-          child.material.needsUpdate = true;
-        }
+      const mesh = child as unknown as THREE.Mesh;
+      if (!mesh?.isMesh) {
+        return;
+      }
+      console.log(`DEBUG: Found mesh in 3D model: '${mesh.name}'`);
+      const color = partColors[mesh.name];
+      if (color) {
+        console.log(`DEBUG: MATCH! Applying color ${color} to '${mesh.name}'`);
+        mesh.material = (mesh.material as unknown as THREE.MeshStandardMaterial).clone();
+        (mesh.material as THREE.MeshStandardMaterial).color.set(color);
+        (mesh.material as unknown as THREE.MeshStandardMaterial).needsUpdate = true;
       }
     });
   }, [partColors, clonedScene]);

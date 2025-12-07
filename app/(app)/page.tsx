@@ -13,14 +13,14 @@ import useSWR from 'swr';
 
 export default function Page() {
 	const { data } = useSWR(`/api/products/homepage?specialOffersLimit=8&newArrivalsLimit=8&popularLimit=8&limitedDealsLimit=8`, configSWR);
-	const {limitedDeals, newArrivals, popular, specialOffers} = data?.data || {};
+	const {limitedDeals, newArrivals, popularProducts, specialOffers} = data?.data || {};
 	return (
 		<div className="container">
 			<div className="grid grid-cols-1 gap-6">
 				<FeaturedProducts />
 				<SpecialOffers products={specialOffers} />
 				<NewArrivals products={newArrivals} />
-				<PopularSneakers products={popular} />
+				<PopularSneakers products={popularProducts} />
 				<Deals products={limitedDeals} />
 				<Info />
 			</div>

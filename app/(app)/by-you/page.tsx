@@ -2,6 +2,10 @@ import prisma from '@/lib/prisma';
 import Content from './content';
 
 async function getCustomizableProducts() {
+  if (!process.env.DATABASE_URL) {
+    console.warn('DATABASE_URL is missing. Returning empty customizable product list for build.');
+    return [];
+  }
   try {
     const products = await prisma.product.findMany({
       where: {

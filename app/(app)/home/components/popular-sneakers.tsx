@@ -22,8 +22,8 @@ export function PopularSneakers({ products }: any) {
       </div>
 
       <div className="grid sm:grid-cols-2 xl:grid-cols-4 gap-5 mb-2">
-        {products?.slice(0, 4) || [...Array(4)]?.map((product: any) => (
-          <Card2 item={product} key={product?.id} />
+        {(products?.slice(0, 4) ?? [...Array(4)]).map((product: any, idx: number) => (
+          <Card2 item={product} key={product?.id ?? idx} />
         ))}
       </div>
     </div>
