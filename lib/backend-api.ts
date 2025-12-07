@@ -59,8 +59,8 @@ export const productApi = {
 // Cart API
 export const cartApi = {
   getActiveCart: (userId: number) => apiCall<any>(`/carts/user/${userId}`),
-  addToCart: (userId: number, item: { productId: string; quantity?: number; unitPrice?: number }) =>
-    apiCall<any>(`/carts/user/${userId}/items`, {
+  addToCart: (item: { productId: string; quantity?: number; unitPrice?: number }) =>
+    apiCall<any>(`/carts/items`, {
       method: 'POST',
       body: JSON.stringify(item),
     }),

@@ -58,7 +58,7 @@ export function useCart(userId: number | null) {
     try {
       setLoading(true);
       setError(null);
-      const response = await cartApi.addToCart(userId, { productId, quantity, unitPrice });
+      const response = await cartApi.addToCart({ productId, quantity, unitPrice });
       if (response.error) {
         setError(response.error);
         return { success: false, error: response.error };

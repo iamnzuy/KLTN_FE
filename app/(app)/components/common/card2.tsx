@@ -18,7 +18,7 @@ export function Card2({ item }: any) {
   const { mutate } = useSWR('/api/carts/1/items', { ...configSWR, revalidateOnMount: false, })
 
   const addToCart = () => {
-    AxiosAPI.post(`/api/carts/user/${1}/items`, {
+    AxiosAPI.post(`/api/carts/items`, {
       productId: item?.id,
       quantity: 1,
       unitPrice: item?.sale ? item?.sale : item?.price
