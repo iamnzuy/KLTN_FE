@@ -15,7 +15,7 @@ export function HeaderTopbar() {
   const [showCart, setShowCart] = useState(false);
   const [showWishlist, setShowWishlist] = useState(false);
 
-  const {data} = useSWR(`/api/carts/${1}/items`, configSWR);
+  const {data} = useSWR(`/api/carts/items`, configSWR);
 
   const cartItems = data?.data?.products || [];
 
@@ -75,7 +75,7 @@ export function HeaderTopbar() {
               <span className="text-xs font-medium text-secondary-foreground">
                 Total decktop
               </span>
-              <span className="text-xs font-medium text-dark">{formatCurrency(data?.data?.meta?.total)}</span>
+              <span className="text-xs font-medium text-foreground">{formatCurrency(data?.data?.meta?.total)}</span>
             </div>
           </div>
         </div>

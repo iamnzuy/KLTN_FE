@@ -11,6 +11,7 @@ import { motion } from 'framer-motion';
 import { calculateDiscount, formatCurrency } from '@/utils/currency';
 import { cn } from '@/lib/utils';
 import { Rating } from '../rating';
+import { HeartWishlist } from '../heart-wishlist';
 
 const items = [
   {
@@ -58,6 +59,11 @@ export const ProductDetailsSheet = ({
 }: { open: boolean, onOpenChange: (open: boolean) => void, product: any, addToCart: (product: any) => void }) => {
   const ref = useRef<any>(null);
   useOnClickOutside(ref, () => onOpenChange(false));
+
+  const handleToggleWishlist = () => {
+    console.log('handleToggleWishlist');
+  };
+
   return (
     <>
       {open && <div className='fixed top-0 left-0 w-screen h-screen bg-black/30 [backdrop-filter:blur(4px)] z-50' />}
@@ -66,12 +72,12 @@ export const ProductDetailsSheet = ({
         animate={open ? "open" : "closed"}
         variants={variants}
         transition={{ duration: 0.2 }}
-        className="fixed border-s z-50 sm:w-[560px] bg-[#0b0809] sm:max-w-none inset-5 start-auto rounded-lg p-0"
+        className="fixed border-s z-50 sm:w-[560px] bg-background sm:max-w-none inset-5 start-auto rounded-lg p-0"
       >
         <div ref={ref} className='flex flex-col gap-4 h-full w-full rounded-lg'>
           <div className='border-b py-3.5 px-5 border-border flex items-center justify-between text-base font-medium'>
             Product Details
-            <X className='text-white/70 hover:text-white cursor-pointer w-5 h-5' onClick={() => onOpenChange(false)} />
+            <X className="text-foreground opacity-70 hover:opacity-100 transition-opacity cursor-pointer w-5 h-5" onClick={() => onOpenChange(false)} />
           </div>
           <div className='px-5 py-0 h-[calc(100dvh-12rem)] pe-3 -me-3 space-y-5 overflow-y-scroll'>
             <div className='flex flex-col text-card-foreground rounded-xl border border-border black/5 relative items-center justify-center bg-accent/50 mb-6.5 h-[280px] shadow-none'>
@@ -85,7 +91,7 @@ export const ProductDetailsSheet = ({
                   save {calculateDiscount(product?.price, product?.sale)}%
                 </Badge>
               )}
-              <Card className="absolute items-center justify-center bg-light w-[75px] h-[45px] overflow-hidden rounded-sm bottom-4 right-4">
+              <Card className="absolute items-center justify-center bg-card w-[75px] h-[45px] overflow-hidden rounded-sm bottom-4 right-4">
                 <Image
                   src={'/media/brand-logos/nike-light.svg'}
                   className="dark:hidden"
@@ -139,16 +145,21 @@ export const ProductDetailsSheet = ({
               <span className="text-lg font-medium text-mono">{formatCurrency(product?.sale)}</span>
             </div>
           </div>
-          <Button
-            onClick={() => {
-              addToCart({ productId: product?.id });
-            }}
-            disabled={!product?.id}
-            className="mx-5 my-3.5"
-          >
-            <ShoppingCart />
-            Add to Cart
-          </Button>
+          <div className='w-full flex items-center justify-center px-5 py-3.5 gap-2'>
+            <HeartWishlist className='rounded-lg' handleToggleWishlist={handleToggleWishlist}>
+              <span className="wishlist-heart-label">Wishlist</span>
+            </HeartWishlist>
+            <Button
+              onClick={() => {
+                addToCart({ productId: product?.id });
+              }}
+              disabled={!product?.id}
+              className="w-full"
+            >
+              <ShoppingCart />
+              Add to Cart
+            </Button>
+          </div>
         </div>
       </motion.nav>
     </>

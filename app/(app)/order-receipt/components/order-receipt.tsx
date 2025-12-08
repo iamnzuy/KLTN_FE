@@ -36,12 +36,12 @@ export function OrderReceipt() {
                 />
               </Link>
 
-              <h3 className="text-2xl text-dark font-semibold mt-6">
+              <h3 className="text-2xl text-foreground font-semibold mt-6">
                 Order Confirmation
               </h3>
               <span className="text-sm text-secondary-foreground font-medium">
                 Thank you! Your order
-                <span className="text-sm text-dark font-semibold">
+                <span className="text-sm text-foreground font-semibold">
                   {' '}
                   #X319330-S24{' '}
                 </span>
@@ -59,7 +59,7 @@ export function OrderReceipt() {
                   <span className="text-sm font-normal text-secondary-foreground">
                     Order placed
                   </span>
-                  <span className="text-sm font-medium text-dark">
+                  <span className="text-sm font-medium text-foreground">
                     26 June, 2025 ID
                   </span>
                 </div>
@@ -67,13 +67,13 @@ export function OrderReceipt() {
                   <span className="text-sm font-normal text-secondary-foreground">
                     Total
                   </span>
-                  <span className="text-sm font-medium text-dark">$512.60</span>
+                  <span className="text-sm font-medium text-foreground">$512.60</span>
                 </div>
                 <div className="flex flex-col gap-1.5">
                   <span className="text-sm font-normal text-secondary-foreground">
                     Ship to
                   </span>
-                  <span className="text-sm font-medium text-dark">
+                  <span className="text-sm font-medium text-foreground">
                     Jeroen van Dijk
                   </span>
                 </div>
@@ -81,7 +81,7 @@ export function OrderReceipt() {
                   <span className="text-sm font-normal text-secondary-foreground">
                     Estimated Delivery
                   </span>
-                  <span className="text-sm font-medium text-dark">
+                  <span className="text-sm font-medium text-foreground">
                     07 July, 2025
                   </span>
                 </div>

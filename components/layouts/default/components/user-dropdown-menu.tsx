@@ -21,12 +21,16 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { Switch } from '@/components/ui/switch';
 import useAuth from '@/hooks/use-auth';
+import AxiosAPI from '@/lib/axios';
 
 export function UserDropdownMenu({ trigger }: { trigger: ReactNode }) {
   const { resolvedTheme, setTheme } = useTheme();
   const { handleLogout } = useAuth();
   const handleThemeToggle = (checked: boolean) => {
     setTheme(checked ? 'dark' : 'light');
+    AxiosAPI.put('/api/users/me', {
+      "preferences": {theme: checked ? 'dark' : 'light'}
+    })
   };
   const { profile } = useAuth();
 

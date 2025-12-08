@@ -11,11 +11,22 @@ import Image from 'next/image';
 import AxiosAPI from '@/lib/axios';
 import useSWR from 'swr';
 import { configSWR } from '@/lib/utils';
+import { HeartWishlist } from '../heart-wishlist';
 
 export function Card2({ item }: any) {
   const [showProductDetails, setShowProductDetails] = useState(false);
 
-  const { mutate } = useSWR('/api/carts/1/items', { ...configSWR, revalidateOnMount: false, })
+  const { mutate } = useSWR('/api/carts/items', { ...configSWR, revalidateOnMount: false });
+
+  const handleToggleWishlist = () => {
+    AxiosAPI.post(`/api/wishlists/items`, {
+      productId: item?.id
+    }).then((res) => {
+      console.log('res', res);
+    }).catch((err) => {
+      console.log('err', err);
+    });
+  };
 
   const addToCart = () => {
     AxiosAPI.post(`/api/carts/items`, {
@@ -28,14 +39,14 @@ export function Card2({ item }: any) {
     }).catch((err) => {
       console.log('err', err);
     });
-  }
-  
+  };
   return (
     <>
       <Card>
         <CardContent className="flex flex-col justify-between p-2.5 gap-4 max-w-[327px]">
           <div className="mb-2.5">
             <Card className="flex items-center justify-center relative bg-accent/50 w-full h-[180px] mb-4 shadow-none">
+              <HeartWishlist size='icon' className='absolute top-2 left-2' handleToggleWishlist={handleToggleWishlist} />
               {item?.sale && (
                 <Badge
                   size="sm"

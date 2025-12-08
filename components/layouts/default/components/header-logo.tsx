@@ -90,7 +90,7 @@ export function HeaderLogo() {
             <span className="text-xs font-medium text-secondary-foreground">
               Total 
             </span>
-            <span className="text-xs font-medium text-dark">$94.56</span>
+            <span className="text-xs font-medium text-foreground">$94.56</span>
           </div>
         </div>
       </div>

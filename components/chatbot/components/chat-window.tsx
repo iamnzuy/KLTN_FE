@@ -552,9 +552,9 @@ const ChatWindow = ({ setChatbotProducts }: { setChatbotProducts: (products: any
                             )}
                         </AnimatePresence>
                     </div>
-                    <div className="flex items-end gap-2 px-4 py-5 border-t border-border">
-                        <TextareaAutoResize ref={chatElementRef} className="w-full h-16 p-2 rounded-md focus:placeholder:opacity-0 resize-none text-white text-t4-bold placeholder:text-t4-bold placeholder:text-white/50 max-h-40 outline-2 outline-border outline-offset-[3px]" placeholder="Nhập tin nhắn..." />
-                        <SendHorizontal onClick={sendMessage} className="w-7 aspect-square text-primary mb-2" />
+                    <div className="flex items-center gap-4 px-4 py-5 border-t border-border">
+                        <TextareaAutoResize ref={chatElementRef} className="w-full h-16 p-2 rounded-md focus:placeholder:opacity-0 resize-none text-foreground text-t4-bold placeholder:text-t4-bold placeholder:text-foreground/50 max-h-40 outline-2 outline-border outline-offset-[3px]" placeholder="Nhập tin nhắn..." />
+                        <SendHorizontal onClick={sendMessage} className="w-8 h-8  flex-shrink-0 text-primary" />
                     </div>
                 </div>
             </motion.nav>

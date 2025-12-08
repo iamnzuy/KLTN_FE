@@ -135,7 +135,7 @@ export function SearchResults() {
           </div>
         </div>
       </ResizablePanel>
-      {isChatbotOpen && <ResizableHandle className="w-2 bg-transparent border-x" withHandle />}
+      {isChatbotOpen && <ResizableHandle className="w-2 bg-transparent border-l" withHandle />}
       {isChatbotOpen && <ResizablePanel className="w-full flex-1 flex flex-col" defaultSize={30} minSize={30}>
         <ChatWindow setChatbotProducts={setChatbotProducts} />
       </ResizablePanel>}

@@ -61,12 +61,12 @@ export function WishlistSheet({ open, onOpenChange }: { open: boolean, onOpenCha
         animate={open ? "open" : "closed"}
         variants={variants}
         transition={{ duration: 0.2 }}
-        className="fixed border-s z-50 sm:w-[560px] bg-[#0b0809] sm:max-w-none inset-5 start-auto rounded-lg p-0"
+        className="fixed border-s z-50 sm:w-[560px] bg-background sm:max-w-none inset-5 start-auto rounded-lg p-0"
       >
         <div className='flex flex-col gap-4 h-full w-full rounded-lg'>
           <div className='border-b py-3.5 px-5 border-border flex items-center justify-between text-base font-medium'>
             Wishlist
-            <X className='text-white/70 hover:text-white cursor-pointer w-5 h-5' onClick={() => onOpenChange(false)} />
+            <X className="text-foreground opacity-70 hover:opacity-100 transition-opacity cursor-pointer w-5 h-5" onClick={() => onOpenChange(false)} />
           </div>
           <div className='px-5 py-0 h-[calc(100dvh-12rem)] pe-3 -me-3 space-y-5 overflow-y-scroll'>
             {items.map((item, index) => (
@@ -82,10 +82,7 @@ export function WishlistSheet({ open, onOpenChange }: { open: boolean, onOpenCha
 
                   <div className="flex flex-col gap-2 w-full">
                     <div className="flex items-center flex-wrap justify-between gap-2.5 -mt-1">
-                      <Link
-                        href="#"
-                        className="hover:text-primary-active text-sm font-medium text-dark leading-5.5"
-                      >
+                      <Link href="#" className="hover:text-primary text-sm font-medium text-foreground leading-5.5">
                         {item.title}
                       </Link>
                       {item?.badge && (
@@ -124,7 +121,7 @@ export function WishlistSheet({ open, onOpenChange }: { open: boolean, onOpenCha
                             {item.label}
                           </span>
                         )}
-                        <span className="text-sm font-medium text-dark">
+                        <span className="text-sm font-medium text-foreground">
                           ${item.total}
                         </span>
                         <Button variant="outline" size="sm">

@@ -23,7 +23,7 @@ export function CartSheet({ open, onOpenChange }: { open: boolean, onOpenChange:
   const ref = useRef<any>(null);
   useOnClickOutside(ref, () => onOpenChange(false));
 
-  const { data, mutate } = useSWR(`/api/carts/${1}/items`, configSWR);
+  const { data, mutate } = useSWR(open ? "/api/carts/items" : null, configSWR);
   const { meta, products } = data?.data || {};
 
   // const handleChangeQuantity = useDebounceCallback((e: ChangeEvent<HTMLInputElement>, itemId: string | number) => {
@@ -57,12 +57,12 @@ export function CartSheet({ open, onOpenChange }: { open: boolean, onOpenChange:
         animate={open ? "open" : "closed"}
         variants={variants}
         transition={{ duration: 0.2 }}
-        className="fixed border-s z-50 sm:w-[560px] bg-[#0b0809] sm:max-w-none inset-5 start-auto rounded-lg p-0"
+        className="fixed border-s z-50 sm:w-[560px] bg-background sm:max-w-none inset-5 start-auto rounded-lg p-0"
       >
         <div ref={ref} className='flex flex-col gap-4 h-full w-full rounded-lg'>
           <div className='border-b py-3.5 px-5 border-border flex items-center justify-between text-base font-medium'>
             Cart
-            <X className='text-white/70 hover:text-white cursor-pointer w-5 h-5' onClick={() => onOpenChange(false)} />
+            <X className="text-foreground opacity-70 hover:opacity-100 transition-opacity cursor-pointer w-5 h-5" onClick={() => onOpenChange(false)} />
           </div>
           <div className='px-5 py-0 h-[calc(100dvh-12rem)] pe-3 -me-3 space-y-5 overflow-y-scroll'>
             {products?.map((item: any, index: number) => (
@@ -130,7 +130,7 @@ export function CartSheet({ open, onOpenChange }: { open: boolean, onOpenChange:
 
             <div className="flex items-center justify-end border-none rounded-md bg-accent/50 gap-5 py-2 px-3 !mt-[30px]">
               <span className="text-sm font-medium text-mono">Total</span>
-              <span className="text-sm font-semibold text-dark">{formatCurrency(meta?.total)}</span>
+              <span className="text-sm font-semibold text-foreground">{formatCurrency(meta?.total)}</span>
             </div>
           </div>
           <div className="flex flex-row border-t py-3.5 px-5 border-border gap-2">
