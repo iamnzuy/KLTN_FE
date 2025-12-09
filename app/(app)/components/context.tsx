@@ -1,6 +1,7 @@
 'use client';
 
 import * as React from 'react';
+import { useRouter } from 'next/navigation';
 
 // Define the state interface
 interface StoreClientState {
@@ -87,13 +88,21 @@ export function StoreClientProvider({
   children: React.ReactNode;
 }) {
   const [state, dispatch] = React.useReducer(storeClientReducer, initialState);
+  const router = useRouter();
 
   const showWishlistSheet = () => dispatch({ type: 'SHOW_WISHLIST_SHEET' });
   const closeWishlistSheet = () => dispatch({ type: 'CLOSE_WISHLIST_SHEET' });
   const showCartSheet = () => dispatch({ type: 'SHOW_CART_SHEET' });
   const closeCartSheet = () => dispatch({ type: 'CLOSE_CART_SHEET' });
-  const showProductDetailsSheet = (product: any) =>
-    dispatch({ type: 'SHOW_PRODUCT_DETAILS_SHEET', product });
+  const showProductDetailsSheet = (product: any) => {
+    // Navigate to product details page instead of opening modal
+    if (product?.id) {
+      router.push(`/product-details/${product.id}`);
+    } else {
+      // Fallback to old modal behavior if no id
+      dispatch({ type: 'SHOW_PRODUCT_DETAILS_SHEET', product });
+    }
+  };
   const closeProductDetailsSheet = () =>
     dispatch({ type: 'CLOSE_PRODUCT_DETAILS_SHEET' });
   const handleAddToCart = ({ productId }: { productId: string }) =>
