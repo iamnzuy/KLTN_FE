@@ -23,8 +23,8 @@ export function CartSheet({ open, onOpenChange }: { open: boolean, onOpenChange:
   const ref = useRef<any>(null);
   useOnClickOutside(ref, () => onOpenChange(false));
 
-  const { data, mutate } = useSWR(open ? "/api/carts/items" : null, configSWR);
-  const { meta, products } = data?.data || {};
+  const { data, mutate } = useSWR(open ? "/api/carts" : null, configSWR);
+  const { meta, items } = data?.data || {};
 
   // const handleChangeQuantity = useDebounceCallback((e: ChangeEvent<HTMLInputElement>, itemId: string | number) => {
   //   AxiosAPI.patch(`/api/carts/${1}/items/${itemId}?quantity=${e.target.value}`).then(() => { mutate() });
@@ -65,7 +65,7 @@ export function CartSheet({ open, onOpenChange }: { open: boolean, onOpenChange:
             <X className="text-foreground opacity-70 hover:opacity-100 transition-opacity cursor-pointer w-5 h-5" onClick={() => onOpenChange(false)} />
           </div>
           <div className='px-5 py-0 h-[calc(100dvh-12rem)] pe-3 -me-3 space-y-5 overflow-y-scroll'>
-            {products?.map((item: any, index: number) => (
+              {items?.map((item: any, index: number) => (
               <Card className="mb-5" key={index}>
                 <CardContent className="p-2 pe-5 flex items-center flex-wrap sm:flex-nowrap w-full justify-between gap-3.5">
                   <div className="flex group md:items-center gap-4 w-4/5">

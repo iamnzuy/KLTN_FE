@@ -17,27 +17,9 @@ interface ProductInfoProps {
   product: any;
 }
 
-// Mock colors and sizes - in real app, these would come from product variants
-const COLORS = [
-  { name: 'White/Aluminium', value: 'white-aluminium', image: '/no_photo.png' },
-  { name: 'Pink', value: 'pink', image: '/no_photo.png' },
-  { name: 'Teal', value: 'teal', image: '/no_photo.png' },
-  { name: 'Grey', value: 'grey', image: '/no_photo.png' },
-  { name: 'Red', value: 'red', image: '/no_photo.png' },
-  { name: 'Green', value: 'green', image: '/no_photo.png' },
-  { name: 'Brown', value: 'brown', image: '/no_photo.png' },
-  { name: 'Cream', value: 'cream', image: '/no_photo.png' },
-  { name: 'Dark Brown', value: 'dark-brown', image: '/no_photo.png' },
-  { name: 'Light Brown', value: 'light-brown', image: '/no_photo.png' },
-];
-
-const SIZES = ['EU35.5', 'EU36', 'EU36.5', 'EU37', 'EU37.5', 'EU38', 'EU38.5', 'EU39', 'EU39.5', 'EU40'];
-
 export function ProductInfo({ product }: ProductInfoProps) {
-  const [selectedColor, setSelectedColor] = useState(COLORS[0]?.value || '');
-  const [selectedSize, setSelectedSize] = useState(SIZES[1] || '');
   const { showCartSheet } = useStoreClient();
-  const { mutate } = useSWR('/api/carts/items', { ...configSWR, revalidateOnMount: false });
+  const { mutate } = useSWR('/api/carts', { ...configSWR, revalidateOnMount: false });
 
   const handleToggleWishlist = () => {
     AxiosAPI.post(`/api/wishlists/items`, {
@@ -70,10 +52,9 @@ export function ProductInfo({ product }: ProductInfoProps) {
 
   return (
     <div className="space-y-6">
-      {/* Category and Title */}
       <div>
-        {product?.categories && product.categories.length > 0 && (
-          <p className="text-sm text-muted-foreground mb-2">{product.categories[0]}</p>
+        {product.categories.length > 0 && (
+          <p className="text-sm text-muted-foreground mb-2">{product.categories.join(', ')}</p>
         )}
         <div className="flex items-start justify-between gap-4">
           <h1 className="text-2xl lg:text-3xl font-semibold text-foreground flex-1">
@@ -81,7 +62,7 @@ export function ProductInfo({ product }: ProductInfoProps) {
           </h1>
           <HeartWishlist
             size="icon"
-            className="shrink-0"
+            productId={product?.id}
             handleToggleWishlist={handleToggleWishlist}
           />
         </div>
@@ -118,68 +99,12 @@ export function ProductInfo({ product }: ProductInfoProps) {
         </span>
       </div>
 
-      {/* Color Selection */}
-      <div className="space-y-3">
-        <div className="flex items-center gap-2">
-          <span className="text-sm font-medium text-foreground">Màu sắc:</span>
-          <span className="text-sm text-muted-foreground">
-            {COLORS.find(c => c.value === selectedColor)?.name || 'White/Aluminium'}
-          </span>
-        </div>
-        <div className="grid grid-cols-5 gap-2">
-          {COLORS.map((color) => (
-            <button
-              key={color.value}
-              onClick={() => setSelectedColor(color.value)}
-              className={cn(
-                "relative aspect-square rounded-lg border-2 overflow-hidden transition-all",
-                selectedColor === color.value
-                  ? "border-primary ring-2 ring-primary/20"
-                  : "border-border hover:border-primary/50"
-              )}
-              title={color.name}
-            >
-              <div
-                className="w-full h-full"
-                style={{ backgroundColor: color.value === 'white-aluminium' ? '#E0E0E0' : color.value }}
-              />
-            </button>
-          ))}
-        </div>
-      </div>
-
-      {/* Size Selection */}
-      <div className="space-y-3">
-        <div className="flex items-center gap-2">
-          <span className="text-sm font-medium text-foreground">Size:</span>
-          <span className="text-sm text-muted-foreground">{selectedSize}</span>
-          <a href="#size-guide" className="text-sm text-primary hover:underline ml-auto">
-            Hướng dẫn chọn size
-          </a>
-        </div>
-        <div className="grid grid-cols-5 gap-2">
-          {SIZES.map((size) => (
-            <button
-              key={size}
-              onClick={() => setSelectedSize(size)}
-              className={cn(
-                "px-4 py-2 rounded-lg border-2 text-sm font-medium transition-all",
-                selectedSize === size
-                  ? "border-primary bg-primary text-primary-foreground"
-                  : "border-border hover:border-primary/50"
-              )}
-            >
-              {size}
-            </button>
-          ))}
-        </div>
-      </div>
 
       {/* Action Buttons */}
       <div className="flex gap-3 pt-4">
         <Button
           onClick={handleAddToCart}
-          className="flex-1 bg-teal-500 hover:bg-teal-600 text-white"
+          className="flex-1 bg-primary hover:bg-primary/90 text-primary-foreground border-primary"
           size="lg"
         >
           <ShoppingCart className="mr-2 h-5 w-5" />
@@ -188,7 +113,7 @@ export function ProductInfo({ product }: ProductInfoProps) {
         <Button
           onClick={handleBuyNow}
           variant="outline"
-          className="flex-1 border-teal-500 text-teal-500 hover:bg-teal-50"
+          className="flex-1 border-primary text-primary hover:bg-primary/10"
           size="lg"
         >
           Mua ngay

@@ -2,8 +2,9 @@ import { ReactNode, useEffect, useRef, useState } from "react";
 import { Button } from '@/components/ui/button';
 import { Heart } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import AxiosAPI from "@/lib/axios";
 
-export const HeartWishlist = ({ handleToggleWishlist, children, className = '', size = 'md' }: { handleToggleWishlist: () => void, children?: ReactNode, className?: string, size?: "md" | "icon" | "lg" | "sm" | null | undefined }) => {
+export const HeartWishlist = ({ handleToggleWishlist, children, className = '', size = 'md', productId = '' }: { handleToggleWishlist: () => void, children?: ReactNode, className?: string, size?: "md" | "icon" | "lg" | "sm" | null | undefined, productId?: string }) => {
     const [isWishlisted, setIsWishlisted] = useState(false);
     const [isBursting, setIsBursting] = useState(false);
     const burstTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -11,6 +12,22 @@ export const HeartWishlist = ({ handleToggleWishlist, children, className = '', 
 
     const toggleWishlist = (event: React.MouseEvent<HTMLButtonElement>) => {
         event.stopPropagation();
+        if (productId && !isWishlisted) {
+            AxiosAPI.post(`/api/products/wishlist`, {
+                productId: productId
+            }).then((res) => {
+                console.log('res', res);
+            }).catch((err) => {
+                console.log('err', err);
+            });
+        }
+        if (productId && isWishlisted) {
+            AxiosAPI.delete(`/api/products/wishlist?productId=${productId}`).then((res) => {
+                console.log('res', res);
+            }).catch((err) => {
+                console.log('err', err);
+            });  
+        }
         setIsWishlisted((prev) => {
             const next = !prev;
             if (burstTimeoutRef.current) clearTimeout(burstTimeoutRef.current);

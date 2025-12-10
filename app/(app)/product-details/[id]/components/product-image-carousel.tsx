@@ -13,7 +13,6 @@ interface ProductImageCarouselProps {
 }
 
 export function ProductImageCarousel({ product }: ProductImageCarouselProps) {
-  // Generate multiple images from product (if product has images array, use it, otherwise use imurl)
   const images = product?.images?.length > 0 
     ? product.images.map((img: any) => img.url || img)
     : product?.imurl 
@@ -65,9 +64,9 @@ export function ProductImageCarousel({ product }: ProductImageCarouselProps) {
         {/* Sale Badge */}
         {product?.sale && (
           <Badge
-            size="sm"
+            size="md"
             variant="destructive"
-            className="absolute top-4 right-4 uppercase"
+            className="absolute top-4 right-4 uppercase text-2xl px-4 py-2 !h-auto rounded-xl"
           >
             Giảm {calculateDiscount(product?.price, product?.sale)}%
           </Badge>

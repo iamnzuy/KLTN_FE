@@ -15,9 +15,8 @@ export function HeaderTopbar() {
   const [showCart, setShowCart] = useState(false);
   const [showWishlist, setShowWishlist] = useState(false);
 
-  const {data} = useSWR(`/api/carts/items`, configSWR);
-
-  const cartItems = data?.data?.products || [];
+  const {data} = useSWR(`/api/carts`, configSWR);
+  const cartItems = data?.data?.items || [];
 
   return (
     <>

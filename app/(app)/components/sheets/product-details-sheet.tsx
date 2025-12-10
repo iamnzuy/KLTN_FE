@@ -146,7 +146,7 @@ export const ProductDetailsSheet = ({
             </div>
           </div>
           <div className='w-full flex items-center justify-center px-5 py-3.5 gap-2'>
-            <HeartWishlist className='rounded-lg' handleToggleWishlist={handleToggleWishlist}>
+            <HeartWishlist className='rounded-lg' handleToggleWishlist={handleToggleWishlist} productId={product?.id}>
               <span className="wishlist-heart-label">Wishlist</span>
             </HeartWishlist>
             <Button

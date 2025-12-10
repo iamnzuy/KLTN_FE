@@ -10,10 +10,10 @@ export function Rating({ rating, outOf = 5 }: RatingProps) {
     const stars = [];
     let ratingLeft = rating;
 
-    for (let i = 1; i <= outOf; i++) {
-        if (ratingLeft >= 1 || ratingLeft === 0) {
+    for (let i = 1; i <= 5; i++) {
+        if (ratingLeft >= 1 || ratingLeft <= 0) {
             stars.push(
-                <Star key={i} className={cn("w-4 h-4", ratingLeft === 0 ? "text-input" : "text-yellow-400")} fill={ratingLeft === 0 ? "none" : "currentColor"} />,
+                <Star key={i} className={cn("w-4 h-4", ratingLeft <= 0 ? "text-input" : "text-yellow-400")} fill={ratingLeft <= 0 ? "none" : "currentColor"} />,
             );
             ratingLeft -= 1;
         }

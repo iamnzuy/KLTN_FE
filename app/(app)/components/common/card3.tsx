@@ -17,19 +17,19 @@ export function Card3({ item }: any) {
       <CardContent className="flex items-center flex-wrap justify-between p-2 pe-5 gap-4.5">
         <div className="flex items-center gap-3.5">
           <Card className="flex items-center justify-center bg-accent/50 h-[70px] w-[90px] shadow-none">
+            <Link href={`/product-details/${item?.id}`} target="_blank">
             <img
               src={item.imurl}
               className="h-[70px] cursor-pointer"
               alt="image"
             />
+            </Link>
           </Card>
 
           <div className="flex flex-col gap-2">
             <div className="flex items-center gap-2.5 -mt-1">
               <Link
-                href="#"
-                className="hover:text-primary text-sm font-medium text-mono leading-5.5"
-              >
+                href={`/product-details/${item?.id}`} target="_blank" className="hover:text-primary text-sm font-medium text-mono leading-5.5">
                 {item.title}
               </Link>
 

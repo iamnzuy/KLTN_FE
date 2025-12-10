@@ -5,22 +5,8 @@ import Link from 'next/link';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent } from '@/components/ui/card';
 
-interface ICard4Props {
-  limit: number;
-}
-
-interface ICard4Item {
-  logo: string;
-  title: string;
-  total?: string;
-  label: string;
-  badge?: boolean;
-  sku: string;
-}
-type ICard4Items = Array<ICard4Item>;
-
-export function Card4({ limit }: ICard4Props) {
-  const items: ICard4Items = [
+export function Card4({ limit }: any) {
+  const items: any = [
     {
       logo: '11.png',
       title: 'Cloud Shift Lightweight Runner Pro Edition',
@@ -49,21 +35,23 @@ export function Card4({ limit }: ICard4Props) {
     },
   ];
 
-  const renderItem = (item: ICard4Item, index: number) => (
+  const renderItem = (item: any, index: number) => (
     <Card key={index} className='shadow-none'>
       <CardContent className="flex items-center flex-wrap justify-between gap-4.5 p-2 pe-5">
         <div className="flex items-center gap-3.5">
           <Card className="flex items-center justify-center bg-accent/50 h-[70px] w-[90px] shadow-none">
+            <Link href={`/product-details/${item?.id}`} target="_blank">
             <img
               src={`/media/store/client/600x600/${item.logo}`}
-              className="cursor-pointer h-[70px]"
-              alt="image"
-            />
+                className="cursor-pointer h-[70px]"
+                alt="image"
+              />
+            </Link>
           </Card>
 
           <div className="flex flex-col gap-1">
             <Link
-              href="#"
+              href={`/product-details/${item?.id}`} target="_blank"
               className="hover:text-primary text-sm font-medium text-mono leading-5.5"
             >
               {item.title}
@@ -107,7 +95,7 @@ export function Card4({ limit }: ICard4Props) {
 
   return (
     <Fragment>
-      {items.slice(0, limit).map((item, index) => {
+      {items.slice(0, limit).map((item: any, index: number) => {
         return renderItem(item, index);
       })}
     </Fragment>
