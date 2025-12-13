@@ -6,7 +6,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { motion } from 'framer-motion';
-import { ChangeEvent, useRef } from 'react';
+import { ChangeEvent, useMemo, useRef } from 'react';
 import { useDebounceCallback, useOnClickOutside } from 'usehooks-ts';
 import useSWR from 'swr';
 import { configSWR } from '@/lib/utils';
@@ -25,13 +25,14 @@ export function CartSheet({ open, onOpenChange }: { open: boolean, onOpenChange:
 
   const { data, mutate } = useSWR(open ? "/api/carts" : null, configSWR);
   const { meta, items } = data?.data || {};
+  console.log(data, "data");
 
   // const handleChangeQuantity = useDebounceCallback((e: ChangeEvent<HTMLInputElement>, itemId: string | number) => {
   //   AxiosAPI.patch(`/api/carts/${1}/items/${itemId}?quantity=${e.target.value}`).then(() => { mutate() });
   // }, 1000);
 
-  const handleChangeQuantity = useDebounceCallback((e: ChangeEvent<HTMLInputElement>, itemId: string | number) => {
-    AxiosAPI.patch(`/api/carts/1/items/${itemId}?quantity=${e.target.value}`).then(() => { mutate() });
+  const handleChangeQuantity = useDebounceCallback((e: ChangeEvent<HTMLInputElement>, itemId: string | number, cartId: string | number) => {
+    AxiosAPI.patch(`/api/carts/${cartId}/items/${itemId}?quantity=${e.target.value}`).then(() => { mutate() });
   }, 1000);
 
   const handleDeleteItem = (itemId: string | number) => {
@@ -48,6 +49,10 @@ export function CartSheet({ open, onOpenChange }: { open: boolean, onOpenChange:
       onOpenChange(false);
     });
   }
+  
+  const totalCostCart = useMemo(() => {
+    return items?.reduce((acc: number, item: any) => acc + (item?.unitPrice || 0) * (item?.quantity || 0), 0);
+  }, [items]);
 
   return (
     <>
@@ -70,7 +75,7 @@ export function CartSheet({ open, onOpenChange }: { open: boolean, onOpenChange:
                 <CardContent className="p-2 pe-5 flex items-center flex-wrap sm:flex-nowrap w-full justify-between gap-3.5">
                   <div className="flex group md:items-center gap-4 w-4/5">
                     <Image
-                      src={item?.imurl}
+                      src={item?.product?.imurl}
                       className="rounded-xl border border-border bg-accent/50 h-[70px] w-[90px] shrink-0"
                       alt="img"
                       unoptimized={true}
@@ -83,22 +88,22 @@ export function CartSheet({ open, onOpenChange }: { open: boolean, onOpenChange:
                         href="#"
                         className="group-hover:text-primary text-sm font-medium text-mono leading-5.5"
                       >
-                        {item?.title}
+                        {item?.product?.title}
                       </Link>
                       <div className="flex items-center gap-2">
                         <span className="text-xs font-normal text-secondary-foreground">
                           SKU:{' '}
                           <span className="text-xs font-medium text-foreground">
-                            {item.sku}
+                            {item.product?.sku}
                           </span>
                         </span>
-                        {item?.sale && (
+                        {item?.product?.sale && (
                           <Badge
                             size="sm"
                             variant="destructive"
                             className="uppercase shrink-0"
                           >
-                            save {calculateDiscount(item?.price, item?.sale)}%
+                            save {calculateDiscount(item?.unitPrice, item?.product?.sale || 0)}%
                           </Badge>
                         )}
                       </div>
@@ -107,8 +112,8 @@ export function CartSheet({ open, onOpenChange }: { open: boolean, onOpenChange:
 
                   <div className="flex justify-center flex-col gap-3">
                     <div className="flex items-center sm:justify-end gap-2">
-                      <input type="number" onChange={(e) => handleChangeQuantity(e, item.cartItemId)} min={1} defaultValue={item.quantity} className='w-14 rounded-md border text-center' />
-                      <Button onClick={() => handleDeleteItem(item.productId)} size="sm" variant="outline" mode="icon">
+                      <input type="number" onChange={(e) => handleChangeQuantity(e, item.id, item.cartId)} min={1} defaultValue={item.quantity} className='w-14 rounded-md border text-center' />
+                      <Button onClick={() => handleDeleteItem(item.id)} size="sm" variant="outline" mode="icon">
                         <TrashIcon />
                       </Button>
                     </div>
@@ -120,7 +125,7 @@ export function CartSheet({ open, onOpenChange }: { open: boolean, onOpenChange:
                         </span>
                       )}
                       <span className="text-sm font-semibold text-mono">
-                        {formatCurrency(item?.price * item.quantity)}
+                        {formatCurrency(item?.unitPrice * item.quantity)}
                       </span>
                     </div>
                   </div>
@@ -130,7 +135,7 @@ export function CartSheet({ open, onOpenChange }: { open: boolean, onOpenChange:
 
             <div className="flex items-center justify-end border-none rounded-md bg-accent/50 gap-5 py-2 px-3 !mt-[30px]">
               <span className="text-sm font-medium text-mono">Total</span>
-              <span className="text-sm font-semibold text-foreground">{formatCurrency(meta?.total)}</span>
+              <span className="text-sm font-semibold text-foreground">{formatCurrency(totalCostCart)}</span>
             </div>
           </div>
           <div className="flex flex-row border-t py-3.5 px-5 border-border gap-2">
