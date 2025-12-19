@@ -21,7 +21,7 @@ const ChatbotFloatingButton = () => {
                     <div className="bg-white rounded-full absolute top-0 right-0 w-full h-full scale-90">
                         <MessageCircleIcon className="text-black w-full h-full scale-[70%]" />
                     </div>
-                    <div className="absolute group-hover:opacity-100 group-hover:-translate-x-[110%] -translate-x-2/3  opacity-0 transition-all duration-300 left-0 top-1/2 -translate-y-1/2 py-1 px-2 text-nowrap text-center text-t4-bold border-2 border-white bg-black shadow-md rounded-md">
+                    <div className="absolute group-hover:opacity-100 group-hover:-translate-x-[110%] -translate-x-2/3  opacity-0 transition-all duration-300 left-0 top-1/2 -translate-y-1/2 py-1.5 px-3 text-nowrap text-center text-t4-bold border border-border bg-background text-foreground shadow-md rounded-lg">
                         Tư vấn sản phẩm với AI
                     </div>
                 </div>

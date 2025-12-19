@@ -151,7 +151,7 @@ const ChatWindow = ({ setChatbotProducts }: { setChatbotProducts: (products: any
                         <div className="absolute bottom-0 left-3 flex gap-4">
                             {productInChatbot?.map((product: any) => (
                                 <Link href={`/product-details/${product?.id}`} target="_blank" key={product?.id} className="relative group flex flex-col justify-center items-center gap-2 border rounded-2xl w-28 p-3">
-                                    <Image src={product?.imurl} alt={product?.title} width={80} height={80} className="w-16 h-16 object-container" />
+                                    <Image unoptimized={true} src={product?.imurl} alt={product?.title} width={80} height={80} className="w-16 h-16 object-container" />
                                     <div className="text-xs font-medium truncate w-full text-center">{product?.title}</div>
                                     <X className="absolute top-2 right-2 group-hover:block hidden" onClick={(event: any) => handleRemoveProductFromChatbot(product, event)} />
                                 </Link>

@@ -16,7 +16,7 @@ export const Deals = ({ products }: any) => {
         </span>
 
         <Button mode="link" asChild>
-          <Link href="/search-results-grid">
+          <Link href="/search-results">
             See All <ChevronRight />
           </Link>
         </Button>

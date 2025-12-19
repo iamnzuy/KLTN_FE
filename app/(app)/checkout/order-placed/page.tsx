@@ -33,7 +33,7 @@ export default function OrderPlacedPage() {
             </Button>
             <Button>
               <Captions />
-              <Link href="/search-results-grid">Continue Shopping</Link>
+              <Link href="/search-results">Continue Shopping</Link>
             </Button>
           </ToolbarActions>
         </Toolbar>

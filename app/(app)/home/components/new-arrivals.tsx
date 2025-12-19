@@ -12,7 +12,7 @@ export function NewArrivals({ products }: any) {
         <span className="text-lg font-medium text-mono">New Arrivals</span>
 
         <Button mode="link" asChild>
-          <Link href="/search-results-grid" className="text-xs">
+          <Link href="/search-results" className="text-xs">
             See All <ChevronRight />
           </Link>
         </Button>
