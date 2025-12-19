@@ -11,7 +11,7 @@ export const HeartWishlist = ({ handleToggleWishlist, children, className = '', 
     const hasLabel = !!children;
 
     const toggleWishlist = (event: React.MouseEvent<HTMLButtonElement>) => {
-        event.stopPropagation();
+        event.preventDefault();
         if (productId && !isWishlisted) {
             AxiosAPI.post(`/api/products/wishlist`, {
                 productId: productId
