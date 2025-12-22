@@ -6,7 +6,7 @@ const BACKEND_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080/ap
 
 export async function PATCH(
   request: NextRequest,
-  { params }: { params: { itemId: string } }
+  context: { params: Promise<{ itemId: string }> }
 ) {
   try {
     const session = await getServerSession(authOptions);
@@ -18,7 +18,7 @@ export async function PATCH(
       );
     }
 
-    const { itemId } = params;
+    const { itemId } = await context.params;
     const { searchParams } = new URL(request.url);
     const quantity = searchParams.get('quantity');
     const token = request.headers.get('Authorization');
@@ -55,7 +55,7 @@ export async function PATCH(
 
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { itemId: string } }
+  context: { params: Promise<{ itemId: string }> }
 ) {
   try {
     const session = await getServerSession(authOptions);
@@ -67,7 +67,7 @@ export async function DELETE(
       );
     }
 
-    const { itemId } = params;
+    const { itemId } = await context.params;
     const token = request.headers.get('Authorization');
 
     const response = await fetch(`${BACKEND_URL}/carts/items/${itemId}`, {

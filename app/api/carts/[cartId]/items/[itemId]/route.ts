@@ -6,7 +6,7 @@ const BACKEND_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080/ap
 
 export async function PATCH(
   request: NextRequest,
-  { params }: { params: { cartId: string; itemId: string } }
+  context: { params: Promise<{ cartId: string; itemId: string }> }
 ) {
   try {
     const session = await getServerSession(authOptions);
@@ -18,7 +18,7 @@ export async function PATCH(
       );
     }
 
-    const { itemId } = params;
+    const { itemId } = await context.params;
     const { searchParams } = new URL(request.url);
     const quantity = searchParams.get('quantity');
     const token = request.headers.get('Authorization');

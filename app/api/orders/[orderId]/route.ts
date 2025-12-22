@@ -18,9 +18,9 @@ async function buildAuthHeader(request: NextRequest) {
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { orderId: string } },
+  context: { params: Promise<{ orderId: string }> },
 ) {
-  const { orderId } = params;
+  const { orderId } = await context.params;
   const authHeader = await buildAuthHeader(request);
 
   if (!authHeader) {
