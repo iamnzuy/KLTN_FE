@@ -8,6 +8,7 @@ import { AxiosChatbot } from "@/lib/axios";
 import { ChatbotStore } from "@/app/(app)/search-results/hooks/chatbot-store";
 import Image from "next/image";
 import Link from "next/link";
+import mockChatbotProducts from "../mock-products";
 
 const variants = {
     open: { opacity: 1, x: 0, display: 'block' },
@@ -57,20 +58,21 @@ const ChatWindow = ({ setChatbotProducts }: { setChatbotProducts: (products: any
         //     setIsLoading(false);
         // }, 3000);
 
-        await AxiosChatbot.post("/chat",
-            {
-                message: message,
-                user_id: `${1}`,
-                k: 20
-            })
-            .then((res) => {
-                setIsLoading(false);
-                setMessages((prev) => [...prev, { role: "assistant", reply: res.data.reply, products: res.data.products }]);
-                setChatbotProducts(res.data.products);
-            }).catch((err) => {
-                setIsLoading(false);
-                console.log(err);
-            })
+        await AxiosChatbot.post("/chat", {
+            message: message,
+            user_id: `${1}`,
+            k: 20
+        }).then((res) => {
+            setIsLoading(false);
+            const products = (res?.data?.products && res.data.products.length) ? res.data.products : mockChatbotProducts;
+            setMessages((prev) => [...prev, { role: "assistant", reply: res?.data?.reply ?? "", products }]);
+            setChatbotProducts(products);
+        }).catch((err) => {
+            setIsLoading(false);
+            console.log(err);
+            setMessages((prev) => [...prev, { role: "assistant", reply: "Dưới đây là gợi ý sản phẩm (dữ liệu mô phỏng)", products: mockChatbotProducts }]);
+            setChatbotProducts(mockChatbotProducts);
+        })
     }
 
     useEffect(() => {
