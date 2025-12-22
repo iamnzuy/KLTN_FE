@@ -104,18 +104,66 @@ const ChatWindow = ({ setChatbotProducts }: { setChatbotProducts: (products: any
                     <div className="flex-1 overflow-y-scroll flex flex-col items-start gap-2 px-4 relative">
                         {messages.map((message, index) => {
                             const isUser = message.role === "user";
+
+                            const parseReplyToReact = (reply: string) => {
+                                if (!reply) return null;
+
+                                // Split by double newlines into paragraphs
+                                const paragraphs = reply.split(/\n\n+/g);
+
+                                return paragraphs.map((para, pIdx) => {
+                                    // Split inline bold markers **bold**
+                                    const parts = para.split(/(\*\*[^*]+\*\*)/g).filter(Boolean);
+
+                                    const inline = parts.map((part, i) => {
+                                        if (/^\*\*[^*]+\*\*$/.test(part)) {
+                                            const text = part.replace(/\*\*/g, "");
+                                            return (<strong key={i} className="font-semibold">{text}</strong>);
+                                        }
+
+                                        // Highlight price patterns like "Giá: 13,975,623 VND"
+                                        const priceMatch = part.match(/(Giá[:\s]*[\d.,]+\s*VND)/i);
+                                        if (priceMatch) {
+                                            const [before, after] = part.split(priceMatch[0]);
+                                            return (
+                                                <span key={i}>
+                                                    {before}
+                                                    <span className="text-primary font-semibold">{priceMatch[0]}</span>
+                                                    {after}
+                                                </span>
+                                            );
+                                        }
+
+                                        // Rating pattern: Đánh giá: 3.75 -> add star
+                                        const ratingMatch = part.match(/(Đánh giá[:\s]*)([0-9]+(?:\.[0-9]+)?)/i);
+                                        if (ratingMatch) {
+                                            const replaced = part.replace(ratingMatch[0], `${ratingMatch[1]}${ratingMatch[2]} ⭐`);
+                                            return <span key={i}>{replaced}</span>;
+                                        }
+
+                                        return <span key={i}>{part}</span>;
+                                    });
+
+                                    return (
+                                        <p key={pIdx} className="m-0 leading-6 whitespace-pre-wrap">
+                                            {inline}
+                                        </p>
+                                    );
+                                });
+                            }
+
                             return (
                                 <div
                                     key={`${message.role}-${index}`}
                                     onClick={() => {
                                         if (message.role === "assistant") setChatbotProducts(message.products);
                                     }}
-                                    className={`max-w-[80%] rounded-4xl px-5 py-4 text-t4-bold ${isUser
-                                        ? "bg-primary/75 text-white self-end"
-                                        : "bg-white/10 text-foreground self-start"
+                                    className={`max-w-[80%] rounded-2xl px-5 py-4 text-t4-bold break-words ${isUser
+                                        ? "bg-primary/75 text-white self-end shadow-md"
+                                        : "bg-card text-foreground/95 self-start border border-border shadow-sm"
                                         }`}
                                 >
-                                    {message.reply}
+                                    {parseReplyToReact(message.reply)}
                                 </div>
                             );
                         })}
