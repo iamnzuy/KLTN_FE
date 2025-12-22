@@ -36,7 +36,7 @@ export function Card4({ limit }: any) {
   ];
 
   const renderItem = (item: any, index: number) => (
-    <Card key={index} className='shadow-none'>
+    <Card key={item?.sku ?? item?.title ?? index} className='shadow-none'>
       <CardContent className="flex items-center flex-wrap justify-between gap-4.5 p-2 pe-5">
         <div className="flex items-center gap-3.5">
           <Card className="flex items-center justify-center bg-accent/50 h-[70px] w-[90px] shadow-none">

@@ -19,6 +19,10 @@ export interface Order {
   totalAmount: number;
   shippingAddress?: string;
   paymentMethod?: string;
+  paymentStatus?: string;
+  paymentLinkId?: string;
+  paymentCode?: string;
+  checkoutUrl?: string;
   createdAt?: string;
   updatedAt?: string;
   items: OrderItem[];
@@ -34,11 +38,17 @@ export function useOrders(userId: number | null) {
 
     try {
       setLoading(true);
-      const response = await orderApi.getUserOrders(userId);
+      const response = await orderApi.getUserOrders();
       if (response.error) {
         setError(response.error);
       } else {
-        setOrders(response.data || []);
+        const data = response.data;
+        const orderList = Array.isArray(data)
+          ? data
+          : Array.isArray(data?.content)
+            ? data.content
+            : [];
+        setOrders(orderList);
       }
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to fetch orders');
@@ -54,7 +64,7 @@ export function useOrders(userId: number | null) {
   const createOrder = useCallback(async (orderData: {
     shippingAddress: string;
     paymentMethod: string;
-    items: Array<{ productId: string; quantity: number; unitPrice: number }>;
+    items: Array<{ productId: string; quantity: number }>;
   }) => {
     if (!userId) {
       setError('User not logged in');
@@ -63,7 +73,7 @@ export function useOrders(userId: number | null) {
 
     try {
       setLoading(true);
-      const response = await orderApi.create(userId, orderData);
+      const response = await orderApi.create(orderData);
       if (response.error) {
         setError(response.error);
         return null;

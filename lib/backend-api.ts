@@ -1,26 +1,35 @@
-/**
- * Backend API Client
- * Handles all API calls to the Spring Boot backend
- */
+import { getCookie } from 'cookies-next';
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:8080/api';
+const API_BASE_URL =
+  process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080/api';
 
 interface ApiResponse<T> {
   data?: T;
   error?: string;
 }
 
+interface ApiCallConfig {
+  baseUrl?: string;
+}
+
 async function apiCall<T>(
   endpoint: string,
-  options: RequestInit = {}
+  options: RequestInit = {},
+  config?: ApiCallConfig,
 ): Promise<ApiResponse<T>> {
   try {
-    const response = await fetch(`${API_BASE_URL}${endpoint}`, {
+    const token =
+      typeof window !== 'undefined' ? getCookie('auth_token') : undefined;
+    const baseUrl = config?.baseUrl ?? API_BASE_URL;
+    const url = baseUrl ? `${baseUrl}${endpoint}` : endpoint;
+    const response = await fetch(url, {
       ...options,
       headers: {
         'Content-Type': 'application/json',
-        ...options.headers,
+        ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        ...(options.headers || {}),
       },
+      credentials: 'include',
     });
 
     if (!response.ok) {
@@ -28,7 +37,7 @@ async function apiCall<T>(
     }
 
     // Handle 204 No Content responses
-    if (response.status === 204 || response.status === 201) {
+    if (response.status === 204) {
       return { data: undefined as T };
     }
 
@@ -58,39 +67,67 @@ export const productApi = {
 
 // Cart API
 export const cartApi = {
-  getActiveCart: (userId: number) => apiCall<any>(`/carts/user/${userId}`),
-  addToCart: (item: { productId: string; quantity?: number; unitPrice?: number }) =>
-    apiCall<any>(`/carts/items`, {
+  getActiveCart: () => apiCall<any>('/carts'),
+  addToCart: (item: { productId: string; quantity?: number }) =>
+    apiCall<any>('/carts/items', {
       method: 'POST',
       body: JSON.stringify(item),
     }),
-  getCartItems: (cartId: number) => apiCall<any[]>(`/carts/${cartId}/items`),
   updateItemQuantity: (itemId: number, quantity?: number) => {
-    const url = quantity !== undefined 
-      ? `/carts/items/${itemId}?quantity=${quantity}`
-      : `/carts/items/${itemId}`;
+    const url =
+      quantity !== undefined
+        ? `/carts/items/${itemId}?quantity=${quantity}`
+        : `/carts/items/${itemId}`;
     return apiCall<void>(url, { method: 'PATCH' });
   },
-  removeItem: (itemId: number) => apiCall<void>(`/carts/items/${itemId}`, { method: 'DELETE' }),
-  clearCart: (cartId: number) => apiCall<void>(`/carts/${cartId}/items`, { method: 'DELETE' }),
-  checkout: (cartId: number) => apiCall<void>(`/carts/${cartId}/checkout`, { method: 'POST' }),
+  removeItem: (itemId: number) =>
+    apiCall<void>(`/carts/items/${itemId}`, { method: 'DELETE' }),
+  clearCart: () => apiCall<void>('/carts/items', { method: 'DELETE' }),
 };
 
 // Order API
 export const orderApi = {
-  create: (userId: number, order: {
+  create: (order: {
     shippingAddress: string;
     paymentMethod: string;
-    items: Array<{ productId: string; quantity: number; unitPrice: number }>;
+    items: Array<{ productId: string; quantity: number }>;
   }) =>
-    apiCall<any>(`/orders/user/${userId}`, {
-      method: 'POST',
-      body: JSON.stringify(order),
-    }),
-  getUserOrders: (userId: number) => apiCall<any[]>(`/orders/user/${userId}`),
-  getById: (orderId: number) => apiCall<any>(`/orders/${orderId}`),
+    apiCall<any>(
+      '/api/orders',
+      {
+        method: 'POST',
+        body: JSON.stringify(order),
+      },
+      { baseUrl: '' },
+    ),
+  getUserOrders: (params?: {
+    page?: number;
+    size?: number;
+    sortBy?: string;
+    sortDir?: 'asc' | 'desc';
+  }) => {
+    const page = params?.page ?? 0;
+    const size = params?.size ?? 24;
+    const sortBy = params?.sortBy ?? 'createdAt';
+    const sortDir = params?.sortDir ?? 'desc';
+
+    const query = new URLSearchParams({
+      page: page.toString(),
+      size: size.toString(),
+      sortBy,
+      sortDir,
+    });
+
+    return apiCall<any>(`/api/orders?${query.toString()}`, {}, { baseUrl: '' });
+  },
+  getById: (orderId: number) =>
+    apiCall<any>(`/api/orders/${orderId}`, {}, { baseUrl: '' }),
   updateStatus: (orderId: number, status: string) =>
-    apiCall<any>(`/orders/${orderId}/status?status=${encodeURIComponent(status)}`, { method: 'PUT' }),
+    apiCall<any>(
+      `/api/orders/${orderId}/status?status=${encodeURIComponent(status)}`,
+      { method: 'PUT' },
+      { baseUrl: '' },
+    ),
 };
 
 // Payment API
@@ -101,24 +138,20 @@ export const paymentApi = {
       paymentLinkId: string;
       orderCode: number;
       qrCode: string;
-    }>(`/payments/create-link`, {
-      method: 'POST',
-      body: JSON.stringify({
-        // Backend expects `orderCode` field (matches PaymentLinkRequest DTO)
-        orderCode: orderId,
-        returnUrl,
-        cancelUrl,
-      }),
-    }),
+    }>(
+      `/api/payments/create-link`,
+      {
+        method: 'POST',
+        body: JSON.stringify({
+          orderCode: orderId,
+          returnUrl,
+          cancelUrl,
+        }),
+      },
+      { baseUrl: '' },
+    ),
   getPaymentStatus: (orderCode: number) =>
-    apiCall<any>(`/payments/status/${orderCode}`),
-  getOrderPaymentStatus: (orderId: number) =>
-    apiCall<{
-      status: string;
-      orderStatus?: string;
-      message?: string;
-      amount?: number;
-    }>(`/payments/order/${orderId}/status`),
+    apiCall<any>(`/api/payments/status/${orderCode}`, {}, { baseUrl: '' }),
 };
 
 // Review API

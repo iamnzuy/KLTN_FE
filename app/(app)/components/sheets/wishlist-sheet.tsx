@@ -70,7 +70,7 @@ export function WishlistSheet({ open, onOpenChange }: { open: boolean, onOpenCha
           </div>
           <div className='px-5 py-0 h-[calc(100dvh-12rem)] pe-3 -me-3 space-y-5 overflow-y-scroll'>
             {items.map((item, index) => (
-              <Card className="mb-7.5" key={index}>
+              <Card className="mb-7.5" key={item?.logo ?? item?.title ?? index}>
                 <CardContent className="p-2 pe-5 flex sm:items-center justify-between gap-3.5">
                   <Card className="flex items-center justify-center bg-accent/50 h-[70px] w-[90px] shadow-none">
                     <img

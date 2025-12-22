@@ -2,7 +2,15 @@
 
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 
-export function Info() {
+interface OrderDeliveryInfoProps {
+  recipient?: string;
+  details?: string[];
+}
+
+export function Info({
+  recipient = 'Customer',
+  details = ['Vui lòng kiểm tra lại địa chỉ giao hàng.'],
+}: OrderDeliveryInfoProps) {
   return (
     <Card>
       <CardHeader className="px-5 min-h-[44px]">
@@ -11,14 +19,13 @@ export function Info() {
 
       <CardContent>
         <div className="text-sm font-semibold text-mono mb-2.5">
-          Jeroen van Dijk
+          {recipient}
         </div>
 
         <div className="flex flex-col gap-2 text-2sm font-normal text-mono">
-          <span>Keizersgracht 172</span>
-          <span>1016 DW, Amsterdam</span>
-          <span>Netherlands</span>
-          <span>Phone number: +31612345678</span>
+          {details.map((line, index) => (
+            <span key={`${line}-${index}`}>{line}</span>
+          ))}
         </div>
       </CardContent>
     </Card>

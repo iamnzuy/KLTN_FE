@@ -115,14 +115,31 @@ const inputWrapperVariants = cva(
   },
 );
 
-function Input({
-  className,
-  type,
-  variant,
-  ...props
-}: React.ComponentProps<'input'> & VariantProps<typeof inputVariants>) {
-  return <input data-slot="input" type={type} className={cn(inputVariants({ variant }), className)} {...props} />;
-}
+type InputProps = React.ComponentProps<'input'> & VariantProps<typeof inputVariants>;
+
+const Input = React.forwardRef<HTMLInputElement, InputProps>(
+  ({ className, type = 'text', variant, value, defaultValue, ...props }, ref) => {
+    const inputProps = { ...props } as React.ComponentProps<'input'>;
+
+    if (value !== undefined) {
+      inputProps.value = value;
+    } else if (defaultValue !== undefined) {
+      inputProps.defaultValue = defaultValue;
+    }
+
+    return (
+      <input
+        ref={ref}
+        data-slot="input"
+        type={type}
+        className={cn(inputVariants({ variant }), className)}
+        {...inputProps}
+      />
+    );
+  },
+);
+
+Input.displayName = 'Input';
 
 export interface InputAddonProps
   extends Omit<React.InputHTMLAttributes<HTMLInputElement>, 'size'>,

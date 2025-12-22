@@ -1,367 +1,170 @@
 'use client';
 
-import { Fragment, ReactElement, useState, useEffect } from 'react';
-import Link from 'next/link';
+import { useCallback } from 'react';
+import { Copy, ExternalLink, RefreshCw } from 'lucide-react';
+import { toast } from 'sonner';
 import { Badge } from '@/components/ui/badge';
+import type { BadgeProps } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { toast } from 'sonner';
-import { RiCheckboxCircleFill } from '@remixicon/react';
-import { Alert, AlertIcon, AlertTitle } from '@/components/ui/alert';
-import {
-  Dialog,
-  DialogTrigger,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogFooter,
-  DialogBody,
-  DialogClose,
-  DialogDescription,
-} from '@/components/ui/dialog';
-import { Input } from '@/components/ui/input';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { useForm } from 'react-hook-form';
-import {
-  Form,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormControl,
-  FormMessage
-} from '@/components/ui/form';
-import { paymentMethodSchema, PaymentMethodFormValues } from './forms';
+import { cn } from '@/lib/utils';
+import { formatCurrency } from '@/utils/currency';
 
-interface IPaymentItem {
-  brandLogo: string;
-  title: string;
-  subTitle: string;
-  description: ReactElement;
-  badge?: boolean;
-  cardNumber?: string;
-  expiry?: string;
-  cvc?: string;
-  billingAddress?: string;
-  name?: string;
-  email?: string;
+export type PayOSPaymentState = 'idle' | 'waiting' | 'paid' | 'timeout' | 'failed';
+
+export interface PayOSCheckoutSession {
+  orderCode?: number;
+  checkoutUrl?: string;
+  qrCode?: string;
 }
-type IPaymentItems = Array<IPaymentItem>;
 
-export function Payment() {
-  // Simulate state for payment items (in real app, this would be lifted up or fetched)
-  const [items, setItems] = useState<IPaymentItems>([
-    {
-      brandLogo: 'visa.svg',
-      title: "Jeroen’s Visa",
-      subTitle: 'Jeroen van Dijk',
-      description: (
-        <span className="text-xs font-normal text-mono">
-          Ending 3604 Expires on 12/2026
-        </span>
-      ),
-      badge: true,
-      cardNumber: '4111 1111 1111 3604',
-      expiry: '12/2026',
-      name: 'Jeroen van Dijk',
-      cvc: '123',
-      billingAddress: 'Keizersgracht 123, Amsterdam',
-    },
-    {
-      brandLogo: 'ideal.svg',
-      title: "Sophie’s iDeal",
-      subTitle: 'Sophie de Vries',
-      description: (
-        <span className="text-xs font-normal text-mono">
-          iDeal with ABN Ambro
-        </span>
-      ),
-      name: 'Sophie de Vries',
-      billingAddress: 'Herengracht 456, Amsterdam',
-    },
-    {
-      brandLogo: 'paypal.svg',
-      title: "Emma’s Paypal",
-      subTitle: 'Emma van den Berg',
-      description: (
-        <Link
-          href="#"
-          className="hover:text-primary text-sm font-medium text-secondary-foreground"
-        >
-          emma@reui.io
-        </Link>
-      ),
-      email: 'emma@reui.io',
-      name: 'Emma van den Berg',
-    },
-    {
-      brandLogo: 'american-express.svg',
-      title: "Bob’s American Express",
-      subTitle: 'Bob van den Berg',
-      description: (
-        <Link
-          href="#"
-          className="hover:text-primary text-sm font-medium text-secondary-foreground"
-        >
-          bob@reui.io
-        </Link>
-      ),
-      email: 'bob@reui.io',
-      name: 'Bob van den Berg',
-    },
-  ]);
+interface PaymentProps {
+  amount: number;
+  orderId: number | null;
+  session: PayOSCheckoutSession | null;
+  state: PayOSPaymentState;
+  note?: string | null;
+  refreshing?: boolean;
+  onOpenCheckout?: () => void;
+  onRefreshStatus?: () => void;
+}
 
-  // Dialog state
-  const [editOpen, setEditOpen] = useState<number|null>(null); // index of item being edited, or null
-  const [removeOpen, setRemoveOpen] = useState<number|null>(null); // index of item being removed, or null
+const STATE_LABELS: Record<PayOSPaymentState, string> = {
+  idle: 'Chưa khởi tạo',
+  waiting: 'Đang chờ thanh toán',
+  paid: 'Đã thanh toán',
+  timeout: 'Đang chờ xác nhận',
+  failed: 'Thanh toán thất bại',
+};
 
-  // react-hook-form for editing
-  const form = useForm<PaymentMethodFormValues>({
-    resolver: zodResolver(paymentMethodSchema),
-    defaultValues: {
-      name: '',
-      cardNumber: '',
-      expiry: '',
-      cvc: '',
-      email: '',
-      billingAddress: '',
-    },
-    mode: 'onChange',
-  });
+const STATE_BADGES: Record<
+  PayOSPaymentState,
+  { variant: BadgeProps['variant']; appearance?: BadgeProps['appearance'] }
+> = {
+  idle: { variant: 'secondary', appearance: 'outline' },
+  waiting: { variant: 'warning', appearance: 'outline' },
+  paid: { variant: 'success', appearance: 'outline' },
+  timeout: { variant: 'info', appearance: 'outline' },
+  failed: { variant: 'destructive', appearance: 'outline' },
+};
 
-  useEffect(() => {
-    if (editOpen !== null) {
-      const item = items[editOpen];
-      form.reset({
-        name: item?.name || '',
-        cardNumber: item?.cardNumber || '',
-        expiry: item?.expiry || '',
-        cvc: item?.cvc || '',
-        email: item?.email || '',
-        billingAddress: item?.billingAddress || '',
-      });
+export function Payment({
+  amount,
+  orderId,
+  session,
+  state,
+  note,
+  refreshing = false,
+  onOpenCheckout,
+  onRefreshStatus,
+}: PaymentProps) {
+  const badgeConfig = STATE_BADGES[state];
+  const canOpenCheckout = Boolean(session?.checkoutUrl && onOpenCheckout);
+  const canRefresh = Boolean(session?.orderCode && onRefreshStatus);
+
+  const handleCopyOrderCode = useCallback(async () => {
+    if (!session?.orderCode) return;
+    try {
+      await navigator.clipboard.writeText(String(session.orderCode));
+      toast.success('Đã sao chép PayOS order code');
+    } catch (error) {
+      const message =
+        error instanceof Error ? error.message : 'Không thể sao chép order code';
+      toast.error(message);
     }
-  }, [editOpen]);
+  }, [session?.orderCode]);
 
-  // When opening the edit dialog, just set the index
-  const handleEditOpen = (item: IPaymentItem, idx: number) => {
-    setEditOpen(idx);
-  };
-
-
-  // Handle Edit submit
-  const handleEditSubmit = async (data: PaymentMethodFormValues) => {
-    if (editOpen === null) return;
-    setItems(prev => prev.map((item, i) => i === editOpen ? { ...item, ...data } : item));
-    setEditOpen(null);
-  };
-
-  // Handle Remove
-  const handleRemove = (idx: number) => {
-    setItems(prev => prev.filter((_, i) => i !== idx));
-    setRemoveOpen(null);
-  };
-
-  const renderItem = (item: IPaymentItem, index: number) => (
-    <Card key={index}>
-      <CardHeader className="px-5">
-        <CardTitle>{item.title}</CardTitle>
-        {item?.badge && (
-          <Badge variant="success" appearance="outline">
-            Pay with this
-          </Badge>
-        )}
+  return (
+    <Card>
+      <CardHeader className="px-5 flex-row items-center justify-between gap-4">
+        <CardTitle className="text-sm">Thanh toán qua PayOS</CardTitle>
+        <Badge
+          variant={badgeConfig.variant}
+          appearance={badgeConfig.appearance}
+          className="uppercase tracking-wide"
+        >
+          {STATE_LABELS[state]}
+        </Badge>
       </CardHeader>
 
-      <CardContent className="px-5 space-y-5">
-        <div className="flex items-center gap-3">
-          <img
-            src={`/media/brand-logos/${item.brandLogo}`}
-            className="size-12"
-            alt="image"
-          />
+      <CardContent className="p-5 space-y-4">
+        <div className="space-y-2 text-sm">
           <div className="flex flex-col gap-0.5">
-            <span className="text-xs font-semibold text-mono">
-              {item.subTitle}
-            </span>
-            {item.description}
+            <span className="text-muted-foreground">Mã đơn hàng hệ thống</span>
+            <span className="font-mono text-base">{orderId ?? '—'}</span>
+          </div>
+
+          {session?.orderCode ? (
+            <div className="flex flex-wrap items-center gap-2">
+              <div className="flex flex-col">
+                <span className="text-muted-foreground text-sm">PayOS order code</span>
+                <span className="font-mono text-base">{session.orderCode}</span>
+              </div>
+              <Button
+                size="icon"
+                variant="ghost"
+                className="shrink-0"
+                onClick={handleCopyOrderCode}
+                aria-label="Copy PayOS order code"
+              >
+                <Copy className="size-4" />
+              </Button>
+            </div>
+          ) : (
+            <p className="text-xs text-muted-foreground">
+              Nhấn &quot;Pay Now&quot; để tạo liên kết thanh toán PayOS cho đơn hàng của bạn.
+            </p>
+          )}
+
+          <div className="flex flex-col">
+            <span className="text-muted-foreground text-sm">Tổng thanh toán</span>
+            <span className="text-base font-semibold">{formatCurrency(amount)}</span>
           </div>
         </div>
 
-        <div className="flex justify-between items-center min-h-8.5">
-          <div className="flex items-center gap-5">
-            {/* Edit Dialog */}
-            <Dialog open={editOpen === index} onOpenChange={open => open ? handleEditOpen(item, index) : setEditOpen(null)}>
-              <DialogTrigger asChild>
-                <Button mode="link" underlined="dashed">
-                  Edit
-                </Button>
-              </DialogTrigger>
-              <DialogContent>
-                <DialogHeader>
-                  <DialogTitle>Edit Payment Method</DialogTitle>
-                  <DialogDescription>
-                    Update your payment details below. All fields are required.
-                  </DialogDescription>
-                </DialogHeader>
-                <DialogBody>
-                  <Form {...form}>
-                    <form onSubmit={form.handleSubmit(handleEditSubmit)} className="block w-full space-y-5">
-                      {item.cardNumber !== undefined && (
-                        <FormField
-                          control={form.control}
-                          name="cardNumber"
-                          render={({ field }) => (
-                            <FormItem>
-                              <FormLabel>Card Number</FormLabel>
-                              <FormControl>
-                                <Input {...field} id="cardNumber" maxLength={19} pattern="[0-9 ]{13,19}" required />
-                              </FormControl>
-                              <FormMessage />
-                            </FormItem>
-                          )}
-                        />
-                      )}
-                      {item.expiry !== undefined && (
-                        <div className="flex gap-2">
-                          <FormField
-                            control={form.control}
-                            name="expiry"
-                            render={({ field }) => (
-                              <FormItem className="flex-1">
-                                <FormLabel>Expiry</FormLabel>
-                                <FormControl>
-                                  <Input {...field} id="expiry" placeholder="MM/YYYY" required />
-                                </FormControl>
-                                <FormMessage />
-                              </FormItem>
-                            )}
-                          />
-                          <FormField
-                            control={form.control}
-                            name="cvc"
-                            render={({ field }) => (
-                              <FormItem className="flex-1">
-                                <FormLabel>CVC</FormLabel>
-                                <FormControl>
-                                  <Input {...field} id="cvc" maxLength={4} required />
-                                </FormControl>
-                                <FormMessage />
-                              </FormItem>
-                            )}
-                          />
-                        </div>
-                      )}
-                      {item.email !== undefined && (
-                        <FormField
-                          control={form.control}
-                          name="email"
-                          render={({ field }) => (
-                            <FormItem>
-                              <FormLabel>Email</FormLabel>
-                              <FormControl>
-                                <Input {...field} id="email" type="email" required />
-                              </FormControl>
-                              <FormMessage />
-                            </FormItem>
-                          )}
-                        />
-                      )}
-                      <FormField
-                        control={form.control}
-                        name="billingAddress"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>Billing Address</FormLabel>
-                            <FormControl>
-                              <Input {...field} id="billingAddress" required />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                      <DialogFooter>
-                        <Button type="submit" variant="primary">
-                          Save Changes
-                        </Button>
-                        <DialogClose asChild>
-                          <Button type="button" variant="outline">
-                            Cancel
-                          </Button>
-                        </DialogClose>
-                      </DialogFooter>
-                    </form>
-                  </Form>
-                </DialogBody>
-              </DialogContent>
-            </Dialog>
-
-            {/* Remove Dialog */}
-            <Dialog open={removeOpen === index} onOpenChange={open => open ? setRemoveOpen(index) : setRemoveOpen(null)}>
-              <DialogTrigger asChild>
-                <Button mode="link" underlined="dashed">
-                  Remove
-                </Button>
-              </DialogTrigger>
-              <DialogContent>
-                <DialogHeader>
-                  <DialogTitle>Remove Payment Method</DialogTitle>
-                </DialogHeader>
-                <DialogBody className="text-sm">
-                  Are you sure you want to remove this payment method? This action cannot be undone.
-                </DialogBody>
-                <DialogFooter>
-                  <Button variant="destructive" onClick={() => handleRemove(index)}>
-                    Yes, Remove
-                  </Button>
-                  <DialogClose asChild>
-                    <Button variant="outline">Cancel</Button>
-                  </DialogClose>
-                </DialogFooter>
-              </DialogContent>
-            </Dialog>
+        {session?.qrCode && (
+          <div className="flex flex-col items-center gap-3 rounded-xl border border-dashed border-primary/30 p-4 text-center">
+            <img
+              src={session.qrCode}
+              alt="PayOS QR code"
+              className="h-48 w-48 object-contain"
+            />
+            <p className="text-xs text-muted-foreground">
+              Quét QR hoặc mở trang PayOS để chuyển khoản đúng nội dung và số tiền.
+            </p>
           </div>
+        )}
 
-          {item.badge !== true && (
-            <Button size="sm" variant="outline" onClick={() => handleSelect(index)}>
-              Select Card
-            </Button>
-          )}
+        {note && (
+          <div className="rounded-md bg-muted px-3 py-2 text-xs text-muted-foreground">
+            {note}
+          </div>
+        )}
+
+        <div className="flex flex-wrap gap-3">
+          <Button
+            className="flex-1 min-w-36"
+            variant="secondary"
+            onClick={onOpenCheckout}
+            disabled={!canOpenCheckout}
+          >
+            <ExternalLink className="size-4 mr-2" />
+            Mở trang PayOS
+          </Button>
+          <Button
+            className="flex-1 min-w-36"
+            variant="outline"
+            onClick={onRefreshStatus}
+            disabled={!canRefresh || refreshing}
+          >
+            <RefreshCw
+              className={cn('size-4 mr-2', refreshing ? 'animate-spin' : 'text-muted-foreground')}
+            />
+            {refreshing ? 'Đang kiểm tra...' : 'Kiểm tra trạng thái'}
+          </Button>
         </div>
       </CardContent>
     </Card>
-  );
-
-  // Handle Select Card
-  const handleSelect = (idx: number) => {
-    setItems(prev => prev.map((item, i) => ({
-      ...item,
-      badge: i === idx,
-    })));
-    toast.custom(
-      (t) => (
-        <Alert
-          variant="mono"
-          icon="success"
-          onClose={() => toast.dismiss(t)}
-        >
-          <AlertIcon>
-            <RiCheckboxCircleFill />
-          </AlertIcon>
-          <AlertTitle>Address selected!</AlertTitle>
-        </Alert>
-      ),
-      {
-        duration: 5000,
-      }
-    );
-  };
-
-  return (
-    <Fragment>
-      {items.map((item, index) => {
-        return renderItem(item, index);
-      })}
-    </Fragment>
   );
 }
 

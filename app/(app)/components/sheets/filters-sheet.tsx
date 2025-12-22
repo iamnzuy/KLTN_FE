@@ -119,7 +119,7 @@ export function StoreClientFiltersSheet({ trigger }: { trigger: ReactNode }) {
               <div className="flex flex-wrap gap-2.5 mb-2">
                 {items.map((item, index) => (
                   <Badge
-                    key={index}
+                    key={item.label ?? index}
                     size="sm"
                     shape="circle"
                     className="border-border bg-accent/50 px-2 py-2.5"

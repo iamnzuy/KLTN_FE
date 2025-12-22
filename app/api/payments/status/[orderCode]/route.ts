@@ -1,0 +1,55 @@
+import { cookies } from 'next/headers';
+import { NextRequest, NextResponse } from 'next/server';
+
+const BACKEND_URL =
+  process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080/api';
+
+function unauthorized() {
+  return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+}
+
+async function buildAuthHeader(request: NextRequest) {
+  const header = request.headers.get('Authorization');
+  if (header) return header;
+  const cookieStore = await cookies();
+  const token = cookieStore.get('auth_token')?.value;
+  return token ? `Bearer ${token}` : undefined;
+}
+
+export async function GET(
+  request: NextRequest,
+  { params }: { params: { orderCode: string } },
+) {
+  const { orderCode } = params;
+  const authHeader = await buildAuthHeader(request);
+
+  if (!authHeader) {
+    return unauthorized();
+  }
+
+  const response = await fetch(`${BACKEND_URL}/payments/status/${orderCode}`, {
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: authHeader,
+    },
+  });
+
+  if (!response.ok) {
+    const errorText = await response.text();
+    try {
+      return NextResponse.json(JSON.parse(errorText || '{}'), {
+        status: response.status,
+      });
+    } catch {
+      return NextResponse.json(
+        { error: errorText || 'Failed to fetch payment status' },
+        { status: response.status },
+      );
+    }
+  }
+
+  const data = await response.json();
+  return NextResponse.json(data);
+}
+

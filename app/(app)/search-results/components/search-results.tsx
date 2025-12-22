@@ -124,12 +124,13 @@ export function SearchResults() {
             }
           >
             {(chatbotProducts.length > 0 ? chatbotProducts : products)?.map((item: any, index: number) => {
+              const key = item?.id ?? item?.productId ?? index;
               return activeTab === 'card' ? (
-                <div className='min-w-[266px] max-w-[301px] flex-1'>
-                  <Card2 key={index} item={item} />
+                <div key={key} className='min-w-[266px] max-w-[301px] flex-1'>
+                  <Card2 item={item} />
                 </div>
               ) : (
-                <Card3 key={index} item={item} />
+                <Card3 key={key} item={item} />
               );
             })}
           </div>

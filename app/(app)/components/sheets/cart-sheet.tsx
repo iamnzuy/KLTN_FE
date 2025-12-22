@@ -13,6 +13,7 @@ import { configSWR } from '@/lib/utils';
 import Image from 'next/image';
 import { calculateDiscount, formatCurrency } from '@/utils/currency';
 import AxiosAPI from '@/lib/axios';
+import { useRouter } from 'next/navigation';
 
 const variants = {
   open: { opacity: 1, x: 0 },
@@ -22,6 +23,7 @@ const variants = {
 export function CartSheet({ open, onOpenChange }: { open: boolean, onOpenChange: (open: boolean) => void }) {
   const ref = useRef<any>(null);
   useOnClickOutside(ref, () => onOpenChange(false));
+  const router = useRouter();
 
   const { data, mutate } = useSWR(open ? "/api/carts" : null, configSWR);
   const { items } = data?.data || {};
@@ -45,11 +47,9 @@ export function CartSheet({ open, onOpenChange }: { open: boolean, onOpenChange:
   }
 
   const checkoutCart = () => {
-    AxiosAPI.post(`/api/carts/${cartId}/checkout`).then(() => {
-      mutate();
-      onOpenChange(false);
-    });
-  }
+    onOpenChange(false);
+    router.push('/checkout/order-summary');
+  };
 
   const totalCostCart = useMemo(() => {
     return items?.reduce((acc: number, item: any) => acc + (item?.unitPrice || 0) * (item?.quantity || 0), 0);
@@ -89,7 +89,7 @@ export function CartSheet({ open, onOpenChange }: { open: boolean, onOpenChange:
             ) : (
               <>
                 {items?.map((item: any, index: number) => (
-                  <Card className="mb-5" key={index}>
+                  <Card className="mb-5" key={item?.id ?? item?.product?.id ?? index}>
                     <CardContent className="p-2 pe-5 flex items-center flex-wrap sm:flex-nowrap w-full justify-between gap-3.5">
                       <div className="flex group md:items-center gap-4 w-4/5">
                         <Image

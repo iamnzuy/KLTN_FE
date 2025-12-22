@@ -4,7 +4,16 @@ import { Fragment, useState, useEffect } from 'react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Dialog, DialogTrigger, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogBody, DialogClose } from '@/components/ui/dialog';
+import {
+  Dialog,
+  DialogTrigger,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+  DialogBody,
+  DialogClose,
+} from '@/components/ui/dialog';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import { addressSchema, AddressFormValues } from './forms';
@@ -13,7 +22,7 @@ import { Alert, AlertIcon, AlertTitle } from '@/components/ui/alert';
 import { RiCheckboxCircleFill } from '@remixicon/react';
 import { toast } from 'sonner';
 
-interface IInfoItem {
+export interface ShippingAddressItem {
   default: boolean;
   title: string;
   addressName: string;
@@ -29,75 +38,17 @@ interface IInfoItem {
   badge?: boolean;
 }
 
-export function Info() {
-  const [items, setItems] = useState<IInfoItem[]>([
-    {
-      default: true,
-      title: 'Jeroen’s Home',
-      addressName: 'Home',
-      name: 'Jeroen',
-      lastName: 'van Dijk',
-      email: 'jeroen@vandijk.com',
-      phone: '+31612345678',
-      address: 'Keizersgracht 172',
-      apartment: '',
-      city: 'Amsterdam',
-      country: 'Netherlands',
-      postalCode: '1016 DW',
-      badge: true,
-    },
-    {
-      default: false,
-      title: 'Sophie’s Office',
-      addressName: 'Office',
-      name: 'Sophie',
-      lastName: 'de Vries',
-      email: 'sophie@devries.com',
-      phone: '+31687654321',
-      address: 'Laan van Meerdervoort 88',
-      apartment: '',
-      city: 'The Hague',
-      country: 'Netherlands',
-      postalCode: '2517 AN',
-      badge: false,
-    },
-    {
-      default: false,
-      title: 'Jeroen’s Home',
-      addressName: 'Vacation',
-      name: 'Jeroen',
-      lastName: 'van Dijk',
-      email: 'jeroen@vandijk.com',
-      phone: '+31612345678',
-      address: 'Keizersgracht 172',
-      apartment: '',
-      city: 'Amsterdam',
-      country: 'Netherlands',
-      postalCode: '1016 DW',
-      badge: false,
-    },
-    {
-      default: false,
-      title: 'Emma’s Apartment',
-      addressName: 'Apartment',
-      name: 'Emma',
-      lastName: 'van den Berg',
-      email: 'emma@vandenberg.com',
-      phone: '+31623456789',
-      address: 'Vondelstreet 45',
-      apartment: 'Apt 2',
-      city: 'Amsterdam',
-      country: 'Netherlands',
-      postalCode: '1054 GJ',
-      badge: false,
-    },
-  ]);
+interface InfoProps {
+  items: ShippingAddressItem[];
+  onSelect: (index: number) => void;
+  onRemove: (index: number) => void;
+  onUpdate: (index: number, data: AddressFormValues) => void;
+}
 
-  // Dialog state
-  const [editOpen, setEditOpen] = useState<number|null>(null); 
-  const [removeOpen, setRemoveOpen] = useState<number|null>(null); 
+export function Info({ items, onSelect, onRemove, onUpdate }: InfoProps) {
+  const [editOpen, setEditOpen] = useState<number | null>(null);
+  const [removeOpen, setRemoveOpen] = useState<number | null>(null);
 
-  // react-hook-form for editing
   const form = useForm<AddressFormValues>({
     resolver: zodResolver(addressSchema),
     defaultValues: {
@@ -115,7 +66,6 @@ export function Info() {
     mode: 'onChange',
   });
 
-  // Reset form values when editOpen changes
   useEffect(() => {
     if (editOpen !== null) {
       const item = items[editOpen];
@@ -134,32 +84,44 @@ export function Info() {
     }
   }, [editOpen, items, form]);
 
-
-  // Handle edit submit
   function handleEditSubmit(data: AddressFormValues) {
     if (editOpen === null) return;
-    setItems((prev: IInfoItem[]) =>
-      prev.map((item: IInfoItem, i: number) =>
-        i === editOpen
-          ? {
-              ...item,
-              ...data,
-              title: data.addressName,
-            }
-          : item
-      )
-    );
+    onUpdate(editOpen, data);
     setEditOpen(null);
   }
 
-  // Remove address
   function handleRemove(idx: number) {
-    setItems((prev: IInfoItem[]) => prev.filter((_, i: number) => i !== idx));
+    onRemove(idx);
     setRemoveOpen(null);
+  }
+
+  const handleSelect = (idx: number) => {
+    onSelect(idx);
+    toast.custom(
+      (t) => (
+        <Alert variant="mono" icon="success" onClose={() => toast.dismiss(t)}>
+          <AlertIcon>
+            <RiCheckboxCircleFill />
+          </AlertIcon>
+          <AlertTitle>Address selected!</AlertTitle>
+        </Alert>
+      ),
+      { duration: 5000 },
+    );
   };
 
-  const renderItem = (item: IInfoItem, index: number) => (
-    <Card key={index}>
+  if (!items.length) {
+    return (
+      <Card className="border-dashed">
+        <CardContent className="py-8 text-center text-sm text-muted-foreground">
+          Add a shipping address to continue with checkout.
+        </CardContent>
+      </Card>
+    );
+  }
+
+  const renderItem = (item: ShippingAddressItem, index: number) => (
+    <Card key={`${item.title}-${index}`}>
       <CardHeader className="px-5">
         <CardTitle>{item.title}</CardTitle>
         {item.default && (
@@ -176,19 +138,23 @@ export function Info() {
           </span>
 
           <div className="flex flex-col gap-2 text-sm font-normal text-mono">
-            <span>{item.postalCode}{item.address}</span>
-            <span>{item.city}</span>
-            <span>{item.country}</span>
+            <span>
+              {item.address}
+              {item.apartment ? `, ${item.apartment}` : ''}
+            </span>
+            <span>
+              {item.city}, {item.country} {item.postalCode}
+            </span>
             <span>Phone Number: {item.phone}</span>
+            <span>{item.email}</span>
           </div>
         </div>
 
         <div className="flex justify-between items-center min-h-8.5">
           <div className="flex items-center gap-5">
-            {/* Edit Dialog */}
             <AddressDialog
               open={editOpen === index}
-              onOpenChange={val => setEditOpen(val ? index : null)}
+              onOpenChange={(val) => setEditOpen(val ? index : null)}
               initialValues={item}
               onSubmit={handleEditSubmit}
               title="Edit Address"
@@ -201,8 +167,10 @@ export function Info() {
               }
             />
 
-            {/* Remove Dialog */}
-            <Dialog open={removeOpen === index} onOpenChange={open => open ? setRemoveOpen(index) : setRemoveOpen(null)}>
+            <Dialog
+              open={removeOpen === index}
+              onOpenChange={(open) => setRemoveOpen(open ? index : null)}
+            >
               <DialogTrigger asChild>
                 <Button mode="link" underlined="dashed">
                   Remove
@@ -213,7 +181,8 @@ export function Info() {
                   <DialogTitle>Remove Shipping Address</DialogTitle>
                 </DialogHeader>
                 <DialogBody className="text-sm">
-                  Are you sure you want to remove this shipping address? This action cannot be undone.
+                  Are you sure you want to remove this shipping address? This
+                  action cannot be undone.
                 </DialogBody>
                 <DialogFooter>
                   <Button variant="destructive" onClick={() => handleRemove(index)}>
@@ -227,42 +196,15 @@ export function Info() {
             </Dialog>
           </div>
 
-          {item.default === false && (
+          {!item.default && (
             <Button size="sm" variant="outline" onClick={() => handleSelect(index)}>
               Select Address
             </Button>
           )}
-
         </div>
       </CardContent>
     </Card>
   );
-
-  // Handle Select Address
-  const handleSelect = (idx: number) => {
-    setItems(prev => prev.map((item, i) => ({
-      ...item,
-      default: i === idx,
-      badge: i === idx,
-    })));
-    toast.custom(
-      (t) => (
-        <Alert
-          variant="mono"
-          icon="success"
-          onClose={() => toast.dismiss(t)}
-        >
-          <AlertIcon>
-            <RiCheckboxCircleFill />
-          </AlertIcon>
-          <AlertTitle>Address selected!</AlertTitle>
-        </Alert>
-      ),
-      {
-        duration: 5000,
-      }
-    );
-  };
 
   return (
     <Fragment>
