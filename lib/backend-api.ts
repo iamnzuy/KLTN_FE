@@ -104,7 +104,8 @@ export const paymentApi = {
     }>(`/payments/create-link`, {
       method: 'POST',
       body: JSON.stringify({
-        orderId,
+        // Backend expects `orderCode` field (matches PaymentLinkRequest DTO)
+        orderCode: orderId,
         returnUrl,
         cancelUrl,
       }),
