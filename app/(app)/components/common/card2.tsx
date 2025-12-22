@@ -13,7 +13,6 @@ import { Card, CardContent } from '@/components/ui/card';
 import { HeartWishlist } from '../heart-wishlist';
 import { useSearchParams } from 'next/navigation';
 import { ChatbotStore } from '../../search-results/hooks/chatbot-store';
-import { useCompare } from '@/hooks/use-compare';
 
 export function Card2({ item }: any) {
   const searchParams = useSearchParams();
@@ -56,7 +55,6 @@ export function Card2({ item }: any) {
         console.log('err', err);
       });
   };
-  const { items: compareItems, toggle: toggleCompare, isCompared } = useCompare();
   return (
     <>
       <Card>
@@ -130,15 +128,6 @@ export function Card2({ item }: any) {
                 onClick={addToCart}
               >
                 <ShoppingCart /> Add
-              </Button>
-
-              <Button
-                size="sm"
-                variant={isCompared(item?.id) ? 'primary' : 'outline'}
-                className="ms-1"
-                onClick={() => toggleCompare(item)}
-              >
-                So sánh
               </Button>
             </div>
           </div>

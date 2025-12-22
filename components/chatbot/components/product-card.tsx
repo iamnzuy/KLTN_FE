@@ -6,7 +6,6 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { TopProduct } from '../types';
 import { useStoreClient } from '@/app/(app)/components/context';
-import { useCompare } from '@/hooks/use-compare';
 
 interface ProductCardProps {
   product: TopProduct;
@@ -14,8 +13,6 @@ interface ProductCardProps {
 
 export function ProductCard({ product }: ProductCardProps) {
   const { showCartSheet, showProductDetailsSheet } = useStoreClient();
-
-  const { toggle, isCompared } = useCompare();
 
   // Format price to Vietnamese currency
   const formatPrice = (price: number) => {
@@ -60,15 +57,6 @@ export function ProductCard({ product }: ProductCardProps) {
               onClick={showCartSheet}
             >
               <ShoppingCart className="size-3.5" /> Add
-            </Button>
-
-            <Button
-              size="sm"
-              variant={isCompared(product.id) ? 'primary' : 'outline'}
-              className="ms-1"
-              onClick={() => toggle(product as any)}
-            >
-              So sánh
             </Button>
           </div>
         </div>
