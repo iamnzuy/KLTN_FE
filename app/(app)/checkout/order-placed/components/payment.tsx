@@ -29,7 +29,7 @@ export function Payment({
     <Card>
       <CardHeader className="px-5 min-h-[44px] flex items-center justify-between">
         <CardTitle className="text-sm">Payment</CardTitle>
-        <Badge variant={normalizedStatus === 'PAID' ? 'success' : 'outline'}>
+        <Badge variant={normalizedStatus === 'PAID' ? 'success' : 'secondary'}>
           {normalizedStatus}
         </Badge>
       </CardHeader>
