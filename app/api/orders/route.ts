@@ -102,7 +102,7 @@ export async function GET(request: NextRequest) {
     sortBy,
     sortDir,
   });
-  const url = `${BACKEND_URL}/orders?${query.toString()}`;
+  const url = `${BACKEND_URL}/api/orders?${query.toString()}`;
   const authHeader = await buildAuthHeader(request);
 
   if (!authHeader) {
@@ -126,7 +126,7 @@ export async function POST(request: NextRequest) {
     return unauthorized();
   }
 
-  return forwardRequest(`${BACKEND_URL}/orders`, {
+  return forwardRequest(`${BACKEND_URL}/api/orders`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',

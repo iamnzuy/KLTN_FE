@@ -28,7 +28,7 @@ export async function GET(
     return unauthorized();
   }
 
-  const response = await fetch(`${BACKEND_URL}/orders/${orderId}`, {
+  const response = await fetch(`${BACKEND_URL}/api/orders/${orderId}`, {
     method: 'GET',
     headers: {
       'Content-Type': 'application/json',
