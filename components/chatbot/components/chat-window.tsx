@@ -8,6 +8,7 @@ import { AxiosChatbot } from "@/lib/axios";
 import { ChatbotStore } from "@/app/(app)/search-results/hooks/chatbot-store";
 import Image from "next/image";
 import Link from "next/link";
+import { CHATBOT_SAMPLE_IMAGES } from "@/lib/chatbot-sample-images";
 
 const variants = {
     open: { opacity: 1, x: 0, display: 'block' },
@@ -15,6 +16,35 @@ const variants = {
 };
 
 const typingDotDelays = [0, 0.18, 0.36];
+
+const shuffleArray = <T,>(array: T[]) => {
+    const copy = [...array];
+    for (let i = copy.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [copy[i], copy[j]] = [copy[j], copy[i]];
+    }
+    return copy;
+};
+
+const enrichProductsWithImages = (products: any[] = []) => {
+    if (!products?.length) return [];
+    const fallbackPool = shuffleArray(CHATBOT_SAMPLE_IMAGES);
+    return products.map((product, index) => {
+        const fallbackImage = fallbackPool[index % fallbackPool.length];
+        const imageUrl =
+            product?.imurl ||
+            product?.image ||
+            product?.imageUrl ||
+            product?.thumbnail ||
+            product?.thumbnailUrl ||
+            fallbackImage;
+
+        return {
+            ...product,
+            imurl: imageUrl || fallbackImage,
+        };
+    });
+};
 
 const ChatWindow = ({ setChatbotProducts }: { setChatbotProducts: (products: any[]) => void }) => {
     const router = useRouter();
@@ -65,8 +95,9 @@ const ChatWindow = ({ setChatbotProducts }: { setChatbotProducts: (products: any
             })
             .then((res) => {
                 setIsLoading(false);
-                setMessages((prev) => [...prev, { role: "assistant", reply: res.data.reply, products: res.data.products }]);
-                setChatbotProducts(res.data.products);
+                const normalizedProducts = enrichProductsWithImages(res.data?.products);
+                setMessages((prev) => [...prev, { role: "assistant", reply: res.data.reply, products: normalizedProducts }]);
+                setChatbotProducts(normalizedProducts);
             }).catch((err) => {
                 setIsLoading(false);
                 console.log(err);

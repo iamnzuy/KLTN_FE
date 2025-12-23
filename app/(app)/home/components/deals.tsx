@@ -23,8 +23,8 @@ export const Deals = ({ products }: any) => {
       </div>
 
       <div className="grid sm:grid-cols-2 xl:grid-cols-4 gap-5 mb-2">
-        {products?.slice(0, 4)?.map((product: any) => (
-          <Card2 item={product} key={product?.id} />
+        {products?.slice(0, 4)?.map((product: any, index: number) => (
+          <Card2 item={product} key={product?.id ?? `deal-${index}`} />
         ))}
       </div>
     </div>

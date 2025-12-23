@@ -46,7 +46,7 @@ export function PaymentMethodContent() {
   );
   const vat = subtotal * 0.1;
   const shippingFee = 0;
-  const orderTotal = order?.totalAmount ?? subtotal + vat + shippingFee;
+  const orderTotal = subtotal + vat + shippingFee;
 
   const shippingDetails = order?.shippingAddress
     ? order.shippingAddress.split('\n').filter(Boolean)
