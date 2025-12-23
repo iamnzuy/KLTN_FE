@@ -138,18 +138,14 @@ export const paymentApi = {
       paymentLinkId: string;
       orderCode: number;
       qrCode: string;
-    }>(
-      `/api/payments/create-link`,
-      {
-        method: 'POST',
-        body: JSON.stringify({
-          orderCode: orderId,
-          returnUrl,
-          cancelUrl,
-        }),
-      },
-      { baseUrl: '' },
-    ),
+    }>(`/api/payments/create-link`, {
+      method: 'POST',
+      body: JSON.stringify({
+        orderCode: orderId,
+        returnUrl,
+        cancelUrl,
+      }),
+    }),
   getPaymentStatus: (orderCode: number) =>
     apiCall<any>(`/api/payments/status/${orderCode}`, {}, { baseUrl: '' }),
 };
