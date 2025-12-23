@@ -1,5 +1,61 @@
 import axios from "axios";
 import { getCookie } from "cookies-next";
+import { enrichProductWithMockImage, enrichProductsWithMockImages } from "./image-utils";
+
+/**
+ * Enrich API response with mock images for products
+ * Handles various response structures (single product, array, nested objects)
+ */
+function enrichApiResponse(data: any): any {
+  if (!data) return data;
+
+  // Handle array of products
+  if (Array.isArray(data)) {
+    return enrichProductsWithMockImages(data);
+  }
+
+  // Handle single product
+  if (data.id && (data.title || data.name)) {
+    return enrichProductWithMockImage(data);
+  }
+
+  // Handle nested structures (e.g., cart items, order items)
+  if (data.product) {
+    return {
+      ...data,
+      product: enrichProductWithMockImage(data.product)
+    };
+  }
+
+  // Handle array of nested products (e.g., cart with items)
+  if (data.items && Array.isArray(data.items)) {
+    return {
+      ...data,
+      items: data.items.map((item: any) => ({
+        ...item,
+        product: item.product ? enrichProductWithMockImage(item.product) : item.product
+      }))
+    };
+  }
+
+  // Handle paginated responses
+  if (data.content && Array.isArray(data.content)) {
+    return {
+      ...data,
+      content: enrichProductsWithMockImages(data.content)
+    };
+  }
+
+  // Handle data wrapper
+  if (data.data) {
+    return {
+      ...data,
+      data: enrichApiResponse(data.data)
+    };
+  }
+
+  return data;
+}
 
 export const AxiosAPI = axios.create({
   baseURL: process.env.NEXT_PUBLIC_API_URL,
@@ -8,7 +64,12 @@ export const AxiosAPI = axios.create({
     "Content-Type": "application/json",
   },
 });
+
 AxiosAPI.interceptors.response.use(function (response: any) {
+  // Enrich response data with mock images
+  if (response.data) {
+    response.data = enrichApiResponse(response.data);
+  }
   return response;
 });
 
@@ -24,7 +85,12 @@ export const AxiosChatbot = axios.create({
     "Content-Type": "application/json",
   },
 });
+
 AxiosChatbot.interceptors.response.use(function (response: any) {
+  // Enrich chatbot response data with mock images
+  if (response.data) {
+    response.data = enrichApiResponse(response.data);
+  }
   return response;
 });
 

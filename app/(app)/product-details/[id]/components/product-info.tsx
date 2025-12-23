@@ -1,35 +1,24 @@
 'use client';
 
-import { useState } from 'react';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { ShoppingCart, Heart, Star } from 'lucide-react';
-import { formatCurrency, calculateDiscount } from '@/utils/currency';
+import { ShoppingCart, Star, Scale } from 'lucide-react';
+import { formatCurrency } from '@/utils/currency';
 import { Rating } from '@/app/(app)/components/rating';
 import { HeartWishlist } from '@/app/(app)/components/heart-wishlist';
-import { cn } from '@/lib/utils';
 import AxiosAPI from '@/lib/axios';
 import useSWR from 'swr';
 import { configSWR } from '@/lib/utils';
 import { useStoreClient } from '@/app/(app)/components/context';
+import { ComparisonStore } from '@/app/(app)/search-results/hooks/comparison-store';
 
 interface ProductInfoProps {
   product: any;
 }
 
 export function ProductInfo({ product }: ProductInfoProps) {
-  const { showCartSheet } = useStoreClient();
+  const { showCartSheet, showComparisonSheet } = useStoreClient();
   const { mutate } = useSWR('/api/carts', { ...configSWR, revalidateOnMount: false });
-
-  const handleToggleWishlist = () => {
-    AxiosAPI.post(`/api/wishlists/items`, {
-      productId: product?.id
-    }).then((res) => {
-      console.log('res', res);
-    }).catch((err) => {
-      console.log('err', err);
-    });
-  };
+  const { addProduct, products: comparisonProducts, canAddProduct } = ComparisonStore();
 
   const handleAddToCart = () => {
     AxiosAPI.post(`/api/carts/items`, {
@@ -50,6 +39,19 @@ export function ProductInfo({ product }: ProductInfoProps) {
     // Navigate to checkout
   };
 
+  const handleAddToComparison = () => {
+    if (canAddProduct()) {
+      addProduct(product);
+      // Nếu đã có 2 sản phẩm, tự động mở comparison sheet
+      if (comparisonProducts.length === 1) {
+        showComparisonSheet();
+      }
+    } else {
+      // Nếu đã đủ 2 sản phẩm, mở comparison sheet
+      showComparisonSheet();
+    }
+  };
+
   return (
     <div className="space-y-6">
       <div>
@@ -63,7 +65,6 @@ export function ProductInfo({ product }: ProductInfoProps) {
           <HeartWishlist
             size="icon"
             productId={product?.id}
-            handleToggleWishlist={handleToggleWishlist}
           />
         </div>
       </div>
@@ -101,22 +102,33 @@ export function ProductInfo({ product }: ProductInfoProps) {
 
 
       {/* Action Buttons */}
-      <div className="flex gap-3 pt-4">
+      <div className="flex flex-col gap-3 pt-4">
+        <div className="flex gap-3">
+          <Button
+            onClick={handleAddToCart}
+            className="flex-1 bg-primary hover:bg-primary/90 text-primary-foreground border-primary"
+            size="lg"
+          >
+            <ShoppingCart className="mr-2 h-5 w-5" />
+            Thêm vào giỏ hàng
+          </Button>
+          <Button
+            onClick={handleBuyNow}
+            variant="outline"
+            className="flex-1 border-primary text-primary hover:bg-primary/10"
+            size="lg"
+          >
+            Mua ngay
+          </Button>
+        </div>
         <Button
-          onClick={handleAddToCart}
-          className="flex-1 bg-primary hover:bg-primary/90 text-primary-foreground border-primary"
-          size="lg"
-        >
-          <ShoppingCart className="mr-2 h-5 w-5" />
-          Thêm vào giỏ hàng
-        </Button>
-        <Button
-          onClick={handleBuyNow}
+          onClick={handleAddToComparison}
           variant="outline"
-          className="flex-1 border-primary text-primary hover:bg-primary/10"
+          className="w-full border-primary text-primary hover:bg-primary/10"
           size="lg"
         >
-          Mua ngay
+          <Scale className="mr-2 h-5 w-5" />
+          {canAddProduct() ? 'Thêm vào so sánh' : 'Xem so sánh'}
         </Button>
       </div>
     </div>

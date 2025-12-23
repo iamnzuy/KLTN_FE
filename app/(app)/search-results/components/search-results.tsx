@@ -1,13 +1,15 @@
 'use client';
 
-import { useState } from 'react';
-import { Funnel, LayoutGrid, List, Search as SearchIcon } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { Funnel, LayoutGrid, List, Search as SearchIcon, Scale } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
+import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { Card2 } from '@/app/(app)/components/common/card2';
 import { Card3 } from '@/app/(app)/components/common/card3';
 import { StoreClientFiltersSheet } from '@/app/(app)/components/sheets/filters-sheet';
+import { ComparisonView } from './comparison-view';
 import ChatWindow from '@/components/chatbot/components/chat-window';
 import { useSearchParams } from 'next/navigation';
 import { cn, configSWR } from '@/lib/utils';
@@ -15,6 +17,7 @@ import Selection from '@/components/selection';
 import useSWR from 'swr';
 import { useDebounceCallback } from 'usehooks-ts';
 import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from '@/components/ui/resizable-panel';
+import { ComparisonStore } from '@/app/(app)/search-results/hooks/comparison-store';
 
 export function SearchResults() {
   const searchParams = useSearchParams();
@@ -23,7 +26,10 @@ export function SearchResults() {
   const [searchInput, setSearchInput] = useState(searchParams.get("q") || '');
   const [activePeriod, setActivePeriod] = useState('Week');
   const [activeTab, setActiveTab] = useState<'card' | 'list'>("card");
+  const [activeViewTab, setActiveViewTab] = useState<'results' | 'comparison'>('results');
   const [chatbotProducts, setChatbotProducts] = useState<any[]>([]);
+  
+  const { products: comparisonProducts } = ComparisonStore();
 
   const productsSWRKey = searchInput ? `/api/products/search?title=${searchInput}` : '/api/products?page=1&page_size=24';
 
@@ -33,6 +39,13 @@ export function SearchResults() {
   const handleSearch = useDebounceCallback((value: string) => {
     setSearchInput(value);
   }, 2000);
+
+  // Tự động chuyển sang tab so sánh khi có 2 sản phẩm
+  useEffect(() => {
+    if (comparisonProducts.length === 2 && activeViewTab !== 'comparison') {
+      setActiveViewTab('comparison');
+    }
+  }, [comparisonProducts.length]);
 
 
   return (
@@ -72,68 +85,94 @@ export function SearchResults() {
             />
           </div>
 
-          <div className="flex flex-wrap items-center gap-5 justify-between mt-3">
-            <h3 className="text-sm text-mono font-medium">
-              1 - {products?.length} over {data?.data?.totalElements} {searchInput && 'results for'}
-              <span className="text-destructive"> {searchInput}</span>
-            </h3>
+          <Tabs value={activeViewTab} onValueChange={(v) => setActiveViewTab(v as 'results' | 'comparison')} className="w-full">
+            <div className="flex items-center justify-between w-full mt-3 mb-4">
+              <TabsList variant="line" className="border-b-0 p-0 h-auto">
+                <TabsTrigger value="results" className="data-[state=active]:border-b-2">
+                  Kết quả tìm kiếm
+                </TabsTrigger>
+                <TabsTrigger value="comparison" className="data-[state=active]:border-b-2 relative">
+                  <Scale className="w-4 h-4 mr-2" />
+                  So sánh
+                  {comparisonProducts.length > 0 && (
+                    <Badge className="ml-2 h-5 w-5 p-0 flex items-center justify-center text-xs">
+                      {comparisonProducts.length}
+                    </Badge>
+                  )}
+                </TabsTrigger>
+              </TabsList>
 
-            <div className="flex items-center gap-2.5">
-              <div className='flex-1'>
-                <Selection defaultValue={'Price: High to Low'} values={['Price: Low to High', 'Price: High to Low', '$0 - $50', '$50 - $100', '$100 - $200', '$200 - $500', '$500+']} />
-              </div>
-              <ToggleGroup
-                type="single"
-                variant="outline"
-                value={activePeriod}
-                onValueChange={(value) => {
-                  if (value) setActivePeriod(value);
-                }}
-                className="grid grid-cols-4"
-              >
-                {['Today', 'Week', 'Month', 'All'].map((period) => (
-                  <ToggleGroupItem key={period} value={period}>
-                    {period}
-                  </ToggleGroupItem>
-                ))}
-              </ToggleGroup>
+              {activeViewTab === 'results' && (
+                <div className="flex items-center gap-5">
+                  <h3 className="text-sm text-mono font-medium">
+                    1 - {products?.length} over {data?.data?.totalElements} {searchInput && 'results for'}
+                    <span className="text-destructive"> {searchInput}</span>
+                  </h3>
+                  <div className="flex items-center gap-2.5">
+                    <div className='flex-1'>
+                      <Selection defaultValue={'Price: High to Low'} values={['Price: Low to High', 'Price: High to Low', '$0 - $50', '$50 - $100', '$100 - $200', '$200 - $500', '$500+']} />
+                    </div>
+                    <ToggleGroup
+                      type="single"
+                      variant="outline"
+                      value={activePeriod}
+                      onValueChange={(value) => {
+                        if (value) setActivePeriod(value);
+                      }}
+                      className="grid grid-cols-4"
+                    >
+                      {['Today', 'Week', 'Month', 'All'].map((period) => (
+                        <ToggleGroupItem key={period} value={period}>
+                          {period}
+                        </ToggleGroupItem>
+                      ))}
+                    </ToggleGroup>
 
-              <ToggleGroup
-                type="single"
-                variant="outline"
-                value={activeTab}
-                onValueChange={(value) => {
-                  setActiveTab(value as 'card' | 'list');
-                }}
-              >
-                <ToggleGroupItem value="card">
-                  <LayoutGrid size={16} />
-                </ToggleGroupItem>
-                <ToggleGroupItem value="list">
-                  <List size={16} />
-                </ToggleGroupItem>
-              </ToggleGroup>
-            </div>
-          </div>
-
-          <div
-            className={
-              activeTab == 'card'
-                ? "flex w-full flex-wrap gap-y-5 gap-x-2 items-center justify-evenly mb-2"
-                : 'flex flex-col gap-5'
-            }
-          >
-            {(chatbotProducts.length > 0 ? chatbotProducts : products)?.map((item: any, index: number) => {
-              const key = item?.id ?? item?.productId ?? index;
-              return activeTab === 'card' ? (
-                <div key={key} className='min-w-[266px] max-w-[301px] flex-1'>
-                  <Card2 item={item} />
+                    <ToggleGroup
+                      type="single"
+                      variant="outline"
+                      value={activeTab}
+                      onValueChange={(value) => {
+                        setActiveTab(value as 'card' | 'list');
+                      }}
+                    >
+                      <ToggleGroupItem value="card">
+                        <LayoutGrid size={16} />
+                      </ToggleGroupItem>
+                      <ToggleGroupItem value="list">
+                        <List size={16} />
+                      </ToggleGroupItem>
+                    </ToggleGroup>
+                  </div>
                 </div>
-              ) : (
-                <Card3 key={key} item={item} />
-              );
-            })}
-          </div>
+              )}
+            </div>
+
+            <TabsContent value="results" className="mt-0">
+              <div
+                className={
+                  activeTab == 'card'
+                    ? "flex w-full flex-wrap gap-y-5 gap-x-2 items-center justify-evenly mb-2"
+                    : 'flex flex-col gap-5'
+                }
+              >
+                {(chatbotProducts.length > 0 ? chatbotProducts : products)?.map((item: any, index: number) => {
+                  const key = item?.id ?? item?.productId ?? index;
+                  return activeTab === 'card' ? (
+                    <div key={key} className='min-w-[266px] max-w-[301px] flex-1'>
+                      <Card2 item={item} />
+                    </div>
+                  ) : (
+                    <Card3 key={key} item={item} />
+                  );
+                })}
+              </div>
+            </TabsContent>
+
+            <TabsContent value="comparison" className="mt-0">
+              <ComparisonView />
+            </TabsContent>
+          </Tabs>
         </div>
       </ResizablePanel>
       {isChatbotOpen && <ResizableHandle className="w-2 bg-transparent border-l" withHandle />}

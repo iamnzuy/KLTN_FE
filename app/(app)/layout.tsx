@@ -2,11 +2,33 @@
 
 import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { StoreClientProvider } from '@/app/(app)/components/context';
+import { StoreClientProvider, useStoreClient } from '@/app/(app)/components/context';
 import { DefaultLayout } from '@/components/layouts/default';
 import { ScreenLoader } from '@/components/screen-loader';
 import ChatbotFloatingButton from '@/components/chatbot';
+import { ComparisonSheet } from '@/app/(app)/components/sheets/comparison-sheet';
 import useAuth from '@/hooks/use-auth';
+
+function LayoutContent({ children }: { children: React.ReactNode }) {
+  const { state, closeComparisonSheet } = useStoreClient();
+  
+  return (
+    <>
+      <DefaultLayout>
+        {children}
+        <ChatbotFloatingButton />
+      </DefaultLayout>
+      <ComparisonSheet 
+        open={state.isComparisonSheetOpen} 
+        onOpenChange={(open) => {
+          if (!open) {
+            closeComparisonSheet();
+          }
+        }} 
+      />
+    </>
+  );
+}
 
 export default function ProtectedLayout({
   children,
@@ -26,10 +48,7 @@ export default function ProtectedLayout({
 
   return isLogin ? (
     <StoreClientProvider>
-      <DefaultLayout>
-        {children}
-        <ChatbotFloatingButton />
-      </DefaultLayout>
+      <LayoutContent>{children}</LayoutContent>
     </StoreClientProvider>
   ) : null;
 }

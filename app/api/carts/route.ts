@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
 import authOptions from '../auth/[...nextauth]/auth-options';
+import { enrichProductWithMockImage } from '@/lib/image-utils';
 
 const BACKEND_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080/api';
 
@@ -31,7 +32,19 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    const data = await response.json();
+    let data = await response.json();
+    
+    // Enrich cart items with mock images
+    if (data && data.items && Array.isArray(data.items)) {
+      data = {
+        ...data,
+        items: data.items.map((item: any) => ({
+          ...item,
+          product: item.product ? enrichProductWithMockImage(item.product) : item.product
+        }))
+      };
+    }
+    
     return NextResponse.json(data);
   } catch (error) {
     console.error('Cart API error:', error);

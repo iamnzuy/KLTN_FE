@@ -1,5 +1,6 @@
 import { cookies } from 'next/headers';
 import { NextRequest, NextResponse } from 'next/server';
+import { enrichProductWithMockImage } from '@/lib/image-utils';
 
 const BACKEND_URL =
   process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080/api';
@@ -27,7 +28,7 @@ export async function GET(
     return unauthorized();
   }
 
-  const response = await fetch(`${BACKEND_URL}/api/orders/${orderId}`, {
+  const response = await fetch(`${BACKEND_URL}/orders/${orderId}`, {
     method: 'GET',
     headers: {
       'Content-Type': 'application/json',
@@ -49,7 +50,19 @@ export async function GET(
     }
   }
 
-  const data = await response.json();
+  let data = await response.json();
+  
+  // Enrich order items with mock images
+  if (data && data.items && Array.isArray(data.items)) {
+    data = {
+      ...data,
+      items: data.items.map((item: any) => ({
+        ...item,
+        product: item.product ? enrichProductWithMockImage(item.product) : item.product
+      }))
+    };
+  }
+  
   return NextResponse.json(data);
 }
 

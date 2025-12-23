@@ -1,4 +1,5 @@
 import { getCookie } from 'cookies-next';
+import { enrichProductWithMockImage, enrichProductsWithMockImages } from './image-utils';
 
 const API_BASE_URL =
   process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080/api';
@@ -10,6 +11,7 @@ interface ApiResponse<T> {
 
 interface ApiCallConfig {
   baseUrl?: string;
+  enrichImages?: boolean; // Flag to enable/disable image enrichment
 }
 
 async function apiCall<T>(
@@ -44,7 +46,13 @@ async function apiCall<T>(
     // Check if response has content
     const contentType = response.headers.get('content-type');
     if (contentType && contentType.includes('application/json')) {
-      const data = await response.json();
+      let data = await response.json();
+      
+      // Enrich with mock images if enabled (default: true)
+      if (config?.enrichImages !== false) {
+        data = enrichApiResponse(data);
+      }
+      
       return { data };
     }
 
@@ -52,6 +60,64 @@ async function apiCall<T>(
   } catch (error) {
     return { error: error instanceof Error ? error.message : 'Unknown error' };
   }
+}
+
+/**
+ * Enrich API response with mock images for products
+ * Handles various response structures (single product, array, nested objects)
+ */
+function enrichApiResponse(data: any): any {
+  if (!data) return data;
+
+  // Handle array of products
+  if (Array.isArray(data)) {
+    return enrichProductsWithMockImages(data);
+  }
+
+  // Handle single product
+  if (data.id && (data.title || data.name)) {
+    return enrichProductWithMockImage(data);
+  }
+
+  // Handle nested structures (e.g., cart items, order items)
+  if (data.product) {
+    return {
+      ...data,
+      product: enrichProductWithMockImage(data.product)
+    };
+  }
+
+  // Handle array of nested products (e.g., cart with items)
+  if (data.items && Array.isArray(data.items)) {
+    return {
+      ...data,
+      items: data.items.map((item: any) => ({
+        ...item,
+        product: item.product ? enrichProductWithMockImage(item.product) : item.product
+      }))
+    };
+  }
+
+  // Handle paginated responses
+  if (data.content && Array.isArray(data.content)) {
+    return {
+      ...data,
+      content: enrichProductsWithMockImages(data.content)
+    };
+  }
+
+  // Handle reviews with products
+  if (data.reviews && Array.isArray(data.reviews)) {
+    return {
+      ...data,
+      reviews: data.reviews.map((review: any) => ({
+        ...review,
+        product: review.product ? enrichProductWithMockImage(review.product) : review.product
+      }))
+    };
+  }
+
+  return data;
 }
 
 // Product API

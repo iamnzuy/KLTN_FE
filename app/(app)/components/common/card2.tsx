@@ -2,8 +2,9 @@
 
 import Image from 'next/image';
 import Link from 'next/link';
+import { useMemo } from 'react';
 import { formatCurrency } from '@/utils/currency';
-import { Plus, ShoppingCart, Star } from 'lucide-react';
+import { Plus, ShoppingCart, Star, Scale } from 'lucide-react';
 import useSWR from 'swr';
 import AxiosAPI from '@/lib/axios';
 import { configSWR } from '@/lib/utils';
@@ -13,6 +14,8 @@ import { Card, CardContent } from '@/components/ui/card';
 import { HeartWishlist } from '../heart-wishlist';
 import { useSearchParams } from 'next/navigation';
 import { ChatbotStore } from '../../search-results/hooks/chatbot-store';
+import { ComparisonStore } from '@/app/(app)/search-results/hooks/comparison-store';
+import { useStoreClient } from '../context';
 
 export function Card2({ item }: any) {
   const searchParams = useSearchParams();
@@ -21,25 +24,48 @@ export function Card2({ item }: any) {
     ...configSWR,
     revalidateOnMount: false,
   });
+  const { data: wishlistData } = useSWR('/api/products/wishlist', {
+    ...configSWR,
+    revalidateOnMount: false,
+  });
   const { productInChatbot, setProductInChatbot }: any = ChatbotStore();
+  const { addProduct, products: comparisonProducts, canAddProduct, clearProducts: clearComparisonProducts } = ComparisonStore();
+  const { showComparisonSheet } = useStoreClient();
 
   const handleAddProductToChatbot = (product: any, event: React.MouseEvent<HTMLDivElement>) => {
     event.preventDefault();
-    if (productInChatbot.length === 2) return;
-    setProductInChatbot((prev: any[]) => [...prev, product]);
+    event.stopPropagation();
+    if (productInChatbot.length >= 2) return;
+    
+    const newProducts = [...productInChatbot, product];
+    setProductInChatbot(newProducts);
+    
+    // Nếu đã có 2 sản phẩm, tự động thêm vào comparison store
+    if (newProducts.length === 2) {
+      clearComparisonProducts();
+      addProduct(newProducts[0]);
+      addProduct(newProducts[1]);
+    }
   };
 
-  const handleToggleWishlist = () => {
-    AxiosAPI.post(`/api/wishlists/items`, {
-      productId: item?.id,
-    })
-      .then((res) => {
-        console.log('res', res);
-      })
-      .catch((err) => {
-        console.log('err', err);
-      });
+  const handleAddToComparison = (product: any, event: React.MouseEvent<HTMLButtonElement>) => {
+    event.preventDefault();
+    event.stopPropagation();
+    if (canAddProduct()) {
+      addProduct(product);
+    }
+    // Không cần mở sheet nữa, sẽ tự động chuyển tab trong search-results
   };
+
+  const wishlistIds = useMemo(() => {
+    const wishlistItems = wishlistData?.data;
+    if (!Array.isArray(wishlistItems)) {
+      return new Set<string>();
+    }
+    return new Set(wishlistItems.map((wishlistItem: any) => wishlistItem.productId));
+  }, [wishlistData?.data]);
+
+  const initiallyWishlisted = item?.id ? wishlistIds.has(item.id) : false;
 
   const addToCart = () => {
     AxiosAPI.post(`/api/carts/items`, {
@@ -64,8 +90,8 @@ export function Card2({ item }: any) {
               <HeartWishlist
                 size="icon"
                 className="absolute top-2 left-2"
-                handleToggleWishlist={handleToggleWishlist}
                 productId={item?.id}
+                initiallyWishlisted={initiallyWishlisted}
               />
               {/* {item?.sale && (
                 <Badge

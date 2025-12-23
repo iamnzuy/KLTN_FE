@@ -1,5 +1,6 @@
 import { cookies } from 'next/headers';
 import { NextRequest, NextResponse } from 'next/server';
+import { enrichProductWithMockImage } from '@/lib/image-utils';
 
 const BACKEND_URL =
   process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080/api';
@@ -48,7 +49,35 @@ async function forwardRequest(
     return new NextResponse(null, { status: 204 });
   }
 
-  const data = await response.json();
+  let data = await response.json();
+  
+  // Enrich order items with mock images
+  if (data) {
+    // Handle single order
+    if (data.items && Array.isArray(data.items)) {
+      data = {
+        ...data,
+        items: data.items.map((item: any) => ({
+          ...item,
+          product: item.product ? enrichProductWithMockImage(item.product) : item.product
+        }))
+      };
+    }
+    // Handle paginated orders (list of orders)
+    else if (data.content && Array.isArray(data.content)) {
+      data = {
+        ...data,
+        content: data.content.map((order: any) => ({
+          ...order,
+          items: order.items ? order.items.map((item: any) => ({
+            ...item,
+            product: item.product ? enrichProductWithMockImage(item.product) : item.product
+          })) : order.items
+        }))
+      };
+    }
+  }
+  
   return NextResponse.json(data, { status: response.status });
 }
 
@@ -73,7 +102,7 @@ export async function GET(request: NextRequest) {
     sortBy,
     sortDir,
   });
-  const url = `${BACKEND_URL}/api/orders?${query.toString()}`;
+  const url = `${BACKEND_URL}/orders?${query.toString()}`;
   const authHeader = await buildAuthHeader(request);
 
   if (!authHeader) {
@@ -97,7 +126,7 @@ export async function POST(request: NextRequest) {
     return unauthorized();
   }
 
-  return forwardRequest(`${BACKEND_URL}/api/orders`, {
+  return forwardRequest(`${BACKEND_URL}/orders`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',

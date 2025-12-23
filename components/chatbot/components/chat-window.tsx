@@ -6,9 +6,10 @@ import { useSearchParams, useRouter, usePathname } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { AxiosChatbot } from "@/lib/axios";
 import { ChatbotStore } from "@/app/(app)/search-results/hooks/chatbot-store";
+import { ComparisonStore } from "@/app/(app)/search-results/hooks/comparison-store";
 import Image from "next/image";
 import Link from "next/link";
-import { CHATBOT_SAMPLE_IMAGES } from "@/lib/chatbot-sample-images";
+import { enrichProductsWithMockImages } from "@/lib/image-utils";
 
 const variants = {
     open: { opacity: 1, x: 0, display: 'block' },
@@ -16,37 +17,6 @@ const variants = {
 };
 
 const typingDotDelays = [0, 0.18, 0.36];
-
-const shuffleArray = <T,>(array: T[]) => {
-    const copy = [...array];
-    for (let i = copy.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [copy[i], copy[j]] = [copy[j], copy[i]];
-    }
-    return copy;
-};
-
-const enrichProductsWithImages = (products: any[] = []) => {
-    if (!products?.length) return [];
-    const fallbackPool = shuffleArray(CHATBOT_SAMPLE_IMAGES);
-    return products.map((product, index) => {
-        const fallbackImage = fallbackPool[index % fallbackPool.length];
-        const originalImage =
-            product?.imurl ||
-            product?.image ||
-            product?.imageUrl ||
-            product?.thumbnail ||
-            product?.thumbnailUrl ||
-            null;
-
-        return {
-            ...product,
-            // Always prioritize local mock images so Next/Image can render without domain config churn.
-            imurl: fallbackImage,
-            originalImage,
-        };
-    });
-};
 
 const ChatWindow = ({ setChatbotProducts }: { setChatbotProducts: (products: any[]) => void }) => {
     const router = useRouter();
@@ -58,9 +28,11 @@ const ChatWindow = ({ setChatbotProducts }: { setChatbotProducts: (products: any
     const [isLoading, setIsLoading] = useState(false);
     const productInChatbot = ChatbotStore((state: any) => state.productInChatbot);
     const setProductInChatbot = ChatbotStore((state: any) => state.setProductInChatbot);
-    console.log(productInChatbot);
+    const pendingMessage = ChatbotStore((state: any) => state.pendingMessage);
+    const clearPendingMessage = ChatbotStore((state: any) => state.clearPendingMessage);
+    const prefillComparison = ComparisonStore((state: any) => state.prefillComparison);
 
-    const handleRemoveProductFromChatbot = (product: any, event: React.MouseEvent<HTMLAnchorElement>) => {
+    const handleRemoveProductFromChatbot = (product: any, event: React.MouseEvent<HTMLElement>) => {
         event.preventDefault();
         setProductInChatbot((prev: any[]) => prev.filter((item: any) => item.id !== product.id));
     };
@@ -69,11 +41,26 @@ const ChatWindow = ({ setChatbotProducts }: { setChatbotProducts: (products: any
         setChatbotProducts([]);
     }, [isOpen])
 
+    // Xử lý pending message từ comparison view
+    useEffect(() => {
+        if (pendingMessage && isOpen) {
+            setMessages((prev) => [...prev, pendingMessage]);
+            clearPendingMessage();
+        }
+    }, [pendingMessage, isOpen, clearPendingMessage])
+
     const closeChatbot = () => {
         const params = new URLSearchParams(searchParams.toString());
         params.delete("chatbot");
         router.replace(`${pathname}?${params.toString()}`);
     }
+
+    // Kiểm tra xem message có liên quan đến so sánh không
+    const isComparisonMessage = (message: string): boolean => {
+        const comparisonKeywords = ['so sánh', 'compare', 'khác nhau', 'giống nhau', 'nên mua', 'nào tốt hơn', 'tốt hơn', 'hơn'];
+        const lowerMessage = message.toLowerCase();
+        return comparisonKeywords.some(keyword => lowerMessage.includes(keyword));
+    };
 
     const sendMessage = async () => {
         if (!chatElementRef.current?.value) return;
@@ -83,12 +70,37 @@ const ChatWindow = ({ setChatbotProducts }: { setChatbotProducts: (products: any
 
         setIsLoading(true);
         
-        // setTimeout(() => {
-        //     setMessages((prev) => [...prev, { role: "assistant", reply: chatbotResponse.data.reply, products: chatbotResponse.data.products }]);
-        //     setChatbotProducts(chatbotResponse.data.products);
-        //     setIsLoading(false);
-        // }, 3000);
+        // Nếu có 2 sản phẩm trong chatbot và message liên quan đến so sánh
+        if (productInChatbot.length === 2 && isComparisonMessage(message)) {
+            try {
+                // Gọi API so sánh
+                const compareResponse = await AxiosChatbot.post('/compare', {
+                    product_a_id: productInChatbot[0].id,
+                    product_b_id: productInChatbot[1].id,
+                });
 
+                const selectedProducts = productInChatbot.slice(0, 2);
+                const productsKey = `${selectedProducts[0].id}-${selectedProducts[1].id}`;
+                prefillComparison(selectedProducts, compareResponse.data, productsKey);
+
+                // Thêm summary vào chatbot message
+                const summaryMessage = `💡 **So sánh ${productInChatbot[0].title} và ${productInChatbot[1].title}:**\n\n${compareResponse.data.summary}\n\n${compareResponse.data.follow_up || ''}\n\n*Đã mở bảng so sánh chi tiết bên cạnh để bạn xem thêm.*`;
+                
+                setMessages((prev) => [...prev, { 
+                    role: "assistant", 
+                    reply: summaryMessage,
+                    products: [],
+                    comparisonData: compareResponse.data
+                }]);
+                setIsLoading(false);
+                return;
+            } catch (err: any) {
+                console.error('Error comparing products:', err);
+                // Fallback to normal chat if comparison fails
+            }
+        }
+
+        // Normal chat flow
         await AxiosChatbot.post("/chat",
             {
                 message: message,
@@ -97,7 +109,7 @@ const ChatWindow = ({ setChatbotProducts }: { setChatbotProducts: (products: any
             })
             .then((res) => {
                 setIsLoading(false);
-                const normalizedProducts = enrichProductsWithImages(res.data?.products);
+                const normalizedProducts = enrichProductsWithMockImages(res.data?.products);
                 setMessages((prev) => [...prev, { role: "assistant", reply: res.data.reply, products: normalizedProducts }]);
                 setChatbotProducts(normalizedProducts);
             }).catch((err) => {
@@ -229,15 +241,38 @@ const ChatWindow = ({ setChatbotProducts }: { setChatbotProducts: (products: any
                                 </motion.div>
                             )}
                         </AnimatePresence>
-                        <div className="absolute bottom-0 left-3 flex gap-4">
-                            {productInChatbot?.map((product: any) => (
-                                <Link href={`/product-details/${product?.id}`} target="_blank" key={product?.id} className="relative group flex flex-col justify-center items-center gap-2 border rounded-2xl w-28 p-3">
-                                    <Image unoptimized={true} src={product?.imurl} alt={product?.title} width={80} height={80} className="w-16 h-16 object-container" />
-                                    <div className="text-xs font-medium truncate w-full text-center">{product?.title}</div>
-                                    <X className="absolute top-2 right-2 group-hover:block hidden" onClick={(event: any) => handleRemoveProductFromChatbot(product, event)} />
-                                </Link>
-                            ))}
-                        </div>
+                        {productInChatbot && productInChatbot.length > 0 && (
+  <div className="sticky bottom-0 left-0 right-0 mt-auto border-t bg-background/95 px-3 py-3 z-30 backdrop-blur-md">
+    <div className="flex flex-wrap gap-2 justify-start items-center">
+      {productInChatbot.map((product: any) => (
+        <div
+          key={product?.id}
+          className="relative flex flex-col items-center w-[90px] p-2 bg-background border border-border/60 rounded-lg transition-all hover:border-primary hover:shadow-sm"
+        >
+          <button
+            className="absolute -top-2 -right-2 w-5 h-5 rounded-full bg-gray-500/90 hover:bg-red-500 text-white shadow-sm transition-colors duration-150 flex items-center justify-center"
+            onClick={(event) => handleRemoveProductFromChatbot(product, event)}
+            aria-label="Xóa sản phẩm"
+            title="Xóa"
+          >
+            <X className="w-3 h-3" strokeWidth={3} />
+          </button>
+          <Image
+            unoptimized
+            src={product?.imurl || '/no_photo.png'}
+            alt={product?.title || 'Product'}
+            width={50}
+            height={50}
+            className="object-contain rounded-md"
+          />
+          <span className="block w-full text-xs text-center mt-1.5 truncate font-medium text-foreground/80">
+            {product?.title}
+          </span>
+        </div>
+      ))}
+    </div>
+  </div>
+)}
                     </div>
                     <div className="flex items-center gap-4 px-4 py-5 border-t border-border">
                         <TextareaAutoResize ref={chatElementRef} className="w-full h-16 p-2 rounded-md focus:placeholder:opacity-0 resize-none text-foreground text-t4-bold placeholder:text-t4-bold placeholder:text-foreground/50 max-h-40 outline-2 outline-border outline-offset-[3px]" placeholder="Nhập tin nhắn..." />

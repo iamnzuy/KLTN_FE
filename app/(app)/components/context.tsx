@@ -9,6 +9,7 @@ interface StoreClientState {
   isCartSheetOpen: boolean;
   isProductDetailsSheetOpen: boolean;
   productDetailsId: string | null;
+  isComparisonSheetOpen: boolean;
 }
 
 // Define the action types
@@ -19,7 +20,9 @@ type StoreClientAction =
   | { type: 'CLOSE_CART_SHEET' }
   | { type: 'SHOW_PRODUCT_DETAILS_SHEET'; product: any }
   | { type: 'CLOSE_PRODUCT_DETAILS_SHEET' }
-  | { type: 'ADD_TO_CART'; productId: string };
+  | { type: 'ADD_TO_CART'; productId: string }
+  | { type: 'SHOW_COMPARISON_SHEET' }
+  | { type: 'CLOSE_COMPARISON_SHEET' };
 
 // Initial state
 const initialState: StoreClientState = {
@@ -27,6 +30,7 @@ const initialState: StoreClientState = {
   isCartSheetOpen: false,
   isProductDetailsSheetOpen: false,
   productDetailsId: null,
+  isComparisonSheetOpen: false,
 };
 
 // Reducer to manage state
@@ -59,6 +63,10 @@ function storeClientReducer(
       // Log productId for now; extend to update cart state if needed
       console.log(`Added product ${action.productId} to cart`);
       return { ...state, isCartSheetOpen: true }; // Open cart sheet on add
+    case 'SHOW_COMPARISON_SHEET':
+      return { ...state, isComparisonSheetOpen: true };
+    case 'CLOSE_COMPARISON_SHEET':
+      return { ...state, isComparisonSheetOpen: false };
     default:
       return state;
   }
@@ -74,6 +82,8 @@ interface StoreClientContextValue {
   showProductDetailsSheet: (product: any) => void;
   closeProductDetailsSheet: () => void;
   handleAddToCart: ({ productId }: { productId: string }) => void;
+  showComparisonSheet: () => void;
+  closeComparisonSheet: () => void;
 }
 
 // Create context
@@ -107,6 +117,8 @@ export function StoreClientProvider({
     dispatch({ type: 'CLOSE_PRODUCT_DETAILS_SHEET' });
   const handleAddToCart = ({ productId }: { productId: string }) =>
     dispatch({ type: 'ADD_TO_CART', productId });
+  const showComparisonSheet = () => dispatch({ type: 'SHOW_COMPARISON_SHEET' });
+  const closeComparisonSheet = () => dispatch({ type: 'CLOSE_COMPARISON_SHEET' });
 
   const value: StoreClientContextValue = {
     state,
@@ -117,6 +129,8 @@ export function StoreClientProvider({
     showProductDetailsSheet,
     closeProductDetailsSheet,
     handleAddToCart,
+    showComparisonSheet,
+    closeComparisonSheet,
   };
 
   return (

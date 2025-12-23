@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
 import authOptions from '../../auth/[...nextauth]/auth-options';
+import { enrichProductWithMockImage } from '@/lib/image-utils';
 
 const BACKEND_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080/api';
 
@@ -35,7 +36,16 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const data = await response.json();
+    let data = await response.json();
+    
+    // Enrich product in cart item response
+    if (data && data.product) {
+      data = {
+        ...data,
+        product: enrichProductWithMockImage(data.product)
+      };
+    }
+    
     return NextResponse.json(data);
   } catch (error) {
     console.error('Cart items API error:', error);

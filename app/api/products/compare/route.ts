@@ -1,48 +1,49 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { enrichProductsWithMockImages } from '@/lib/image-utils';
 
 // Use environment variable with fallback to localhost
-const CHATBOT_API_URL = process.env.CHATBOT_API_URL || 'http://localhost:8000/chat';
+const CHATBOT_API_URL = process.env.CHATBOT_API_URL || 'http://localhost:8000';
 
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
+    const { product_a_id, product_b_id } = body;
 
-    const response = await fetch(CHATBOT_API_URL, {
+    if (!product_a_id || !product_b_id) {
+      return NextResponse.json(
+        { error: 'product_a_id and product_b_id are required' },
+        { status: 400 }
+      );
+    }
+
+    const response = await fetch(`${CHATBOT_API_URL}/compare`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
         'Accept': 'application/json',
       },
-      body: JSON.stringify(body),
+      body: JSON.stringify({
+        product_a_id,
+        product_b_id,
+      }),
     });
 
     if (!response.ok) {
       const errorText = await response.text();
-      console.error('Chatbot API error:', errorText);
+      console.error('Compare API error:', errorText);
       return NextResponse.json(
         { error: `API error: ${response.status} ${response.statusText}` },
         { status: response.status }
       );
     }
 
-    let data = await response.json();
-    
-    // Enrich products in chatbot response with mock images
-    if (data && data.products && Array.isArray(data.products)) {
-      data = {
-        ...data,
-        products: enrichProductsWithMockImages(data.products)
-      };
-    }
-    
+    const data = await response.json();
     return NextResponse.json(data);
   } catch (error) {
-    console.error('Error proxying chatbot request:', error);
+    console.error('Error proxying compare request:', error);
     const errorMessage = error instanceof Error ? error.message : 'Unknown error';
     return NextResponse.json(
       { 
-        error: 'Failed to connect to chatbot API',
+        error: 'Failed to connect to compare API',
         details: errorMessage,
         hint: 'Make sure the chatbot backend is running on ' + CHATBOT_API_URL
       },

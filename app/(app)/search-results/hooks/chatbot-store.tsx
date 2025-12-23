@@ -8,4 +8,7 @@ export const ChatbotStore = create((set) => ({
                 ? updater(state.productInChatbot) 
                 : updater 
         })),
+    pendingMessage: null,
+    addPendingMessage: (message: any) => set({ pendingMessage: message }),
+    clearPendingMessage: () => set({ pendingMessage: null }),
 }));

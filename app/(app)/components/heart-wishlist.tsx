@@ -3,43 +3,78 @@ import { Button } from '@/components/ui/button';
 import { Heart } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import AxiosAPI from "@/lib/axios";
+import { useSWRConfig } from "swr";
 
-export const HeartWishlist = ({ handleToggleWishlist, children, className = '', size = 'md', productId = '' }: { handleToggleWishlist: () => void, children?: ReactNode, className?: string, size?: "md" | "icon" | "lg" | "sm" | null | undefined, productId?: string }) => {
-    const [isWishlisted, setIsWishlisted] = useState(false);
+type HeartWishlistProps = {
+    handleToggleWishlist?: (nextState: boolean) => void;
+    children?: ReactNode;
+    className?: string;
+    size?: "md" | "icon" | "lg" | "sm" | null | undefined;
+    productId?: string;
+    initiallyWishlisted?: boolean;
+};
+
+export const HeartWishlist = ({ handleToggleWishlist, children, className = '', size = 'md', productId = '', initiallyWishlisted }: HeartWishlistProps) => {
+    const [isWishlisted, setIsWishlisted] = useState(Boolean(initiallyWishlisted));
     const [isBursting, setIsBursting] = useState(false);
     const burstTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
     const hasLabel = !!children;
+    const { mutate } = useSWRConfig();
 
-    const toggleWishlist = (event: React.MouseEvent<HTMLButtonElement>) => {
-        event.preventDefault();
-        if (productId && !isWishlisted) {
-            AxiosAPI.post(`/api/products/wishlist`, {
-                productId: productId
-            }).then((res) => {
-                console.log('res', res);
-            }).catch((err) => {
-                console.log('err', err);
+    useEffect(() => {
+        if (typeof initiallyWishlisted === 'boolean') {
+            setIsWishlisted(initiallyWishlisted);
+        }
+    }, [initiallyWishlisted]);
+
+    useEffect(() => {
+        if (initiallyWishlisted !== undefined || !productId) return;
+        let isMounted = true;
+        AxiosAPI.get(`/api/products/wishlist/check?productId=${productId}`)
+            .then((response) => {
+                if (isMounted) {
+                    setIsWishlisted(Boolean(response?.data));
+                }
+            })
+            .catch((error) => {
+                console.error('Failed to fetch wishlist status', error);
             });
+        return () => {
+            isMounted = false;
+        };
+    }, [initiallyWishlisted, productId]);
+
+    const refreshWishlistCaches = () => {
+        mutate('/api/products/wishlist');
+        mutate('/api/products/wishlist/products');
+    };
+
+    const toggleWishlist = async (event: React.MouseEvent<HTMLButtonElement>) => {
+        event.preventDefault();
+        if (!productId) return;
+
+        try {
+            if (!isWishlisted) {
+                await AxiosAPI.post(`/api/products/wishlist`, { productId });
+            } else {
+                await AxiosAPI.delete(`/api/products/wishlist?productId=${productId}`);
+            }
+            refreshWishlistCaches();
+            setIsWishlisted((prev) => {
+                const next = !prev;
+                if (burstTimeoutRef.current) clearTimeout(burstTimeoutRef.current);
+                if (next) {
+                    setIsBursting(true);
+                    burstTimeoutRef.current = setTimeout(() => {
+                        setIsBursting(false);
+                    }, 700);
+                } else setIsBursting(false);
+                return next;
+            });
+            handleToggleWishlist?.(!isWishlisted);
+        } catch (error) {
+            console.error('Failed to toggle wishlist state', error);
         }
-        if (productId && isWishlisted) {
-            AxiosAPI.delete(`/api/products/wishlist?productId=${productId}`).then((res) => {
-                console.log('res', res);
-            }).catch((err) => {
-                console.log('err', err);
-            });  
-        }
-        setIsWishlisted((prev) => {
-            const next = !prev;
-            if (burstTimeoutRef.current) clearTimeout(burstTimeoutRef.current);
-            if (next) {
-                setIsBursting(true);
-                burstTimeoutRef.current = setTimeout(() => {
-                    setIsBursting(false);
-                }, 700);
-            } else setIsBursting(false);
-            return next;
-        });
-        handleToggleWishlist();
     };
 
     useEffect(() => {
