@@ -31,17 +31,19 @@ const enrichProductsWithImages = (products: any[] = []) => {
     const fallbackPool = shuffleArray(CHATBOT_SAMPLE_IMAGES);
     return products.map((product, index) => {
         const fallbackImage = fallbackPool[index % fallbackPool.length];
-        const imageUrl =
+        const originalImage =
             product?.imurl ||
             product?.image ||
             product?.imageUrl ||
             product?.thumbnail ||
             product?.thumbnailUrl ||
-            fallbackImage;
+            null;
 
         return {
             ...product,
-            imurl: imageUrl || fallbackImage,
+            // Always prioritize local mock images so Next/Image can render without domain config churn.
+            imurl: fallbackImage,
+            originalImage,
         };
     });
 };

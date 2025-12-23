@@ -88,8 +88,10 @@ export function ProductReviews({ reviews = [], rating = 0 }: {reviews: any, rati
         </div>
       </div>
       <div className="w-[90%]">
-        {paginatedReviews.map((review: any, index: number) => (
-          <div key={review.id} className={cn("py-8 space-y-3", index !== 0 && "border-t")}>
+        {paginatedReviews.map((review: any, index: number) => {
+          const reviewKey = review?.id ?? `${review?.userId ?? review?.user?.id ?? 'review'}-${index}`;
+          return (
+          <div key={reviewKey} className={cn("py-8 space-y-3", index !== 0 && "border-t")}>
             <div className="flex items-start gap-3">
               <Avatar className="h-10 w-10">
                 <AvatarImage src={review?.user?.avatar || undefined} />
@@ -127,7 +129,7 @@ export function ProductReviews({ reviews = [], rating = 0 }: {reviews: any, rati
               </div>
             </div>
           </div>
-        ))}
+        )})}
       </div>
 
       {totalPages > 1 && (
