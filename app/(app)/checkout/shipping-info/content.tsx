@@ -102,7 +102,7 @@ export function ShippingInfoContent({
       return;
     }
 
-    const payloadItems = cartItems.map((item: any) => ({
+    const payloadItems: { productId?: string; quantity: number }[] = cartItems.map((item: any) => ({
       productId: item.productId || item.product?.id,
       quantity: Number(item.quantity) || 1,
     }));
@@ -111,13 +111,17 @@ export function ShippingInfoContent({
       toast.error('Không tìm thấy thông tin sản phẩm trong giỏ hàng');
       return;
     }
+    const orderItems: { productId: string; quantity: number }[] = payloadItems.map((item) => ({
+      productId: item.productId!,
+      quantity: item.quantity,
+    }));
 
     try {
       setCreatingOrder(true);
       const response = await orderApi.create({
         shippingAddress: formatShippingAddress(selectedAddress),
         paymentMethod: 'PAYOS',
-        items: payloadItems,
+        items: orderItems,
       });
 
       if (response.error || !response.data) {
