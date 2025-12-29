@@ -10,13 +10,10 @@ import { formatCurrency } from '@/utils/currency';
 import { Rating } from '@/app/(app)/components/rating';
 import { ComparisonStore } from '@/app/(app)/search-results/hooks/comparison-store';
 import { ChatbotStore } from '@/app/(app)/search-results/hooks/chatbot-store';
-import { AxiosChatbot, AxiosAPI } from '@/lib/axios';
+import { AxiosChatbot } from '@/lib/axios';
 import Link from 'next/link';
 import { ShoppingCart } from 'lucide-react';
 import { useSearchParams } from 'next/navigation';
-import useSWR from 'swr';
-import { configSWR } from '@/lib/utils';
-import { useStoreClient } from '@/app/(app)/components/context';
 
 export function ComparisonView() {
   const { products, removeProduct, clearProducts, comparisonData: cachedData, productsKey, setComparisonData } = ComparisonStore();
@@ -27,8 +24,6 @@ export function ComparisonView() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const lastRequestedKeyRef = useRef<string | null>(null);
-  const { showCartSheet } = useStoreClient();
-  const { mutate } = useSWR('/api/carts', { ...configSWR, revalidateOnMount: false });
 
   // Tạo key để check cache
   const currentKey = products.length === 2 ? `${products[0].id}-${products[1].id}` : null;
@@ -94,20 +89,6 @@ export function ComparisonView() {
       setError(err.response?.data?.error || 'Không thể so sánh sản phẩm. Vui lòng thử lại.');
     } finally {
       setIsLoading(false);
-    }
-  };
-
-  const handleAddToCart = async (product: any) => {
-    try {
-      await AxiosAPI.post(`/api/carts/items`, {
-        productId: product.id,
-        quantity: 1,
-        unitPrice: product.sale || product.price
-      });
-      mutate();
-      showCartSheet();
-    } catch (err) {
-      console.error('Error adding to cart:', err);
     }
   };
 
@@ -245,10 +226,7 @@ export function ComparisonView() {
                       Xem chi tiết
                     </Button>
                   </Link>
-                  <Button 
-                    className="flex-1 rounded-xl shadow-md"
-                    onClick={() => handleAddToCart(product)}
-                  >
+                  <Button className="flex-1 rounded-xl shadow-md">
                     <ShoppingCart className="mr-2 h-4 w-4" />
                     Thêm vào giỏ
                   </Button>
