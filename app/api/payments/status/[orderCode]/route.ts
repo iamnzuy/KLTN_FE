@@ -4,10 +4,7 @@ import { NextRequest, NextResponse } from 'next/server';
 const BACKEND_URL =
   process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080/api';
 
-function unauthorized() {
-  return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-}
-
+// Build auth header if available, but do not block when missing
 async function buildAuthHeader(request: NextRequest) {
   const header = request.headers.get('Authorization');
   if (header) return header;
@@ -23,15 +20,12 @@ export async function GET(
   const { orderCode } = await context.params;
   const authHeader = await buildAuthHeader(request);
 
-  if (!authHeader) {
-    return unauthorized();
-  }
-
+  // Allow public access; attach Authorization only when present
   const response = await fetch(`${BACKEND_URL}/payments/status/${orderCode}`, {
     method: 'GET',
     headers: {
       'Content-Type': 'application/json',
-      Authorization: authHeader,
+      ...(authHeader ? { Authorization: authHeader } : {}),
     },
   });
 
