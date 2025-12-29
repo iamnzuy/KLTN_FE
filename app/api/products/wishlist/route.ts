@@ -1,15 +1,23 @@
+
 import { NextRequest, NextResponse } from 'next/server';
-import { getServerSession } from 'next-auth';
+import { cookies } from 'next/headers';
+import { getServerSession, type Session } from 'next-auth';
 import authOptions from '../../auth/[...nextauth]/auth-options';
 
 const BACKEND_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080/api';
 
+type SessionWithToken = Session & { accessToken?: string };
+
 async function buildAuthHeader(request: NextRequest) {
   const header = request.headers.get('Authorization');
   if (header) return header;
-  
+
+  const cookieToken =
+    request.cookies.get('auth_token')?.value || (await cookies()).get('auth_token')?.value;
+  if (cookieToken) return `Bearer ${cookieToken}`;
+
   const session = await getServerSession(authOptions);
-  const token = session?.accessToken;
+  const token = (session as SessionWithToken | null)?.accessToken;
   return token ? `Bearer ${token}` : undefined;
 }
 

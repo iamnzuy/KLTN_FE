@@ -1,14 +1,26 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getServerSession } from 'next-auth';
+import { cookies } from 'next/headers';
+import { getServerSession, type Session } from 'next-auth';
 import authOptions from '../../../auth/[...nextauth]/auth-options';
 import { enrichProductWithMockImage } from '@/lib/image-utils';
 
 const BACKEND_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080/api';
 
+type SessionWithToken = Session & { accessToken?: string };
+
+async function resolveAccessToken() {
+  const cookieStore = await cookies();
+  const cookieToken = cookieStore.get('auth_token')?.value;
+  if (cookieToken) return cookieToken;
+
+  const session = await getServerSession(authOptions);
+  return (session as SessionWithToken | null)?.accessToken;
+}
+
 export async function GET(request: NextRequest) {
   try {
-    const session = await getServerSession(authOptions);
-    if (!session?.accessToken) {
+    const accessToken = await resolveAccessToken();
+    if (!accessToken) {
       return NextResponse.json(
         { error: 'Unauthorized' },
         { status: 401 }
@@ -19,7 +31,7 @@ export async function GET(request: NextRequest) {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${session.accessToken}`,
+        'Authorization': `Bearer ${accessToken}`,
       },
     });
 

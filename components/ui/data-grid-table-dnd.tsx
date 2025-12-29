@@ -32,8 +32,8 @@ import { CSS } from '@dnd-kit/utilities';
 import { Cell, flexRender, Header, HeaderGroup, Row } from '@tanstack/react-table';
 import { GripVertical } from 'lucide-react';
 
-function DataGridTableDndHeader<TData>({ header }: { header: Header<TData, unknown> }) {
-  const { props } = useDataGrid();
+function DataGridTableDndHeader<TData extends object>({ header }: { header: Header<TData, unknown> }) {
+  const { props } = useDataGrid<TData>();
   const { column } = header;
 
   const { attributes, isDragging, listeners, setNodeRef, transform, transition } = useSortable({
@@ -73,7 +73,7 @@ function DataGridTableDndHeader<TData>({ header }: { header: Header<TData, unkno
   );
 }
 
-function DataGridTableDndCell<TData>({ cell }: { cell: Cell<TData, unknown> }) {
+function DataGridTableDndCell<TData extends object>({ cell }: { cell: Cell<TData, unknown> }) {
   const { isDragging, setNodeRef, transform, transition } = useSortable({
     id: cell.column.id,
   });
@@ -94,8 +94,8 @@ function DataGridTableDndCell<TData>({ cell }: { cell: Cell<TData, unknown> }) {
   );
 }
 
-function DataGridTableDnd<TData>({ handleDragEnd }: { handleDragEnd: (event: DragEndEvent) => void }) {
-  const { table, isLoading, props } = useDataGrid();
+function DataGridTableDnd<TData extends object>({ handleDragEnd }: { handleDragEnd: (event: DragEndEvent) => void }) {
+  const { table, isLoading, props } = useDataGrid<TData>();
   const pagination = table.getState().pagination;
 
   const sensors = useSensors(useSensor(MouseSensor, {}), useSensor(TouchSensor, {}), useSensor(KeyboardSensor, {}));
@@ -142,7 +142,7 @@ function DataGridTableDnd<TData>({ handleDragEnd }: { handleDragEnd: (event: Dra
                 </DataGridTableBodyRowSkeleton>
               ))
             ) : table.getRowModel().rows.length ? (
-              table.getRowModel().rows.map((row: Row<TData>, index) => {
+              table.getRowModel().rows.map((row, index) => {
                 return (
                   <Fragment key={row.id}>
                     <DataGridTableBodyRow row={row} key={index}>

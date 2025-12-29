@@ -44,7 +44,7 @@ function DataGridTableDndRowHandle({ rowId }: { rowId: string }) {
   );
 }
 
-function DataGridTableDndRow<TData>({ row }: { row: Row<TData> }) {
+function DataGridTableDndRow<TData extends object>({ row }: { row: Row<TData> }) {
   const { transform, transition, setNodeRef, isDragging } = useSortable({
     id: row.id,
   });
@@ -69,14 +69,14 @@ function DataGridTableDndRow<TData>({ row }: { row: Row<TData> }) {
   );
 }
 
-function DataGridTableDndRows<TData>({
+function DataGridTableDndRows<TData extends object>({
   handleDragEnd,
   dataIds,
 }: {
   handleDragEnd: (event: DragEndEvent) => void;
   dataIds: UniqueIdentifier[];
 }) {
-  const { table, isLoading, props } = useDataGrid();
+  const { table, isLoading, props } = useDataGrid<TData>();
   const pagination = table.getState().pagination;
 
   const sensors = useSensors(useSensor(MouseSensor, {}), useSensor(TouchSensor, {}), useSensor(KeyboardSensor, {}));
@@ -129,9 +129,9 @@ function DataGridTableDndRows<TData>({
               ))
             ) : table.getRowModel().rows.length ? (
               <SortableContext items={dataIds} strategy={verticalListSortingStrategy}>
-                {table.getRowModel().rows.map((row: Row<TData>) => {
-                  return <DataGridTableDndRow row={row} key={row.id} />;
-                })}
+                {table.getRowModel().rows.map((row) => (
+                  <DataGridTableDndRow row={row} key={row.id} />
+                ))}
               </SortableContext>
             ) : (
               <DataGridTableEmpty />

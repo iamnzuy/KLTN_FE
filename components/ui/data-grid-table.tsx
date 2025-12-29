@@ -75,14 +75,14 @@ function DataGridTableHead({ children }: { children: ReactNode }) {
   );
 }
 
-function DataGridTableHeadRow<TData>({
+function DataGridTableHeadRow<TData extends object>({
   children,
   headerGroup,
 }: {
   children: ReactNode;
   headerGroup: HeaderGroup<TData>;
 }) {
-  const { props } = useDataGrid();
+  const { props } = useDataGrid<TData>();
 
   return (
     <tr
@@ -101,7 +101,7 @@ function DataGridTableHeadRow<TData>({
   );
 }
 
-function DataGridTableHeadRowCell<TData>({
+function DataGridTableHeadRowCell<TData extends object>({
   children,
   header,
   dndRef,
@@ -112,7 +112,7 @@ function DataGridTableHeadRowCell<TData>({
   dndRef?: React.Ref<HTMLTableCellElement>;
   dndStyle?: CSSProperties;
 }) {
-  const { props } = useDataGrid();
+  const { props } = useDataGrid<TData>();
 
   const { column } = header;
   const isPinned = column.getIsPinned();
@@ -154,7 +154,7 @@ function DataGridTableHeadRowCell<TData>({
   );
 }
 
-function DataGridTableHeadRowCellResize<TData>({ header }: { header: Header<TData, unknown> }) {
+function DataGridTableHeadRowCellResize<TData extends object>({ header }: { header: Header<TData, unknown> }) {
   const { column } = header;
 
   return (
@@ -212,8 +212,14 @@ function DataGridTableBodyRowSkeleton({ children }: { children: ReactNode }) {
   );
 }
 
-function DataGridTableBodyRowSkeletonCell<TData>({ children, column }: { children: ReactNode; column: Column<TData> }) {
-  const { props, table } = useDataGrid();
+function DataGridTableBodyRowSkeletonCell<TData extends object>({
+  children,
+  column,
+}: {
+  children: ReactNode;
+  column: Column<TData>;
+}) {
+  const { props, table } = useDataGrid<TData>();
   const bodyCellSpacing = bodyCellSpacingVariants({
     size: props.tableLayout?.dense ? 'dense' : 'default',
   });
@@ -239,7 +245,7 @@ function DataGridTableBodyRowSkeletonCell<TData>({ children, column }: { childre
   );
 }
 
-function DataGridTableBodyRow<TData>({
+function DataGridTableBodyRow<TData extends object>({
   children,
   row,
   dndRef,
@@ -250,7 +256,7 @@ function DataGridTableBodyRow<TData>({
   dndRef?: React.Ref<HTMLTableRowElement>;
   dndStyle?: CSSProperties;
 }) {
-  const { props, table } = useDataGrid();
+  const { props, table } = useDataGrid<TData>();
 
   return (
     <tr
@@ -275,8 +281,8 @@ function DataGridTableBodyRow<TData>({
   );
 }
 
-function DataGridTableBodyRowExpandded<TData>({ row }: { row: Row<TData> }) {
-  const { props, table } = useDataGrid();
+function DataGridTableBodyRowExpandded<TData extends object>({ row }: { row: Row<TData> }) {
+  const { props, table } = useDataGrid<TData>();
 
   return (
     <tr className={cn(props.tableLayout?.rowBorder && '[&:not(:last-child)>td]:border-b')}>
@@ -290,7 +296,7 @@ function DataGridTableBodyRowExpandded<TData>({ row }: { row: Row<TData> }) {
   );
 }
 
-function DataGridTableBodyRowCell<TData>({
+function DataGridTableBodyRowCell<TData extends object>({
   children,
   cell,
   dndRef,
@@ -301,7 +307,7 @@ function DataGridTableBodyRowCell<TData>({
   dndRef?: React.Ref<HTMLTableCellElement>;
   dndStyle?: CSSProperties;
 }) {
-  const { props } = useDataGrid();
+  const { props } = useDataGrid<TData>();
 
   const { column, row } = cell;
   const isPinned = column.getIsPinned();
@@ -379,7 +385,7 @@ function DataGridTableLoader() {
   );
 }
 
-function DataGridTableRowSelect<TData>({ row, size }: { row: Row<TData>; size?: 'sm' | 'md' | 'lg' }) {
+function DataGridTableRowSelect<TData extends object>({ row, size }: { row: Row<TData>; size?: 'sm' | 'md' | 'lg' }) {
   return (
     <>
       <div
@@ -411,8 +417,8 @@ function DataGridTableRowSelectAll({ size }: { size?: 'sm' | 'md' | 'lg' }) {
   );
 }
 
-function DataGridTable<TData>() {
-  const { table, isLoading, props } = useDataGrid();
+function DataGridTable<TData extends object>() {
+  const { table, isLoading, props } = useDataGrid<TData>();
   const pagination = table.getState().pagination;
 
   return (
