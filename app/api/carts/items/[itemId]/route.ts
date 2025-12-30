@@ -1,8 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
 import authOptions from '../../../auth/[...nextauth]/auth-options';
-
-const BACKEND_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080/api';
+import { BACKEND_URL } from '../../../_utils/backend';
 
 export async function PATCH(
   request: NextRequest,

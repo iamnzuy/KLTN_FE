@@ -3,8 +3,7 @@ import { cookies } from 'next/headers';
 import { getServerSession, type Session } from 'next-auth';
 import authOptions from '../../../auth/[...nextauth]/auth-options';
 import { enrichProductWithMockImage } from '@/lib/image-utils';
-
-const BACKEND_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080/api';
+import { BACKEND_URL } from '../../../_utils/backend';
 
 type SessionWithToken = Session & { accessToken?: string };
 

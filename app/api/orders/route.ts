@@ -1,9 +1,7 @@
 import { cookies } from 'next/headers';
 import { NextRequest, NextResponse } from 'next/server';
 import { enrichProductWithMockImage } from '@/lib/image-utils';
-
-const BACKEND_URL =
-  process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080/api';
+import { BACKEND_URL } from '../_utils/backend';
 const DEFAULT_PAGE = '0';
 const DEFAULT_SIZE = '24';
 const DEFAULT_SORT_BY = 'createdAt';
@@ -102,7 +100,7 @@ export async function GET(request: NextRequest) {
     sortBy,
     sortDir,
   });
-  const url = `${BACKEND_URL}/api/orders?${query.toString()}`;
+  const url = `${BACKEND_URL}/orders?${query.toString()}`;
   const authHeader = await buildAuthHeader(request);
 
   if (!authHeader) {
@@ -126,7 +124,7 @@ export async function POST(request: NextRequest) {
     return unauthorized();
   }
 
-  return forwardRequest(`${BACKEND_URL}/api/orders`, {
+  return forwardRequest(`${BACKEND_URL}/orders`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',

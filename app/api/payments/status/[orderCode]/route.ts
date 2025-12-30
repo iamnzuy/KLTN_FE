@@ -1,8 +1,6 @@
 import { cookies } from 'next/headers';
 import { NextRequest, NextResponse } from 'next/server';
-
-const BACKEND_URL =
-  process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080/api';
+import { BACKEND_URL } from '../../../_utils/backend';
 
 // Build auth header if available, but do not block when missing
 async function buildAuthHeader(request: NextRequest) {

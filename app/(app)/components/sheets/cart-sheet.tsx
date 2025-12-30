@@ -31,7 +31,7 @@ export function CartSheet({ open, onOpenChange }: { open: boolean, onOpenChange:
 
   const handleChangeQuantity = useDebounceCallback(
     (e: ChangeEvent<HTMLInputElement>, itemId: string | number) => {
-      AxiosAPI.patch(`/carts/items/${itemId}?quantity=${e.target.value}`).then(() => {
+      AxiosAPI.patch(`/api/carts/items/${itemId}?quantity=${e.target.value}`).then(() => {
         mutate();
       });
     },
@@ -39,13 +39,13 @@ export function CartSheet({ open, onOpenChange }: { open: boolean, onOpenChange:
   );
 
   const handleDeleteItem = (itemId: string | number) => {
-    AxiosAPI.delete(`/carts/items/${itemId}`).then(() => {
+    AxiosAPI.delete(`/api/carts/items/${itemId}`).then(() => {
       mutate();
     });
   };
 
   const clearAllCart = () => {
-    AxiosAPI.delete('/carts/items').then(() => {
+    AxiosAPI.delete('/api/carts/items').then(() => {
       mutate();
     });
   };

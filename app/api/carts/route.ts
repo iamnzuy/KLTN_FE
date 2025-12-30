@@ -2,8 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
 import authOptions from '../auth/[...nextauth]/auth-options';
 import { enrichProductWithMockImage } from '@/lib/image-utils';
-
-const BACKEND_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080/api';
+import { BACKEND_URL } from '../_utils/backend';
 
 export async function GET(request: NextRequest) {
   try {

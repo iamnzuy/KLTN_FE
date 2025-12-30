@@ -1,8 +1,15 @@
 import { getCookie } from 'cookies-next';
 import { enrichProductWithMockImage, enrichProductsWithMockImages } from './image-utils';
 
-const API_BASE_URL =
-  process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080/api';
+function normalizeApiBase(url?: string) {
+  const fallback = 'http://localhost:8080/api';
+  if (!url) return fallback;
+  const trimmed = url.endsWith('/') ? url.slice(0, -1) : url;
+  if (trimmed.endsWith('/api')) return trimmed;
+  return `${trimmed}/api`;
+}
+
+const API_BASE_URL = normalizeApiBase(process.env.NEXT_PUBLIC_API_URL);
 
 interface ApiResponse<T> {
   data?: T;
@@ -182,7 +189,7 @@ export const orderApi = {
     items: Array<{ productId: string; quantity: number }>;
   }) =>
     apiCall<any>(
-      '/api/orders',
+      '/orders',
       {
         method: 'POST',
         body: JSON.stringify(order),
@@ -206,13 +213,13 @@ export const orderApi = {
       sortDir,
     });
 
-    return apiCall<any>(`/api/orders?${query.toString()}`);
+    return apiCall<any>(`/orders?${query.toString()}`);
   },
   getById: (orderId: number) =>
-    apiCall<any>(`/api/orders/${orderId}`),
+    apiCall<any>(`/orders/${orderId}`),
   updateStatus: (orderId: number, status: string) =>
     apiCall<any>(
-      `/api/orders/${orderId}/status?status=${encodeURIComponent(status)}`,
+      `/orders/${orderId}/status?status=${encodeURIComponent(status)}`,
       { method: 'PUT' }
     ),
 };
@@ -225,7 +232,7 @@ export const paymentApi = {
       paymentLinkId: string;
       orderCode: number;
       qrCode: string;
-    }>(`/api/payments/create-link`, {
+    }>(`/payments/create-link`, {
       method: 'POST',
       body: JSON.stringify({
         orderCode: orderId,
@@ -234,7 +241,7 @@ export const paymentApi = {
       }),
     }),
   getPaymentStatus: (orderCode: number) =>
-    apiCall<any>(`/api/payments/status/${orderCode}`, {}, { baseUrl: '' }),
+    apiCall<any>(`/payments/status/${orderCode}`, {}, { baseUrl: '' }),
 };
 
 // Review API
