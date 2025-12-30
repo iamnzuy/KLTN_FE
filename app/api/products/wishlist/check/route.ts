@@ -2,7 +2,8 @@ import { NextRequest, NextResponse } from 'next/server';
 import { cookies } from 'next/headers';
 import { getServerSession, type Session } from 'next-auth';
 import authOptions from '../../../auth/[...nextauth]/auth-options';
-import { BACKEND_URL } from '../../../_utils/backend';
+
+const BACKEND_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080/api';
 
 type SessionWithToken = Session & { accessToken?: string };
 

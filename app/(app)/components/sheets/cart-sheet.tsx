@@ -29,26 +29,22 @@ export function CartSheet({ open, onOpenChange }: { open: boolean, onOpenChange:
   const { items } = data?.data || {};
   const isEmpty = !items?.length;
 
-  const handleChangeQuantity = useDebounceCallback(
-    (e: ChangeEvent<HTMLInputElement>, itemId: string | number) => {
-      AxiosAPI.patch(`/api/carts/items/${itemId}?quantity=${e.target.value}`).then(() => {
-        mutate();
-      });
-    },
-    1000,
-  );
+  const cartId = data?.data?.id;
+  // const handleChangeQuantity = useDebounceCallback((e: ChangeEvent<HTMLInputElement>, itemId: string | number) => {
+  //   AxiosAPI.patch(`/api/carts/${1}/items/${itemId}?quantity=${e.target.value}`).then(() => { mutate() });
+  // }, 1000);
+
+  const handleChangeQuantity = useDebounceCallback((e: ChangeEvent<HTMLInputElement>, itemId: string | number) => {
+    AxiosAPI.patch(`/api/carts/items/${itemId}?quantity=${e.target.value}`).then(() => { mutate() });
+  }, 1000);
 
   const handleDeleteItem = (itemId: string | number) => {
-    AxiosAPI.delete(`/api/carts/items/${itemId}`).then(() => {
-      mutate();
-    });
+    AxiosAPI.delete(`/api/carts/items/${itemId}`).then(() => { mutate() });
   };
 
   const clearAllCart = () => {
-    AxiosAPI.delete('/api/carts/items').then(() => {
-      mutate();
-    });
-  };
+    AxiosAPI.delete("/api/carts/items").then(() => { mutate() });
+  }
 
   const checkoutCart = () => {
     onOpenChange(false);

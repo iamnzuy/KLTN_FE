@@ -1,7 +1,9 @@
 import { cookies } from 'next/headers';
 import { NextRequest, NextResponse } from 'next/server';
 import { enrichProductWithMockImage } from '@/lib/image-utils';
-import { BACKEND_URL } from '../../_utils/backend';
+
+const BACKEND_URL =
+  process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080/api';
 
 function unauthorized() {
   return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
@@ -26,7 +28,7 @@ export async function GET(
     return unauthorized();
   }
 
-  const response = await fetch(`${BACKEND_URL}/orders/${orderId}`, {
+  const response = await fetch(`${BACKEND_URL}/api/orders/${orderId}`, {
     method: 'GET',
     headers: {
       'Content-Type': 'application/json',

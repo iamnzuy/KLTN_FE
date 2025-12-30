@@ -2,14 +2,6 @@ import axios from "axios";
 import { getCookie } from "cookies-next";
 import { enrichProductWithMockImage, enrichProductsWithMockImages } from "./image-utils";
 
-function normalizeApiBase(url?: string) {
-  const fallback = "http://localhost:8080/api";
-  if (!url) return fallback;
-  const trimmed = url.endsWith("/") ? url.slice(0, -1) : url;
-  if (trimmed.endsWith("/api")) return trimmed;
-  return `${trimmed}/api`;
-}
-
 /**
  * Enrich API response with mock images for products
  * Handles various response structures (single product, array, nested objects)
@@ -89,7 +81,7 @@ function enrichApiResponse(data: any): any {
 }
 
 export const AxiosAPI = axios.create({
-  baseURL: normalizeApiBase(process.env.NEXT_PUBLIC_API_URL),
+  baseURL: process.env.NEXT_PUBLIC_API_URL,
   withCredentials: true,
   headers: {
     "Content-Type": "application/json",
