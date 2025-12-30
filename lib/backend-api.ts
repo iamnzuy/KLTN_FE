@@ -2,7 +2,7 @@ import { getCookie } from 'cookies-next';
 import { enrichProductWithMockImage, enrichProductsWithMockImages } from './image-utils';
 
 const API_BASE_URL =
-  process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080/api';
+  process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080/';
 
 interface ApiResponse<T> {
   data?: T;
@@ -156,7 +156,8 @@ export const orderApi = {
   create: (order: {
     shippingAddress: string;
     paymentMethod: string;
-    items: Array<{ productId: string; quantity: number }>;
+    totalAmount: number;
+    items: Array<{ productId: string; quantity: number; unitPrice: number }>;
   }) =>
     apiCall<any>(
       '/api/orders',
@@ -164,7 +165,6 @@ export const orderApi = {
         method: 'POST',
         body: JSON.stringify(order),
       },
-      { baseUrl: '' },
     ),
   getUserOrders: (params?: {
     page?: number;
@@ -184,15 +184,14 @@ export const orderApi = {
       sortDir,
     });
 
-    return apiCall<any>(`/api/orders?${query.toString()}`, {}, { baseUrl: '' });
+    return apiCall<any>(`/api/orders?${query.toString()}`);
   },
   getById: (orderId: number) =>
-    apiCall<any>(`/api/orders/${orderId}`, {}, { baseUrl: '' }),
+    apiCall<any>(`/api/orders/${orderId}`),
   updateStatus: (orderId: number, status: string) =>
     apiCall<any>(
       `/api/orders/${orderId}/status?status=${encodeURIComponent(status)}`,
       { method: 'PUT' },
-      { baseUrl: '' },
     ),
 };
 
@@ -213,7 +212,7 @@ export const paymentApi = {
       }),
     }),
   getPaymentStatus: (orderCode: number) =>
-    apiCall<any>(`/api/payments/status/${orderCode}`, {}, { baseUrl: '' }),
+    apiCall<any>(`/api/payments/status/${orderCode}`),
 };
 
 // Review API

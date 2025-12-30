@@ -33,7 +33,6 @@ export function OrderSummaryContent() {
     if (isEmpty) return;
     router.push('/checkout/shipping-info');
   };
-
   return (
     <div className="grid grid-cols-1 xl:grid-cols-3 gap-5 lg:gap-9 mb-5 lg:mb-10">
       <div className="col-span-2 space-y-5">

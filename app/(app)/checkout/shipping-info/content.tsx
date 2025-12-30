@@ -102,18 +102,20 @@ export function ShippingInfoContent({
       return;
     }
 
-    const payloadItems: { productId?: string; quantity: number }[] = cartItems.map((item: any) => ({
+    const payloadItems: { productId?: string; quantity: number; unitPrice: number }[] = cartItems.map((item: any) => ({
       productId: item.productId || item.product?.id,
       quantity: Number(item.quantity) || 1,
+      unitPrice: item?.unitPrice || item?.product?.price || 0,
     }));
 
     if (payloadItems.some((item) => !item.productId)) {
       toast.error('Không tìm thấy thông tin sản phẩm trong giỏ hàng');
       return;
     }
-    const orderItems: { productId: string; quantity: number }[] = payloadItems.map((item) => ({
+    const orderItems: { productId: string; quantity: number; unitPrice: number }[] = payloadItems.map((item) => ({
       productId: item.productId!,
       quantity: item.quantity,
+      unitPrice: item.unitPrice,
     }));
 
     try {
@@ -121,6 +123,7 @@ export function ShippingInfoContent({
       const response = await orderApi.create({
         shippingAddress: formatShippingAddress(selectedAddress),
         paymentMethod: 'PAYOS',
+        totalAmount: subtotal + vat,
         items: orderItems,
       });
 

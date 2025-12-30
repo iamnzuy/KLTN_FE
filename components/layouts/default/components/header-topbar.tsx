@@ -6,22 +6,20 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { useState } from 'react';
 import { WishlistSheet } from '@/app/(app)/components/sheets/wishlist-sheet';
-import { CartSheet } from '@/app/(app)/components/sheets/cart-sheet';
 import useSWR from 'swr';
 import { configSWR } from '@/lib/utils';
 import { formatCurrency } from '@/utils/currency';
+import { CartStore } from '@/app/(app)/cart/hooks/cart-store';
 
 export function HeaderTopbar() {
-  const [showCart, setShowCart] = useState(false);
   const [showWishlist, setShowWishlist] = useState(false);
-
+  const setIsOpen = CartStore((state) => state.setIsOpen);
   const {data} = useSWR(`/api/carts`, configSWR);
   const cartItems = data?.data?.items || [];
 
   return (
     <>
       <WishlistSheet open={showWishlist} onOpenChange={setShowWishlist} />
-      <CartSheet open={showCart} onOpenChange={setShowCart} />
       <div className="flex items-center justify-end gap-1">
         <Button
           variant="ghost"
@@ -57,7 +55,7 @@ export function HeaderTopbar() {
               size="lg"
               mode="icon"
               shape="circle"
-              onClick={() => setShowCart(true)}
+              onClick={() => setIsOpen(true)}
               className="relative hover:text-primary"
             >
               <ShoppingCart className="size-5!" />
