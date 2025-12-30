@@ -16,6 +16,68 @@ import { Button } from '@/components/ui/button';
 import { paymentApi } from '@/lib/backend-api';
 import { useOrder } from '@/hooks/use-orders';
 
+const PAYOS_SESSION_PREFIX = 'payos_session_';
+
+function getSessionKey(orderId: number) {
+  return `${PAYOS_SESSION_PREFIX}${orderId}`;
+}
+
+function normalizeQrCode(qr?: string | null) {
+  if (!qr) return qr ?? undefined;
+  const trimmed = qr.trim();
+  if (
+    trimmed.startsWith('http://') ||
+    trimmed.startsWith('https://') ||
+    trimmed.startsWith('data:')
+  ) {
+    return trimmed;
+  }
+  return `data:image/png;base64,${trimmed}`;
+}
+
+function saveSessionToStorage(
+  orderId: number,
+  session: PayOSCheckoutSession,
+  state: PayOSPaymentState,
+  note?: string | null,
+) {
+  try {
+    localStorage.setItem(
+      getSessionKey(orderId),
+      JSON.stringify({
+        session: { ...session, qrCode: normalizeQrCode(session.qrCode) },
+        state,
+        note,
+        ts: Date.now(),
+      }),
+    );
+  } catch {
+    // ignore storage errors (private mode / quota)
+  }
+}
+
+function loadSessionFromStorage(orderId: number) {
+  try {
+    const raw = localStorage.getItem(getSessionKey(orderId));
+    if (!raw) return null;
+    return JSON.parse(raw) as {
+      session: PayOSCheckoutSession;
+      state?: PayOSPaymentState;
+      note?: string | null;
+    };
+  } catch {
+    return null;
+  }
+}
+
+function clearSessionFromStorage(orderId: number) {
+  try {
+    localStorage.removeItem(getSessionKey(orderId));
+  } catch {
+    // ignore
+  }
+}
+
 export function PaymentMethodContent() {
   const searchParams = useSearchParams();
   const orderIdParam = searchParams.get('orderId');
@@ -33,6 +95,20 @@ export function PaymentMethodContent() {
     setPaymentState('idle');
     setStatusNote(null);
     setRefreshingStatus(false);
+
+    if (!orderId || typeof window === 'undefined') return;
+
+    const saved = loadSessionFromStorage(orderId);
+    if (saved?.session?.orderCode && saved.session?.qrCode) {
+      setPaymentSession({
+        ...saved.session,
+        qrCode: normalizeQrCode(saved.session.qrCode),
+      });
+      setPaymentState(saved.state ?? 'waiting');
+      setStatusNote(
+        saved.note ?? 'Đang chờ bạn hoàn tất thanh toán qua PayOS.',
+      );
+    }
   }, [orderId]);
 
   const subtotal = useMemo(
@@ -79,7 +155,7 @@ export function PaymentMethodContent() {
       const session: PayOSCheckoutSession = {
         checkoutUrl: createResp.data.checkoutUrl,
         orderCode: createResp.data.orderCode ?? order.id,
-        qrCode: createResp.data.qrCode,
+        qrCode: normalizeQrCode(createResp.data.qrCode),
       };
 
       if (!session.checkoutUrl) {
@@ -89,6 +165,7 @@ export function PaymentMethodContent() {
       setPaymentSession(session);
       setPaymentState('waiting');
       setStatusNote('Đang chờ bạn hoàn tất thanh toán qua PayOS.');
+      saveSessionToStorage(order.id, session, 'waiting', 'Đang chờ bạn hoàn tất thanh toán qua PayOS.');
       openCheckout(session.checkoutUrl);
 
       const pollResult = await pollPayosStatus(session.orderCode ?? order.id);
@@ -96,6 +173,7 @@ export function PaymentMethodContent() {
       if (pollResult.status === 'success') {
         setPaymentState('paid');
         setStatusNote(pollResult.description ?? 'PayOS xác nhận thanh toán thành công.');
+        clearSessionFromStorage(order.id);
         toast.success('Thanh toán PayOS thành công');
       } else if (pollResult.status === 'failure') {
         setPaymentState('failed');
@@ -103,6 +181,7 @@ export function PaymentMethodContent() {
           pollResult.description ??
             `PayOS báo lỗi với mã ${pollResult.statusCode ?? 'không xác định'}.`,
         );
+        clearSessionFromStorage(order.id);
         toast.error('PayOS báo giao dịch không thành công');
       } else {
         setPaymentState('timeout');
@@ -110,6 +189,7 @@ export function PaymentMethodContent() {
           pollResult.description ??
             'Không nhận được xác nhận thanh toán trong thời gian quy định. Vui lòng kiểm tra lại trang đơn hàng.',
         );
+        saveSessionToStorage(order.id, session, 'timeout', pollResult.description);
         toast('Thanh toán chưa được xác nhận — vui lòng kiểm tra trang đơn hàng', {
           icon: '⚠️',
         });
@@ -148,6 +228,9 @@ export function PaymentMethodContent() {
       if (isSuccessStatus(statusCode)) {
         setPaymentState('paid');
         setStatusNote(description ?? 'PayOS xác nhận thanh toán');
+        if (paymentSession?.orderCode) {
+          clearSessionFromStorage(paymentSession.orderCode);
+        }
         toast.success('PayOS xác nhận thanh toán');
         if (redirectOrderId) {
           router.push(`/checkout/order-placed?orderId=${redirectOrderId}&paymentStatus=paid`);
@@ -158,6 +241,9 @@ export function PaymentMethodContent() {
       if (isFailureStatus(statusCode)) {
         setPaymentState('failed');
         setStatusNote(description ?? 'PayOS báo giao dịch thất bại');
+        if (paymentSession?.orderCode) {
+          clearSessionFromStorage(paymentSession.orderCode);
+        }
         toast.error('PayOS báo giao dịch thất bại');
         if (redirectOrderId) {
           router.push(`/checkout/order-placed?orderId=${redirectOrderId}&paymentStatus=failed`);
@@ -171,6 +257,14 @@ export function PaymentMethodContent() {
           ? `PayOS trả về mã trạng thái ${statusCode}. Vui lòng đợi thêm ít phút.`
           : 'Chưa nhận được trạng thái cuối cùng từ PayOS.');
       setStatusNote(note);
+      if (paymentSession?.orderCode) {
+        saveSessionToStorage(
+          paymentSession.orderCode,
+          { ...paymentSession, qrCode: normalizeQrCode(paymentSession.qrCode) },
+          paymentState,
+          note,
+        );
+      }
       toast.info('PayOS chưa xác nhận thanh toán', { description: note });
     } catch (error) {
       const message =
@@ -298,8 +392,14 @@ async function pollPayosStatus(orderCode: number): Promise<PollResult> {
 const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
 function openCheckout(url: string) {
-  const popup = window.open(url, '_blank', 'noopener,noreferrer');
+  const popup = window.open(url, '_blank', 'noopener');
   if (!popup) {
-    window.location.assign(url);
+    toast.info('Trình duyệt đang chặn pop-up, vui lòng cho phép để mở PayOS.');
+    return;
+  }
+  try {
+    popup.focus();
+  } catch {
+    // ignore focus errors
   }
 }

@@ -5,13 +5,13 @@ import { cn } from '@/lib/utils';
 import { ColumnFiltersState, RowData, SortingState, Table } from '@tanstack/react-table';
 
 declare module '@tanstack/react-table' {
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  interface ColumnMeta<TData extends RowData, TValue> {
+  interface ColumnMeta<TData extends RowData, TValue = unknown> {
     headerTitle?: string;
     headerClassName?: string;
     cellClassName?: string;
     skeleton?: ReactNode;
     expandedContent?: (row: TData) => ReactNode;
+    valueType?: TValue;
   }
 }
 
@@ -85,17 +85,14 @@ export interface DataGridProps<TData extends object> {
   };
 }
 
-const DataGridContext = createContext<
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  DataGridContextProps<any> | undefined
->(undefined);
+const DataGridContext = createContext<DataGridContextProps<any> | undefined>(undefined);
 
-function useDataGrid() {
+function useDataGrid<TData extends object = Record<string, unknown>>() {
   const context = useContext(DataGridContext);
   if (!context) {
     throw new Error('useDataGrid must be used within a DataGridProvider');
   }
-  return context;
+  return context as DataGridContextProps<TData>;
 }
 
 function DataGridProvider<TData extends object>({

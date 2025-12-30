@@ -1,5 +1,6 @@
 'use client';
 
+import Image from 'next/image';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { formatCurrency } from '@/utils/currency';
@@ -36,8 +37,7 @@ export function Payment({
 
       <CardContent className="p-5 space-y-3">
         <div className="flex items-center gap-2.5">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src={logo} className="size-12" alt="Payment Method" />
+          <Image src={logo} className="size-12" alt="Payment Method" width={48} height={48} />
           <div className="flex flex-col gap-0.5 text-2sm">
             <span className="font-semibold text-mono uppercase">{method}</span>
             <span className="font-normal text-mono text-muted-foreground">

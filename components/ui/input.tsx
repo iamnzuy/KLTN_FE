@@ -118,11 +118,14 @@ const inputWrapperVariants = cva(
 type InputProps = React.ComponentProps<'input'> & VariantProps<typeof inputVariants>;
 
 const Input = React.forwardRef<HTMLInputElement, InputProps>(
-  ({ className, type = 'text', variant, value, defaultValue, ...props }, ref) => {
-    const inputProps = { ...props } as React.ComponentProps<'input'>;
+  ({ className, type = 'text', variant, ...props }, ref) => {
+    const { value, defaultValue, ...restProps } = props;
+    const hasValueProp = Object.prototype.hasOwnProperty.call(props, 'value');
+    const inputProps = { ...restProps } as React.ComponentProps<'input'>;
 
-    if (value !== undefined) {
-      inputProps.value = value;
+    if (hasValueProp) {
+      // Keep the input controlled when the value prop is supplied, even if undefined.
+      inputProps.value = value ?? '';
     } else if (defaultValue !== undefined) {
       inputProps.defaultValue = defaultValue;
     }

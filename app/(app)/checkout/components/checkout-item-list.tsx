@@ -1,5 +1,6 @@
 'use client';
 
+import Image from 'next/image';
 import Link from 'next/link';
 import { Card, CardContent } from '@/components/ui/card';
 import { formatCurrency } from '@/utils/currency';
@@ -54,12 +55,13 @@ export function CheckoutItemList({
         return (
           <Card key={`${productId}-${item.id}`}>
             <CardContent className="flex items-center gap-4 p-3 pe-5">
-              <div className="h-[70px] w-[90px] rounded-xl border border-border bg-accent/50 flex items-center justify-center overflow-hidden shrink-0">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
+              <div className="relative h-[70px] w-[90px] rounded-xl border border-border bg-accent/50 flex items-center justify-center overflow-hidden shrink-0">
+                <Image
                   src={item.product?.imurl || FALLBACK_IMAGE}
                   alt={item.product?.title || 'Product image'}
-                  className="h-full w-full object-cover"
+                  fill
+                  sizes="90px"
+                  className="object-cover"
                 />
               </div>
 
