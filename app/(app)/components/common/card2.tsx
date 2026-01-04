@@ -16,6 +16,7 @@ import { useSearchParams } from 'next/navigation';
 import { ChatbotStore } from '../../search-results/hooks/chatbot-store';
 import { ComparisonStore } from '@/app/(app)/search-results/hooks/comparison-store';
 import { useStoreClient } from '../context';
+import { toast } from 'sonner';
 
 export function Card2({ item }: any) {
   const searchParams = useSearchParams();
@@ -74,10 +75,11 @@ export function Card2({ item }: any) {
       unitPrice: item?.sale ? item?.sale : item?.price,
     })
       .then((res) => {
-        console.log('res', res);
+        toast.success('Đã thêm sản phẩm vào giỏ hàng');
         mutate();
       })
       .catch((err) => {
+        toast.error('Không thể thêm sản phẩm vào giỏ hàng');
         console.log('err', err);
       });
   };

@@ -10,6 +10,7 @@ import useSWR from 'swr';
 import { configSWR } from '@/lib/utils';
 import { useStoreClient } from '@/app/(app)/components/context';
 import { ComparisonStore } from '@/app/(app)/search-results/hooks/comparison-store';
+import { toast } from 'sonner';
 
 interface ProductInfoProps {
   product: any;
@@ -26,10 +27,11 @@ export function ProductInfo({ product }: ProductInfoProps) {
       quantity: 1,
       unitPrice: product?.sale ? product?.sale : product?.price
     }).then((res) => {
-      console.log('res', res);
+      toast.success('Đã thêm sản phẩm vào giỏ hàng');
       mutate();
       showCartSheet();
     }).catch((err) => {
+      toast.error('Không thể thêm sản phẩm vào giỏ hàng');
       console.log('err', err);
     });
   };

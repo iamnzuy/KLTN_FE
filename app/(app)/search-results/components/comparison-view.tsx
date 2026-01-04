@@ -14,6 +14,11 @@ import { AxiosChatbot } from '@/lib/axios';
 import Link from 'next/link';
 import { ShoppingCart } from 'lucide-react';
 import { useSearchParams } from 'next/navigation';
+import AxiosAPI from '@/lib/axios';
+import { toast } from 'sonner';
+import useSWR from 'swr';
+import { configSWR } from '@/lib/utils';
+import { useStoreClient } from '../../components/context';
 
 export function ComparisonView() {
   const clearProductInChatbot = ChatbotStore((state: any) => state.clearProductInChatbot);
@@ -26,6 +31,25 @@ export function ComparisonView() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const lastRequestedKeyRef = useRef<string | null>(null);
+  const { showCartSheet } = useStoreClient();
+  const { mutate } = useSWR('/api/carts', { ...configSWR, revalidateOnMount: false });
+
+  const addToCart = (product: any) => {
+    AxiosAPI.post(`/api/carts/items`, {
+      productId: product?.id,
+      quantity: 1,
+      unitPrice: product?.sale || product?.price || 0
+    })
+      .then((res) => {
+        toast.success('Đã thêm sản phẩm vào giỏ hàng');
+        mutate();
+        showCartSheet();
+      })
+      .catch((err) => {
+        toast.error('Không thể thêm sản phẩm vào giỏ hàng');
+        console.log('err', err);
+      });
+  };
 
   const currentKey = products.length === 2 ? `${products[0].id}-${products[1].id}` : null;
   const hasValidCache = cachedData && productsKey === currentKey && products.length === 2;
@@ -202,7 +226,10 @@ export function ComparisonView() {
                       Xem chi tiết
                     </Button>
                   </Link>
-                  <Button className="flex-1 rounded-xl shadow-md">
+                  <Button 
+                    className="flex-1 rounded-xl shadow-md"
+                    onClick={() => addToCart(product)}
+                  >
                     <ShoppingCart className="mr-2 h-4 w-4" />
                     Thêm vào giỏ
                   </Button>

@@ -7,12 +7,35 @@ import { Button } from '@/components/ui/button';
 import { TopProduct } from '../types';
 import { useStoreClient } from '@/app/(app)/components/context';
 
+import AxiosAPI from '@/lib/axios';
+import { toast } from 'sonner';
+import useSWR from 'swr';
+import { configSWR } from '@/lib/utils';
+
 interface ProductCardProps {
   product: TopProduct;
 }
 
 export function ProductCard({ product }: ProductCardProps) {
   const { showCartSheet, showProductDetailsSheet } = useStoreClient();
+  const { mutate } = useSWR('/api/carts', { ...configSWR, revalidateOnMount: false });
+
+  const addToCart = () => {
+    AxiosAPI.post(`/api/carts/items`, {
+      productId: product?.id,
+      quantity: 1,
+      unitPrice: product?.price
+    })
+      .then((res) => {
+        toast.success('Đã thêm sản phẩm vào giỏ hàng');
+        mutate();
+        showCartSheet();
+      })
+      .catch((err) => {
+        toast.error('Không thể thêm sản phẩm vào giỏ hàng');
+        console.log('err', err);
+      });
+  };
 
   // Format price to Vietnamese currency
   const formatPrice = (price: number) => {
@@ -54,7 +77,11 @@ export function ProductCard({ product }: ProductCardProps) {
               size="sm"
               variant="outline"
               className="ms-1"
-              onClick={showCartSheet}
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                addToCart();
+              }}
             >
               <ShoppingCart className="size-3.5" /> Thêm
             </Button>

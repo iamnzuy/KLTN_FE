@@ -16,6 +16,7 @@ import { configSWR } from '@/lib/utils';
 import { formatCurrency } from '@/utils/currency';
 import AxiosAPI from '@/lib/axios';
 import { useStoreClient } from '@/app/(app)/components/context';
+import { toast } from 'sonner';
 
 const FALLBACK_IMAGE = '/no_photo.png';
 
@@ -97,9 +98,11 @@ export function WishlistSheet({ open, onOpenChange }: WishlistSheetProps) {
           quantity: 1,
           unitPrice,
         });
+        toast.success('Đã thêm sản phẩm vào giỏ hàng');
         mutate('/api/carts');
         showCartSheet();
       } catch (err) {
+        toast.error('Không thể thêm sản phẩm vào giỏ hàng');
         console.error('Failed to add wishlist item to cart', err);
       }
     },

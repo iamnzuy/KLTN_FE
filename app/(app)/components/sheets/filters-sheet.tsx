@@ -23,24 +23,8 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from '@/components/ui/tooltip';
-
-const items = [
-  { label: 'Giày thể thao' },
-  { label: 'Giày chạy bộ' },
-  { label: 'Ủng' },
-  { label: 'Golf' },
-  { label: 'Xăng đan' },
-  { label: 'Giày bảo hộ' },
-  { label: 'Giày thường ngày' },
-  { label: 'Dụng cụ ngoài trời' },
-  { label: 'Đồ thể thao' },
-  { label: 'Giày Chelsea' },
-  { label: 'Giày lười' },
-  { label: 'Giày xỏ' },
-  { label: 'Mùa đông' },
-  { label: 'Giày cói' },
-  { label: 'Bóng rổ' },
-];
+import useSWR from 'swr';
+import { configSWR } from '@/lib/utils';
 
 const ratings = [
   { number: 5 },
@@ -52,6 +36,8 @@ const ratings = [
 
 export function StoreClientFiltersSheet({ trigger }: { trigger: ReactNode }) {
   const [activePeriod, setActivePeriod] = useState('Sale');
+  const { data: brandsResponse } = useSWR(`/api/brands`, configSWR);
+  const brands = brandsResponse?.data;
 
   return (
     <Sheet>
@@ -122,14 +108,14 @@ export function StoreClientFiltersSheet({ trigger }: { trigger: ReactNode }) {
               <span className="text-sm font-medium text-mono">Danh mục</span>
 
               <div className="flex flex-wrap gap-2.5 mb-2">
-                {items.map((item, index) => (
+                {brands?.map((item: any) => (
                   <Badge
-                    key={item.label ?? index}
+                    key={item?.name ?? item?.id}
                     size="sm"
                     shape="circle"
                     className="border-border bg-accent/50 px-2 py-2.5"
                   >
-                    {item.label}
+                    {item?.name}
                   </Badge>
                 ))}
               </div>
