@@ -1,16 +1,11 @@
 import { ReactNode } from 'react';
 import Link from 'next/link';
 import {
-  BadgeInfo,
-  Blocks,
-  LockKeyhole,
   Moon,
   Sun,
   User,
-  Settings,
 } from 'lucide-react';
 import { useTheme } from 'next-themes';
-import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
@@ -41,85 +36,30 @@ export function UserDropdownMenu({ trigger }: { trigger: ReactNode }) {
         {/* Header */}
         <div className="flex items-center justify-between p-3">
           <div className="flex items-center gap-2">
-            <img
-              className="w-9 h-9 rounded-full border border-border"
-              src={'/media/avatars/300-2.png'}
-              alt="User avatar"
-            />
-            <div className="flex flex-col">
+            <Link href="/account/settings" className="flex flex-col">
               <div
                 className="text-sm text-mono hover:text-primary font-semibold"
               >
                 {profile.username}
               </div>
-              {/* <Link
-                href={`mailto:${profile.email}`}
-                className="text-xs text-muted-foreground hover:text-primary"
-              >
-                {profile.email}
-              </Link> */}
               <div
                 className="text-xs text-muted-foreground hover:text-primary"
               >
                 {profile.email}
               </div>
-            </div>
+            </Link>
           </div>
-          {/* <Badge variant="primary" appearance="outline" size="sm">
-            Pro
-          </Badge> */}
         </div>
 
         <DropdownMenuSeparator />
-
-        {/* Menu Items */}
-        <DropdownMenuItem asChild>
-          <Link
-            href="/my-profile"
-            className="flex items-center gap-2"
-          >
-            <User />
-            Hồ sơ của tôi
-          </Link>
-        </DropdownMenuItem>
 
         <DropdownMenuItem asChild>
           <Link
             href="/account/settings"
             className="flex items-center gap-2"
           >
-            <Settings />
-            Cài đặt
-          </Link>
-        </DropdownMenuItem>
-
-        <DropdownMenuItem asChild>
-          <Link
-            href="/account/billing"
-            className="flex items-center gap-2"
-          >
-            <BadgeInfo />
-            Thanh toán
-          </Link>
-        </DropdownMenuItem>
-
-        <DropdownMenuItem asChild>
-          <Link
-            href="/account/security"
-            className="flex items-center gap-2"
-          >
-           <LockKeyhole />
-            Bảo mật
-          </Link>
-        </DropdownMenuItem>
-
-        <DropdownMenuItem asChild>
-          <Link
-            href="/account/integrations"
-            className="flex items-center gap-2"
-          >
-            <Blocks />
-            Tích hợp
+            <User />
+            Hồ sơ của tôi
           </Link>
         </DropdownMenuItem>
 
