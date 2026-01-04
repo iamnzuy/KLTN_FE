@@ -4,6 +4,7 @@ import { Heart } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import AxiosAPI from "@/lib/axios";
 import { useSWRConfig } from "swr";
+import { toast } from "sonner";
 
 type HeartWishlistProps = {
     handleToggleWishlist?: (nextState: boolean) => void;
@@ -56,8 +57,10 @@ export const HeartWishlist = ({ handleToggleWishlist, children, className = '', 
         try {
             if (!isWishlisted) {
                 await AxiosAPI.post(`/api/products/wishlist`, { productId });
+                toast.success('Đã thêm vào danh sách yêu thích');
             } else {
                 await AxiosAPI.delete(`/api/products/wishlist?productId=${productId}`);
+                toast.success('Đã xóa khỏi danh sách yêu thích');
             }
             refreshWishlistCaches();
             setIsWishlisted((prev) => {
@@ -73,6 +76,7 @@ export const HeartWishlist = ({ handleToggleWishlist, children, className = '', 
             });
             handleToggleWishlist?.(!isWishlisted);
         } catch (error) {
+            toast.error('Không thể cập nhật danh sách yêu thích');
             console.error('Failed to toggle wishlist state', error);
         }
     };

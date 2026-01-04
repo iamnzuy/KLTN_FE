@@ -16,6 +16,7 @@ import { configSWR } from '@/lib/utils';
 import { formatCurrency } from '@/utils/currency';
 import AxiosAPI from '@/lib/axios';
 import { useStoreClient } from '@/app/(app)/components/context';
+import { useWishlistProducts } from '@/hooks/use-wishlist';
 import { toast } from 'sonner';
 
 const FALLBACK_IMAGE = '/no_photo.png';
@@ -48,11 +49,7 @@ export function WishlistSheet({ open, onOpenChange }: WishlistSheetProps) {
 
   useOnClickOutside(sheetRef as RefObject<HTMLElement>, () => onOpenChange(false));
 
-  const { data, isLoading, error, mutate: mutateWishlist } = useSWR(
-    open ? '/api/products/wishlist/products' : null,
-    configSWR,
-  );
-  const products: WishlistProduct[] = data?.data ?? [];
+  const { data: products = [], isLoading, error, mutate: mutateWishlist } = useWishlistProducts();
 
   const isEmpty = !products?.length && !isLoading && !error;
 
@@ -75,9 +72,9 @@ export function WishlistSheet({ open, onOpenChange }: WishlistSheetProps) {
     try {
       await Promise.all(
         products
-          .map((product) => product.id)
+          .map((product: any) => product.id)
           .filter(Boolean)
-          .map((productId) =>
+          .map((productId: string) =>
             AxiosAPI.delete(`/api/products/wishlist?productId=${productId}`),
           ),
       );
@@ -181,7 +178,7 @@ export function WishlistSheet({ open, onOpenChange }: WishlistSheetProps) {
 
             {!isLoading &&
               !error &&
-              products?.map((product) => {
+              products?.map((product: any) => {
                 const price = Number(product.sale ?? product.price ?? 0);
                 const basePrice = Number(product.price ?? price);
                 const categories = product.categories?.join(', ');

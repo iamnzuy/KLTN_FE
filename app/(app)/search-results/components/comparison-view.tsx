@@ -19,6 +19,8 @@ import { toast } from 'sonner';
 import useSWR from 'swr';
 import { configSWR } from '@/lib/utils';
 import { useStoreClient } from '../../components/context';
+import { HeartWishlist } from '../../components/heart-wishlist';
+import { useWishlistProducts } from '@/hooks/use-wishlist';
 
 export function ComparisonView() {
   const clearProductInChatbot = ChatbotStore((state: any) => state.clearProductInChatbot);
@@ -31,6 +33,7 @@ export function ComparisonView() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const lastRequestedKeyRef = useRef<string | null>(null);
+  const { listId } = useWishlistProducts();
   const { showCartSheet } = useStoreClient();
   const { mutate } = useSWR('/api/carts', { ...configSWR, revalidateOnMount: false });
 
@@ -67,7 +70,7 @@ export function ComparisonView() {
       lastRequestedKeyRef.current = currentKey;
       return;
     }
-    
+
     if (products.length === 2 && currentKey) {
       if (lastRequestedKeyRef.current === currentKey) {
         return;
@@ -221,12 +224,18 @@ export function ComparisonView() {
                 </div>
 
                 <div className="flex flex-col gap-3 sm:flex-row">
+                  <HeartWishlist
+                    productId={product?.id}
+                    size="icon"
+                    className=""
+                    initiallyWishlisted={product?.id ? listId?.includes(product.id) : false}
+                  />
                   <Link href={`/product-details/${product.id}`} target="_blank" className="flex-1">
                     <Button variant="secondary" className="w-full rounded-xl border-border/80">
                       Xem chi tiết
                     </Button>
                   </Link>
-                  <Button 
+                  <Button
                     className="flex-1 rounded-xl shadow-md"
                     onClick={() => addToCart(product)}
                   >
@@ -239,7 +248,7 @@ export function ComparisonView() {
           );
         })}
       </div>
-      {isLoading && ( 
+      {isLoading && (
         <div className="flex flex-col items-center justify-center h-full min-h-[400px] gap-4">
           <Loader2 className="w-8 h-8 animate-spin text-primary" />
           <p className="text-muted-foreground">Đang so sánh sản phẩm...</p>
@@ -247,12 +256,12 @@ export function ComparisonView() {
       )}
       {error && (
         <div className="flex flex-col items-center justify-center h-full min-h-[400px] gap-4 text-center p-8">
-        <X className="w-8 h-8 text-destructive" />
-        <p className="text-destructive">{error}</p>
-        <Button onClick={fetchComparison} variant="outline">
-          Thử lại
-        </Button>
-      </div>
+          <X className="w-8 h-8 text-destructive" />
+          <p className="text-destructive">{error}</p>
+          <Button onClick={fetchComparison} variant="outline">
+            Thử lại
+          </Button>
+        </div>
       )}
       {comparisonData?.comparison && !isLoading && !error && (
         <Card className="p-6">
@@ -282,18 +291,18 @@ export function ComparisonView() {
                     const productAValue: any = typeof value === 'object' && value.a !== undefined
                       ? value.a
                       : typeof value === 'object' && value.product_a !== undefined
-                      ? value.product_a
-                      : value;
+                        ? value.product_a
+                        : value;
                     const productBValue: any = typeof value === 'object' && value.b !== undefined
                       ? value.b
                       : typeof value === 'object' && value.product_b !== undefined
-                      ? value.product_b
-                      : value;
-                    
+                        ? value.product_b
+                        : value;
+
                     // Format dữ liệu theo loại
                     const formatValue = (val: any, key: string): string => {
                       if (val === null || val === undefined) return 'N/A';
-                      
+
                       // Format giá tiền
                       if (key === 'price') {
                         const num = typeof val === 'number' ? val : parseFloat(String(val));
@@ -301,7 +310,7 @@ export function ComparisonView() {
                           return formatCurrency(num);
                         }
                       }
-                      
+
                       // Format rating
                       if (key === 'rating') {
                         const num = typeof val === 'number' ? val : parseFloat(String(val));
@@ -309,7 +318,7 @@ export function ComparisonView() {
                           return `${num.toFixed(1)} ⭐`;
                         }
                       }
-                      
+
                       // Format battery (thêm mAh)
                       if (key === 'battery') {
                         const num = typeof val === 'number' ? val : parseFloat(String(val));
@@ -317,7 +326,7 @@ export function ComparisonView() {
                           return `${num} mAh`;
                         }
                       }
-                      
+
                       // Format screen (thêm inch)
                       if (key === 'screen') {
                         const num = typeof val === 'number' ? val : parseFloat(String(val));
@@ -325,13 +334,13 @@ export function ComparisonView() {
                           return `${num}"`;
                         }
                       }
-                      
+
                       return String(val);
                     };
-                    
+
                     const formattedA = formatValue(productAValue, key);
                     const formattedB = formatValue(productBValue, key);
-                    
+
                     // So sánh số nếu có thể
                     const numA = typeof productAValue === 'number' ? productAValue : parseFloat(String(productAValue));
                     const numB = typeof productBValue === 'number' ? productBValue : parseFloat(String(productBValue));
@@ -339,7 +348,7 @@ export function ComparisonView() {
                     const isBetter = isNumeric ? numA !== numB : formattedA !== formattedB;
                     const aIsBetter = isNumeric && numA > numB;
                     const bIsBetter = isNumeric && numB > numA;
-                    
+
                     // Map key sang tiếng Việt
                     const keyMap: Record<string, string> = {
                       price: 'Giá',
@@ -348,7 +357,7 @@ export function ComparisonView() {
                       chipset: 'Chip xử lý',
                       screen: 'Màn hình',
                     };
-                    
+
                     const badgeClass = (isWinner: boolean) =>
                       isWinner
                         ? 'bg-primary/10 text-primary font-semibold shadow-inner ring-1 ring-primary/20'

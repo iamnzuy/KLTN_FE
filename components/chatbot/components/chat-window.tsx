@@ -31,17 +31,18 @@ const ChatWindow = ({ setChatbotProducts }: { setChatbotProducts: (products: any
     const pendingMessage = ChatbotStore((state: any) => state.pendingMessage);
     const clearPendingMessage = ChatbotStore((state: any) => state.clearPendingMessage);
     const prefillComparison = ComparisonStore((state: any) => state.prefillComparison);
+    const removeProduct = ComparisonStore((state: any) => state.removeProduct);
 
     const handleRemoveProductFromChatbot = (product: any, event: React.MouseEvent<HTMLElement>) => {
         event.preventDefault();
         setProductInChatbot((prev: any[]) => prev.filter((item: any) => item.id !== product.id));
+        removeProduct(product.id);
     };
 
     useEffect(() => {
         setChatbotProducts([]);
     }, [isOpen])
 
-    // Xử lý pending message từ comparison view
     useEffect(() => {
         if (pendingMessage && isOpen) {
             setMessages((prev) => [...prev, pendingMessage]);

@@ -11,6 +11,8 @@ import AxiosAPI from '@/lib/axios';
 import { toast } from 'sonner';
 import useSWR from 'swr';
 import { configSWR } from '@/lib/utils';
+import { HeartWishlist } from '@/app/(app)/components/heart-wishlist';
+import { useWishlistProducts } from '@/hooks/use-wishlist';
 
 interface ProductCardProps {
   product: TopProduct;
@@ -19,6 +21,7 @@ interface ProductCardProps {
 export function ProductCard({ product }: ProductCardProps) {
   const { showCartSheet, showProductDetailsSheet } = useStoreClient();
   const { mutate } = useSWR('/api/carts', { ...configSWR, revalidateOnMount: false });
+  const { listId } = useWishlistProducts();
 
   const addToCart = () => {
     AxiosAPI.post(`/api/carts/items`, {
@@ -43,7 +46,13 @@ export function ProductCard({ product }: ProductCardProps) {
   };
 
   return (
-    <Card className="hover:shadow-md transition-shadow">
+    <Card className="hover:shadow-md transition-shadow relative group">
+      <HeartWishlist 
+        productId={product?.id} 
+        size="icon" 
+        className="absolute top-2 left-2 z-10 opacity-0 group-hover:opacity-100 transition-opacity"
+        initiallyWishlisted={product?.id ? listId?.includes(product.id) : false}
+      />
       <CardContent className="flex flex-col justify-between p-3 gap-3">
         <div className="mb-2">
           <div

@@ -12,6 +12,8 @@ import AxiosAPI from '@/lib/axios';
 import { toast } from 'sonner';
 import useSWR from 'swr';
 import { configSWR } from '@/lib/utils';
+import { HeartWishlist } from '../../components/heart-wishlist';
+import { useWishlistProducts } from '@/hooks/use-wishlist';
 
 const DEFAULT_PRODUCT_IMAGE = '/no_photo.png';
 
@@ -21,7 +23,7 @@ export function Card2({ product }: { product: any }) {
     ...configSWR,
     revalidateOnMount: false,
   });
-
+  const { listId } = useWishlistProducts();
   const addToCart = () => {
     AxiosAPI.post(`/api/carts/items`, {
       productId: product?.id,
@@ -39,7 +41,13 @@ export function Card2({ product }: { product: any }) {
   };
 
   return (
-    <Card className="bg-accent/50 h-full">
+    <Card className="bg-accent/50 h-full relative group">
+      <HeartWishlist 
+        productId={product?.id} 
+        size="icon" 
+        className="absolute top-4 left-4 z-10"
+        initiallyWishlisted={product?.id ? listId?.includes(product.id) : false}
+      />
       <Link href={`/product-details/${product?.id}`} className="block h-full">
         <CardContent className="flex flex-col items-center justify-center px-5 pb-0 h-full">
           <div className="mb-3.5">

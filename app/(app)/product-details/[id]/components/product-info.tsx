@@ -11,6 +11,7 @@ import { configSWR } from '@/lib/utils';
 import { useStoreClient } from '@/app/(app)/components/context';
 import { ComparisonStore } from '@/app/(app)/search-results/hooks/comparison-store';
 import { toast } from 'sonner';
+import { useWishlistProducts } from '@/hooks/use-wishlist';
 
 interface ProductInfoProps {
   product: any;
@@ -20,7 +21,7 @@ export function ProductInfo({ product }: ProductInfoProps) {
   const { showCartSheet, showComparisonSheet } = useStoreClient();
   const { mutate } = useSWR('/api/carts', { ...configSWR, revalidateOnMount: false });
   const { addProduct, products: comparisonProducts, canAddProduct } = ComparisonStore();
-
+  const { listId } = useWishlistProducts();
   const handleAddToCart = () => {
     AxiosAPI.post(`/api/carts/items`, {
       productId: product?.id,
@@ -67,6 +68,7 @@ export function ProductInfo({ product }: ProductInfoProps) {
           <HeartWishlist
             size="icon"
             productId={product?.id}
+            initiallyWishlisted={product?.id ? listId?.includes(product.id) : false}
           />
         </div>
       </div>
@@ -123,15 +125,6 @@ export function ProductInfo({ product }: ProductInfoProps) {
             Mua ngay
           </Button>
         </div>
-        <Button
-          onClick={handleAddToComparison}
-          variant="outline"
-          className="w-full border-primary text-primary hover:bg-primary/10"
-          size="lg"
-        >
-          <Scale className="mr-2 h-5 w-5" />
-          {canAddProduct() ? 'Thêm vào so sánh' : 'Xem so sánh'}
-        </Button>
       </div>
     </div>
   );

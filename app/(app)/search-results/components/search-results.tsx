@@ -168,123 +168,224 @@ export function SearchResults() {
   };
 
   return (
-    <ResizablePanelGroup autoSaveId="review-layout" direction="horizontal" className="flex z-0 h-full items-stretch overflow-hidden">
-      <ResizablePanel className="w-full h-full flex flex-col overflow-hidden" defaultSize={70} minSize={30}>
-        <div className="flex flex-col h-full items-stretch gap-7 container min-h-0 search-results-container overflow-hidden">
-          <div className="flex items-center gap-3 w-full shrink-0">
-            <div className="relative flex gap-3 border py-2 px-3 rounded-lg items-center w-full mx-auto  z-1">
-              <SearchIcon
-                className="text-muted-foreground"
-                size={16}
-              />
+    <>
+      {isChatbotOpen ? (
+        <ResizablePanelGroup autoSaveId="review-layout" direction="horizontal" className="flex z-0 h-full items-stretch overflow-y-hidden">
+          <ResizablePanel className="w-full h-full flex flex-col" defaultSize={70} minSize={30}>
+            <div className="flex flex-col h-full items-stretch gap-7 container min-h-0 search-results-container overflow-y-auto">
+              <div className="flex items-center gap-3 w-full shrink-0">
+                <div className="relative flex gap-3 border py-2 px-3 rounded-lg items-center w-full mx-auto  z-1">
+                  <SearchIcon
+                    className="text-muted-foreground"
+                    size={16}
+                  />
 
-              <input
-                id="search-input"
-                placeholder="Nhập sản phẩm tìm kiếm"
-                defaultValue={searchInput}
-                onChange={(e) => handleSearch(e.target.value)}
-                className="w-full focus:outline-none"
-              />
-            </div>
-
-            <StoreClientFiltersSheet
-              trigger={
-                <Button>
-                  <Funnel /> Bộ lọc
-                </Button>
-              }
-            />
-          </div>
-
-          <Tabs value={activeViewTab} onValueChange={(v) => setActiveViewTab(v as 'results' | 'comparison')} className="w-full flex-1 flex flex-col min-h-0">
-            <div className="flex items-center justify-between w-full mt-3 mb-4 shrink-0">
-              <TabsList variant="line" className="border-b-0 p-0 h-auto">
-                <TabsTrigger value="results" className="data-[state=active]:border-b-2">
-                  Kết quả tìm kiếm
-                </TabsTrigger>
-                <TabsTrigger value="comparison" className="data-[state=active]:border-b-2 relative">
-                  <Scale className="w-4 h-4 mr-2" />
-                  So sánh
-                  {comparisonProducts.length > 0 && (
-                    <Badge className="ml-2 h-5 w-5 p-0 flex items-center justify-center text-xs">
-                      {comparisonProducts.length}
-                    </Badge>
-                  )}
-                </TabsTrigger>
-              </TabsList>
-
-              {activeViewTab === 'results' && (
-                <div className="flex items-center gap-5">
-                  <h3 className="text-sm text-mono font-medium">
-                    {(currentPage - 1) * pageSize + 1} - {Math.min(currentPage * pageSize, totalElements)} trên {totalElements} {searchInput && 'kết quả cho'}
-                    <span className="text-destructive"> {searchInput}</span>
-                  </h3>
-                  <div className="flex items-center gap-2.5">
-                    <div className='flex-1'>
-                      <Selection defaultValue={'Giá: Cao đến Thấp'} values={['Giá: Thấp đến Cao', 'Giá: Cao đến Thấp', '$0 - $50', '$50 - $100', '$100 - $200', '$200 - $500', '$500+']} />
-                    </div>
-
-                    <ToggleGroup
-                      type="single"
-                      variant="outline"
-                      value={activeTab}
-                      onValueChange={(value) => {
-                        setActiveTab(value as 'card' | 'list');
-                      }}
-                    >
-                      <ToggleGroupItem value="card">
-                        <LayoutGrid size={16} />
-                      </ToggleGroupItem>
-                      <ToggleGroupItem value="list">
-                        <List size={16} />
-                      </ToggleGroupItem>
-                    </ToggleGroup>
-                  </div>
+                  <input
+                    id="search-input"
+                    placeholder="Nhập sản phẩm tìm kiếm"
+                    defaultValue={searchInput}
+                    onChange={(e) => handleSearch(e.target.value)}
+                    className="w-full focus:outline-none"
+                  />
                 </div>
-              )}
-            </div>
 
-            <TabsContent value="results" className="mt-0 flex-1 min-h-0 overflow-y-auto pr-2">
-              <div
-                className={
-                  activeTab == 'card'
-                    ? "flex w-full flex-wrap gap-y-5 gap-x-2 items-center justify-evenly mb-2"
-                    : 'flex flex-col gap-5'
-                }
-              >
-                {(chatbotProducts.length > 0 ? chatbotProducts : products)?.map((item: any, index: number) => {
-                  const key = item?.id ?? item?.productId ?? index;
-                  return activeTab === 'card' ? (
-                    <div key={key} className='min-w-[266px] max-w-[301px] flex-1'>
-                      <Card2 item={item} />
+                <StoreClientFiltersSheet
+                  trigger={
+                    <Button>
+                      <Funnel /> Bộ lọc
+                    </Button>
+                  }
+                />
+              </div>
+              <Tabs value={activeViewTab} onValueChange={(v) => setActiveViewTab(v as 'results' | 'comparison')} className="w-full flex-1 flex flex-col min-h-0">
+                <div className="flex items-center justify-between w-full mt-3 mb-4 shrink-0">
+                  <TabsList variant="line" className="border-b-0 p-0 h-auto">
+                    <TabsTrigger value="results" className="data-[state=active]:border-b-2">
+                      Kết quả tìm kiếm
+                    </TabsTrigger>
+                    <TabsTrigger value="comparison" className="data-[state=active]:border-b-2 relative">
+                      <Scale className="w-4 h-4 mr-2" />
+                      So sánh
+                      {comparisonProducts.length > 0 && (
+                        <Badge className="ml-2 h-5 w-5 p-0 flex items-center justify-center text-xs">
+                          {comparisonProducts.length}
+                        </Badge>
+                      )}
+                    </TabsTrigger>
+                  </TabsList>
+
+                  {activeViewTab === 'results' && (
+                    <div className="flex items-center gap-5">
+                      <h3 className="text-sm text-mono font-medium">
+                        {(currentPage - 1) * pageSize + 1} - {Math.min(currentPage * pageSize, totalElements)} trên {totalElements} {searchInput && 'kết quả cho'}
+                        <span className="text-destructive"> {searchInput}</span>
+                      </h3>
+                      <div className="flex items-center gap-2.5">
+                        <div className='flex-1'>
+                          <Selection defaultValue={'Giá: Cao đến Thấp'} values={['Giá: Thấp đến Cao', 'Giá: Cao đến Thấp', '$0 - $50', '$50 - $100', '$100 - $200', '$200 - $500', '$500+']} />
+                        </div>
+
+                        <ToggleGroup
+                          type="single"
+                          variant="outline"
+                          value={activeTab}
+                          onValueChange={(value) => {
+                            setActiveTab(value as 'card' | 'list');
+                          }}
+                        >
+                          <ToggleGroupItem value="card">
+                            <LayoutGrid size={16} />
+                          </ToggleGroupItem>
+                          <ToggleGroupItem value="list">
+                            <List size={16} />
+                          </ToggleGroupItem>
+                        </ToggleGroup>
+                      </div>
                     </div>
-                  ) : (
-                    <Card3 key={key} item={item} />
-                  );
-                })}
+                  )}
+                </div>
+
+                <TabsContent value="results" className="mt-0 flex-1 min-h-0 pr-2">
+                  <div
+                    className={
+                      activeTab == 'card'
+                        ? "flex w-full flex-wrap gap-y-5 gap-x-2 items-center justify-evenly mb-2"
+                        : 'flex flex-col gap-5'
+                    }
+                  >
+                    {(chatbotProducts.length > 0 ? chatbotProducts : products)?.map((item: any, index: number) => {
+                      const key = item?.id ?? item?.productId ?? index;
+                      return activeTab === 'card' ? (
+                        <div key={key} className='min-w-[266px] max-w-[301px] flex-1'>
+                          <Card2 item={item} />
+                        </div>
+                      ) : (
+                        <Card3 key={key} item={item} />
+                      );
+                    })}
+                  </div>
+
+                </TabsContent>
+
+                <TabsContent value="comparison" className="mt-0 flex-1 min-h-0 overflow-y-auto">
+                  <ComparisonView />
+                </TabsContent>
+              </Tabs>
+            </div>
+            {activeViewTab !== 'comparison' && totalPages > 1 && (
+              <div className="py-3 border-t mt-2">
+                <Pagination>
+                  <PaginationContent>
+                    {renderPaginationItems()}
+                  </PaginationContent>
+                </Pagination>
+              </div>
+            )}
+          </ResizablePanel>
+          <ResizableHandle className="w-2 bg-transparent border-l" withHandle />
+          <ResizablePanel className="w-full flex-1 flex flex-col" defaultSize={30} minSize={30}>
+            <ChatWindow setChatbotProducts={setChatbotProducts} />
+          </ResizablePanel>
+        </ResizablePanelGroup>
+      ) : (
+        <>
+          <div className="flex flex-col h-full items-stretch gap-7 container min-h-0 search-results-container">
+            <div className="flex items-center gap-3 w-full shrink-0">
+              <div className="relative flex gap-3 border py-2 px-3 rounded-lg items-center w-full mx-auto  z-1">
+                <SearchIcon
+                  className="text-muted-foreground"
+                  size={16}
+                />
+                <input
+                  id="search-input"
+                  placeholder="Nhập sản phẩm tìm kiếm"
+                  defaultValue={searchInput}
+                  onChange={(e) => handleSearch(e.target.value)}
+                  className="w-full focus:outline-none"
+                />
               </div>
 
-              {totalPages > 1 && (
-                <div className="py-10 border-t mt-10">
-                  <Pagination>
-                    <PaginationContent>
-                      {renderPaginationItems()}
-                    </PaginationContent>
-                  </Pagination>
-                </div>
-              )}
-            </TabsContent>
+              <StoreClientFiltersSheet
+                trigger={
+                  <Button>
+                    <Funnel /> Bộ lọc
+                  </Button>
+                }
+              />
+            </div>
+            <Tabs value={activeViewTab} onValueChange={(v) => setActiveViewTab(v as 'results' | 'comparison')} className="w-full flex-1 flex flex-col min-h-0">
+              <div className="flex items-center justify-between w-full mt-3 mb-4 shrink-0">
+                <TabsList variant="line" className="border-b-0 p-0 h-auto">
+                  <TabsTrigger value="results" className="data-[state=active]:border-b-2">
+                    Kết quả tìm kiếm
+                  </TabsTrigger>
+                </TabsList>
 
-            <TabsContent value="comparison" className="mt-0 flex-1 min-h-0 overflow-y-auto">
-              <ComparisonView />
-            </TabsContent>
-          </Tabs>
-        </div>
-      </ResizablePanel>
-      {isChatbotOpen && <ResizableHandle className="w-2 bg-transparent border-l" withHandle />}
-      {isChatbotOpen && <ResizablePanel className="w-full flex-1 flex flex-col" defaultSize={30} minSize={30}>
-        <ChatWindow setChatbotProducts={setChatbotProducts} />
-      </ResizablePanel>}
-    </ResizablePanelGroup>
+                {activeViewTab === 'results' && (
+                  <div className="flex items-center gap-5">
+                    <h3 className="text-sm text-mono font-medium">
+                      {(currentPage - 1) * pageSize + 1} - {Math.min(currentPage * pageSize, totalElements)} trên {totalElements} {searchInput && 'kết quả cho'}
+                      <span className="text-destructive"> {searchInput}</span>
+                    </h3>
+                    <div className="flex items-center gap-2.5">
+                      <div className='flex-1'>
+                        <Selection defaultValue={'Giá: Cao đến Thấp'} values={['Giá: Thấp đến Cao', 'Giá: Cao đến Thấp', '$0 - $50', '$50 - $100', '$100 - $200', '$200 - $500', '$500+']} />
+                      </div>
+
+                      <ToggleGroup
+                        type="single"
+                        variant="outline"
+                        value={activeTab}
+                        onValueChange={(value) => {
+                          setActiveTab(value as 'card' | 'list');
+                        }}
+                      >
+                        <ToggleGroupItem value="card">
+                          <LayoutGrid size={16} />
+                        </ToggleGroupItem>
+                        <ToggleGroupItem value="list">
+                          <List size={16} />
+                        </ToggleGroupItem>
+                      </ToggleGroup>
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              <TabsContent value="results" className="mt-0 flex-1 min-h-0 pr-2">
+                <div
+                  className={
+                    activeTab == 'card'
+                      ? "flex w-full flex-wrap gap-y-5 gap-x-2 items-center justify-evenly mb-2"
+                      : 'flex flex-col gap-5'
+                  }
+                >
+                  {(chatbotProducts.length > 0 ? chatbotProducts : products)?.map((item: any, index: number) => {
+                    const key = item?.id ?? item?.productId ?? index;
+                    return activeTab === 'card' ? (
+                      <div key={key} className='min-w-[266px] max-w-[301px] flex-1'>
+                        <Card2 item={item} />
+                      </div>
+                    ) : (
+                      <Card3 key={key} item={item} />
+                    );
+                  })}
+                </div>
+
+                {totalPages > 1 && (
+                  <div className="py-10 border-t mt-10">
+                    <Pagination>
+                      <PaginationContent>
+                        {renderPaginationItems()}
+                      </PaginationContent>
+                    </Pagination>
+                  </div>
+                )}
+              </TabsContent>
+            </Tabs>
+          </div>
+        </>
+      )}
+    </>
   );
 }

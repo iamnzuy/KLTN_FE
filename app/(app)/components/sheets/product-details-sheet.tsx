@@ -12,6 +12,7 @@ import { calculateDiscount, formatCurrency } from '@/utils/currency';
 import { cn } from '@/lib/utils';
 import { Rating } from '../rating';
 import { HeartWishlist } from '../heart-wishlist';
+import { useWishlistProducts } from '@/hooks/use-wishlist';
 
 const items = [
   {
@@ -59,7 +60,7 @@ export const ProductDetailsSheet = ({
 }: { open: boolean, onOpenChange: (open: boolean) => void, product: any, addToCart: (product: any) => void }) => {
   const ref = useRef<any>(null);
   useOnClickOutside(ref, () => onOpenChange(false));
-
+  const { listId } = useWishlistProducts();
   return (
     <>
       {open && <div className='fixed top-0 left-0 w-screen h-screen bg-black/30 [backdrop-filter:blur(4px)] z-50' />}
@@ -142,7 +143,7 @@ export const ProductDetailsSheet = ({
             </div>
           </div>
           <div className='w-full flex items-center justify-center px-5 py-3.5 gap-2'>
-            <HeartWishlist className='rounded-lg' productId={product?.id}>
+            <HeartWishlist className='rounded-lg' productId={product?.id} initiallyWishlisted={product?.id ? listId?.includes(product.id) : false}>
               <span className="wishlist-heart-label">Yêu thích</span>
             </HeartWishlist>
             <Button

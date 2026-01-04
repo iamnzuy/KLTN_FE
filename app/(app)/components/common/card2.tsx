@@ -3,7 +3,7 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import { useMemo } from 'react';
-import { formatCurrency } from '@/utils/currency';
+import { calculateDiscount, formatCurrency } from '@/utils/currency';
 import { Plus, ShoppingCart, Star, Scale } from 'lucide-react';
 import useSWR from 'swr';
 import AxiosAPI from '@/lib/axios';
@@ -17,6 +17,7 @@ import { ChatbotStore } from '../../search-results/hooks/chatbot-store';
 import { ComparisonStore } from '@/app/(app)/search-results/hooks/comparison-store';
 import { useStoreClient } from '../context';
 import { toast } from 'sonner';
+import { useWishlistProducts } from '@/hooks/use-wishlist';
 
 export function Card2({ item }: any) {
   const searchParams = useSearchParams();
@@ -25,22 +26,19 @@ export function Card2({ item }: any) {
     ...configSWR,
     revalidateOnMount: false,
   });
-  const { data: wishlistData } = useSWR('/api/products/wishlist', {
-    ...configSWR,
-    revalidateOnMount: false,
-  });
   const { productInChatbot, setProductInChatbot }: any = ChatbotStore();
   const { addProduct, products: comparisonProducts, canAddProduct, clearProducts: clearComparisonProducts } = ComparisonStore();
-  const { showComparisonSheet } = useStoreClient();
+  const { listId } = useWishlistProducts();
+  console.log('listId', listId);
 
   const handleAddProductToChatbot = (product: any, event: React.MouseEvent<HTMLDivElement>) => {
     event.preventDefault();
     event.stopPropagation();
     if (productInChatbot.length >= 2) return;
-    
+
     const newProducts = [...productInChatbot, product];
     setProductInChatbot(newProducts);
-    
+
     // Nếu đã có 2 sản phẩm, tự động thêm vào comparison store
     if (newProducts.length === 2) {
       clearComparisonProducts();
@@ -58,15 +56,7 @@ export function Card2({ item }: any) {
     // Không cần mở sheet nữa, sẽ tự động chuyển tab trong search-results
   };
 
-  const wishlistIds = useMemo(() => {
-    const wishlistItems = wishlistData?.data;
-    if (!Array.isArray(wishlistItems)) {
-      return new Set<string>();
-    }
-    return new Set(wishlistItems.map((wishlistItem: any) => wishlistItem.productId));
-  }, [wishlistData?.data]);
-
-  const initiallyWishlisted = item?.id ? wishlistIds.has(item.id) : false;
+  const initiallyWishlisted = item?.id ? listId.includes(item.id) : false;
 
   const addToCart = () => {
     AxiosAPI.post(`/api/carts/items`, {
@@ -95,23 +85,27 @@ export function Card2({ item }: any) {
                 productId={item?.id}
                 initiallyWishlisted={initiallyWishlisted}
               />
-              {/* {item?.sale && (
-                <Badge
-                  size="sm"
-                  variant="destructive"
-                  className="absolute top-2 right-2 uppercase"
-                >
-                  save ${calculateDiscount(item?.price, item?.sale)}%
-                </Badge>
-              )} */}
-              {isChatbot && (
-                <div onClick={(event) => handleAddProductToChatbot(item, event)} className="absolute flex gap-0 items-center top-2 right-2 min-w-8 min-h-8 justify-center bg-background/80 rounded-full p-1 border overflow-hidden transition-all duration-300 group-hover:gap-2 group-hover:px-3">
+
+              <div className="absolute top-2 right-2 flex flex-col gap-2">
+                {isChatbot && (<div onClick={(event) => handleAddProductToChatbot(item, event)} className="flex gap-0 items-center w-fit ml-auto min-w-8 min-h-8 justify-center bg-background/80 rounded-full p-1 border overflow-hidden transition-all duration-300 group-hover:gap-2 group-hover:px-3">
                   <Plus className="w-4 h-4 shrink-0 group-hover:text-primary" />
                   <div className="text-sm font-medium text-mono whitespace-nowrap opacity-0 max-w-0 transition-all group-hover:text-primary duration-500 ease-in-out group-hover:opacity-100 group-hover:max-w-[200px]">
                     Thêm vào chatbot
                   </div>
-                </div>
-              )}
+
+
+                </div>)}
+                {item?.sale && (
+                  <Badge
+                    size="sm"
+                    variant="destructive"
+                    className="uppercase w-fit ml-auto"
+                  >
+                    save ${calculateDiscount(item?.price, item?.sale)}%
+                  </Badge>
+                )}
+              </div>
+
 
               <Image
                 src={item?.imurl}
