@@ -223,21 +223,6 @@ export function SearchResults() {
                     <div className='flex-1'>
                       <Selection defaultValue={'Giá: Cao đến Thấp'} values={['Giá: Thấp đến Cao', 'Giá: Cao đến Thấp', '$0 - $50', '$50 - $100', '$100 - $200', '$200 - $500', '$500+']} />
                     </div>
-                    <ToggleGroup
-                      type="single"
-                      variant="outline"
-                      value={activePeriod}
-                      onValueChange={(value) => {
-                        if (value) setActivePeriod(value);
-                      }}
-                      className="grid grid-cols-4"
-                    >
-                      {['Hôm nay', 'Tuần này', 'Tháng này', 'Tất cả'].map((period) => (
-                        <ToggleGroupItem key={period} value={period}>
-                          {period}
-                        </ToggleGroupItem>
-                      ))}
-                    </ToggleGroup>
 
                     <ToggleGroup
                       type="single"
