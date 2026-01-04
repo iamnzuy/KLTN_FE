@@ -41,7 +41,7 @@ export function CartSheet() {
   // }, 1000);
 
   const handleChangeQuantity = useDebounceCallback((e: ChangeEvent<HTMLInputElement>, itemId: string | number) => {
-    AxiosAPI.patch(`/api/carts/${cartId}/items/${itemId}?quantity=${e.target.value}`).then(() => { mutate() });
+    AxiosAPI.patch(`/api/carts/items/${itemId}?quantity=${e.target.value}`).then(() => { mutate() });
   }, 1000);
 
   const handleDeleteItem = (itemId: string | number) => {

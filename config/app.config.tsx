@@ -1,5 +1,5 @@
 import { type MenuConfig } from '@/types/menu';
-import { Home, Pyramid, Salad, Search, Hourglass, Tag } from 'lucide-react';
+import { Home, Hourglass } from 'lucide-react';
 
 export const MAIN_MENU: MenuConfig = [
   {
@@ -11,11 +11,6 @@ export const MAIN_MENU: MenuConfig = [
     title: 'My Orders', 
     icon: Hourglass,
     path: '/my-orders' 
-  },
-  { 
-    title: 'Order Receipt', 
-    icon: Pyramid,
-    path: '/order-receipt' 
   }
 ];
 
