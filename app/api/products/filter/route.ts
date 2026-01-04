@@ -44,7 +44,7 @@ export async function POST(request: NextRequest) {
       }
     }
     
-    return NextResponse.json(data);
+    return NextResponse.json({ data });
   } catch (error) {
     console.error('Filter API error:', error);
     return NextResponse.json(
