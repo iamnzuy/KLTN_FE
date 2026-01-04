@@ -14,7 +14,7 @@ export function Info({
   return (
     <Card>
       <CardHeader className="px-5 min-h-[44px]">
-        <CardTitle className="text-sm">Delivery to</CardTitle>
+        <CardTitle className="text-sm">Giao hàng đến</CardTitle>
       </CardHeader>
 
       <CardContent>

@@ -56,7 +56,7 @@ export function ProductCard({ product }: ProductCardProps) {
               className="ms-1"
               onClick={showCartSheet}
             >
-              <ShoppingCart className="size-3.5" /> Add
+              <ShoppingCart className="size-3.5" /> Thêm
             </Button>
           </div>
         </div>

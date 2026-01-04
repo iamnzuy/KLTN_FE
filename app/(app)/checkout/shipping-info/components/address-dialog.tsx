@@ -26,9 +26,9 @@ export function AddressDialog({
   onOpenChange,
   initialValues = {},
   onSubmit,
-  title = 'Add Address',
-  description = 'Fill in the address details below.',
-  submitLabel = 'Save Address',
+  title = 'Thêm địa chỉ',
+  description = 'Điền chi tiết địa chỉ bên dưới.',
+  submitLabel = 'Lưu địa chỉ',
   trigger,
 }: AddressDialogProps) {
   const form = useForm<AddressFormValues>({
@@ -90,7 +90,7 @@ export function AddressDialog({
                 name="addressName"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Address Name</FormLabel>
+                    <FormLabel>Tên địa chỉ</FormLabel>
                     <FormControl>
                       <Input {...field} id="addressName" required />
                     </FormControl>
@@ -105,7 +105,7 @@ export function AddressDialog({
                   name="name"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>First Name</FormLabel>
+                      <FormLabel>Tên</FormLabel>
                       <FormControl>
                         <Input {...field} id="name" required />
                       </FormControl>
@@ -118,7 +118,7 @@ export function AddressDialog({
                   name="lastName"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Last Name</FormLabel>
+                      <FormLabel>Họ</FormLabel>
                       <FormControl>
                         <Input {...field} id="lastName" required />
                       </FormControl>
@@ -147,7 +147,7 @@ export function AddressDialog({
                   name="phone"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Phone</FormLabel>
+                      <FormLabel>Số điện thoại</FormLabel>
                       <FormControl>
                         <Input {...field} id="phone" required />
                       </FormControl>
@@ -163,7 +163,7 @@ export function AddressDialog({
                   name="address"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Address</FormLabel>
+                      <FormLabel>Địa chỉ</FormLabel>
                       <FormControl>
                         <Input {...field} id="address" required />
                       </FormControl>
@@ -176,7 +176,7 @@ export function AddressDialog({
                   name="apartment"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Address Line 2 <span className="text-xs text-muted-foreground">(optional)</span></FormLabel>
+                      <FormLabel>Địa chỉ dòng 2 <span className="text-xs text-muted-foreground">(tùy chọn)</span></FormLabel>
                       <FormControl>
                         <Input {...field} id="apartment" />
                       </FormControl>
@@ -192,7 +192,7 @@ export function AddressDialog({
                   name="city"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>City</FormLabel>
+                      <FormLabel>Thành phố</FormLabel>
                       <FormControl>
                         <Input {...field} id="city" required />
                       </FormControl>
@@ -205,7 +205,7 @@ export function AddressDialog({
                   name="country"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Country</FormLabel>
+                      <FormLabel>Quốc gia</FormLabel>
                       <FormControl>
                         <CountryCombobox value={field.value} onChange={field.onChange} />
                       </FormControl>
@@ -221,7 +221,7 @@ export function AddressDialog({
                   name="postalCode"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Zip/Postal Code</FormLabel>
+                      <FormLabel>Mã bưu chính</FormLabel>
                       <FormControl>
                         <Input {...field} id="postalCode" required />
                       </FormControl>
@@ -236,7 +236,7 @@ export function AddressDialog({
                 </Button>
                 <DialogClose asChild>
                   <Button type="button" variant="outline">
-                    Cancel
+                    Hủy
                   </Button>
                 </DialogClose>
               </DialogFooter>

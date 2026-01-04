@@ -5,27 +5,27 @@ export const getSignupSchema = () => {
     .object({
       name: z
         .string()
-        .min(5, { message: 'Name must be at least 5 characters long.' })
-        .min(1, { message: 'Name is required.' }),
+        .min(5, { message: 'Họ và tên phải có ít nhất 5 ký tự.' })
+        .min(1, { message: 'Họ và tên là bắt buộc.' }),
       email: z
         .string()
-        .email({ message: 'Please enter a valid email address.' })
-        .min(1, { message: 'Email is required.' }),
+        .email({ message: 'Vui lòng nhập địa chỉ email hợp lệ.' })
+        .min(1, { message: 'Email là bắt buộc.' }),
       password: z
         .string()
         .min(6, {
-          message: `Password must be at least 6 characters long.`,
+          message: `Mật khẩu phải có ít nhất 6 ký tự.`,
         })
-        .min(1, { message: 'Password is required.' }),
+        .min(1, { message: 'Mật khẩu là bắt buộc.' }),
       passwordConfirmation: z.string().min(1, {
-        message: 'Password confirmation is required.',
+        message: 'Xác nhận mật khẩu là bắt buộc.',
       }),
       accept: z.boolean().refine((val) => val === true, {
-        message: 'You must accept the terms and conditions.',
+        message: 'Bạn phải đồng ý với các điều khoản và điều kiện.',
       }),
     })
     .refine((data) => data.password === data.passwordConfirmation, {
-      message: 'Passwords do not match.',
+      message: 'Mật khẩu không khớp.',
       path: ['passwordConfirmation'],
     });
 };

@@ -67,7 +67,7 @@ export function Card4({ limit }: any) {
 
               {item?.badge && (
                 <Badge size="sm" variant="destructive" className="uppercase">
-                  save 25%
+                  Giảm 25%
                 </Badge>
               )}
             </div>

@@ -18,25 +18,25 @@ export function DropdownMenu2({ trigger }: { trigger: ReactNode }) {
         <DropdownMenuItem asChild>
           <Link href="/account/home/settings-enterprise">
             <Settings />
-            <span>Settings</span>
+            <span>Cài đặt</span>
           </Link>
         </DropdownMenuItem>
         <DropdownMenuItem asChild>
           <Link href="/account/members/import-members">
             <FileInput />
-            <span>Import</span>
+            <span>Nhập</span>
           </Link>
         </DropdownMenuItem>
         <DropdownMenuItem asChild>
           <Link href="/account/activity">
             <CloudCog />
-            <span>Activity</span>
+            <span>Hoạt động</span>
           </Link>
         </DropdownMenuItem>
         <DropdownMenuItem asChild>
           <Link href="#">
             <ThumbsDown />
-            <span>Report</span>
+            <span>Báo cáo</span>
           </Link>
         </DropdownMenuItem>
       </DropdownMenuContent>

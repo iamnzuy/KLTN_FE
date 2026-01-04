@@ -103,7 +103,7 @@ export function Info({ items, onSelect, onRemove, onUpdate }: InfoProps) {
           <AlertIcon>
             <RiCheckboxCircleFill />
           </AlertIcon>
-          <AlertTitle>Address selected!</AlertTitle>
+          <AlertTitle>Đã chọn địa chỉ!</AlertTitle>
         </Alert>
       ),
       { duration: 5000 },
@@ -114,7 +114,7 @@ export function Info({ items, onSelect, onRemove, onUpdate }: InfoProps) {
     return (
       <Card className="border-dashed">
         <CardContent className="py-8 text-center text-sm text-muted-foreground">
-          Add a shipping address to continue with checkout.
+          Thêm địa chỉ giao hàng để tiếp tục thanh toán.
         </CardContent>
       </Card>
     );
@@ -126,7 +126,7 @@ export function Info({ items, onSelect, onRemove, onUpdate }: InfoProps) {
         <CardTitle>{item.title}</CardTitle>
         {item.default && (
           <Badge variant="success" appearance="outline">
-            Ship here
+            Giao đến đây
           </Badge>
         )}
       </CardHeader>
@@ -145,7 +145,7 @@ export function Info({ items, onSelect, onRemove, onUpdate }: InfoProps) {
             <span>
               {item.city}, {item.country} {item.postalCode}
             </span>
-            <span>Phone Number: {item.phone}</span>
+            <span>Số điện thoại: {item.phone}</span>
             <span>{item.email}</span>
           </div>
         </div>
@@ -157,12 +157,12 @@ export function Info({ items, onSelect, onRemove, onUpdate }: InfoProps) {
               onOpenChange={(val) => setEditOpen(val ? index : null)}
               initialValues={item}
               onSubmit={handleEditSubmit}
-              title="Edit Address"
-              description="Update the address details below."
-              submitLabel="Update Address"
+              title="Chỉnh sửa địa chỉ"
+              description="Cập nhật chi tiết địa chỉ bên dưới."
+              submitLabel="Cập nhật địa chỉ"
               trigger={
                 <Button mode="link" underlined="dashed">
-                  Edit
+                  Chỉnh sửa
                 </Button>
               }
             />
@@ -173,23 +173,23 @@ export function Info({ items, onSelect, onRemove, onUpdate }: InfoProps) {
             >
               <DialogTrigger asChild>
                 <Button mode="link" underlined="dashed">
-                  Remove
+                  Xóa
                 </Button>
               </DialogTrigger>
               <DialogContent>
                 <DialogHeader>
-                  <DialogTitle>Remove Shipping Address</DialogTitle>
+                  <DialogTitle>Xóa địa chỉ giao hàng</DialogTitle>
                 </DialogHeader>
                 <DialogBody className="text-sm">
-                  Are you sure you want to remove this shipping address? This
-                  action cannot be undone.
+                  Bạn có chắc chắn muốn xóa địa chỉ giao hàng này không? Hành động
+                  này không thể hoàn tác.
                 </DialogBody>
                 <DialogFooter>
                   <Button variant="destructive" onClick={() => handleRemove(index)}>
-                    Yes, Remove
+                    Có, Xóa
                   </Button>
                   <DialogClose asChild>
-                    <Button variant="outline">Cancel</Button>
+                    <Button variant="outline">Hủy</Button>
                   </DialogClose>
                 </DialogFooter>
               </DialogContent>
@@ -198,7 +198,7 @@ export function Info({ items, onSelect, onRemove, onUpdate }: InfoProps) {
 
           {!item.default && (
             <Button size="sm" variant="outline" onClick={() => handleSelect(index)}>
-              Select Address
+              Chọn địa chỉ
             </Button>
           )}
         </div>

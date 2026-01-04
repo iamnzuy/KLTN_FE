@@ -55,7 +55,7 @@ export function HeaderSearch() {
               <SearchInput className="absolute start-2 text-muted-foreground" size={18} />
               <Input
                 id="search-input-mobile"
-                placeholder="Search shop"
+                placeholder="Tìm kiếm sản phẩm"
                 className="ps-9 pe-10 w-full"
                 autoFocus={popoverOpen}
               />
@@ -70,7 +70,7 @@ export function HeaderSearch() {
           />
           <input
             id="search-input"
-            placeholder="Search shop"
+            placeholder="Tìm kiếm sản phẩm"
             className="text-foreground placeholder:text-muted-foreground/80 !outline-none"
           />
         </div>

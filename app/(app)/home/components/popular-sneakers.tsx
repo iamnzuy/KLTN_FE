@@ -12,11 +12,11 @@ export function PopularSneakers({ products }: any) {
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between gap-4">
-        <span className="text-lg font-medium text-mono">Popular Phones</span>
+        <span className="text-lg font-medium text-mono">Sản phẩm phổ biến</span>
 
         <Button mode="link" asChild>
           <Link href="/search-results" className="text-xs">
-            See All <ChevronRight />
+            Xem tất cả <ChevronRight />
           </Link>
         </Button>
       </div>

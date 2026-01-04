@@ -275,17 +275,17 @@ export default function CountryCombobox({ value, onChange }: CountryComboboxProp
               <span className="truncate">{selectedCountry.name}</span>
             </span>
           ) : (
-            <span>Select a country...</span>
+            <span>Chọn quốc gia...</span>
           )}
           <ButtonArrow />
         </Button>
       </PopoverTrigger>
       <PopoverContent className="w-(--radix-popper-anchor-width) p-0">
         <Command>
-          <CommandInput placeholder="Search country..." />
+          <CommandInput placeholder="Tìm kiếm quốc gia..." />
           <CommandList>
             <ScrollArea viewportClassName="max-h-[300px] [&>div]:block!">
-              <CommandEmpty>No country found.</CommandEmpty>
+              <CommandEmpty>Không tìm thấy quốc gia.</CommandEmpty>
               <CommandGroup>
                 {countryFlags.map((country) => (
                   <CommandItem

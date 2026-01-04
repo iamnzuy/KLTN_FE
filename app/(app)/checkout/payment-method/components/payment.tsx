@@ -97,7 +97,7 @@ export function Payment({
           {session?.orderCode ? (
             <div className="flex flex-wrap items-center gap-2">
               <div className="flex flex-col">
-                <span className="text-muted-foreground text-sm">PayOS order code</span>
+                <span className="text-muted-foreground text-sm">Mã đơn hàng PayOS</span>
                 <span className="font-mono text-base">{session.orderCode}</span>
               </div>
               <Button
@@ -105,14 +105,14 @@ export function Payment({
                 variant="ghost"
                 className="shrink-0"
                 onClick={handleCopyOrderCode}
-                aria-label="Copy PayOS order code"
+                aria-label="Sao chép mã đơn hàng PayOS"
               >
                 <Copy className="size-4" />
               </Button>
             </div>
           ) : (
             <p className="text-xs text-muted-foreground">
-              Nhấn &quot;Pay Now&quot; để tạo liên kết thanh toán PayOS cho đơn hàng của bạn.
+              Nhấn &quot;Thanh toán ngay&quot; để tạo liên kết thanh toán PayOS cho đơn hàng của bạn.
             </p>
           )}
 
@@ -126,7 +126,7 @@ export function Payment({
           <div className="flex flex-col items-center gap-3 rounded-xl border border-dashed border-primary/30 p-4 text-center">
             <img
               src={session.qrCode}
-              alt="PayOS QR code"
+              alt="Mã QR PayOS"
               className="h-48 w-48 object-contain"
             />
             <p className="text-xs text-muted-foreground">

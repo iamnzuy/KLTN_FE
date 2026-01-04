@@ -70,7 +70,7 @@ export function HeaderTopbar() {
             </Button>
             <div className="flex flex-col">
               <span className="text-xs font-medium text-secondary-foreground">
-                Total decktop
+                Tổng cộng
               </span>
               <span className="text-xs font-medium text-foreground">{formatCurrency(data?.data?.meta?.total)}</span>
             </div>

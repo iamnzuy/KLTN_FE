@@ -25,21 +25,21 @@ import {
 } from '@/components/ui/tooltip';
 
 const items = [
-  { label: 'Sneakers' },
-  { label: 'Running Shoes' },
-  { label: 'Boots' },
+  { label: 'Giày thể thao' },
+  { label: 'Giày chạy bộ' },
+  { label: 'Ủng' },
   { label: 'Golf' },
-  { label: 'Sandals' },
-  { label: 'Work Shoes' },
-  { label: 'Casual Wear' },
-  { label: 'Outdoor Gear' },
-  { label: 'Sportswear' },
-  { label: 'Chelsea Boots' },
-  { label: 'Loafers' },
-  { label: 'Slip-On' },
-  { label: 'Winter' },
-  { label: 'Espadrilles' },
-  { label: 'Basketball' },
+  { label: 'Xăng đan' },
+  { label: 'Giày bảo hộ' },
+  { label: 'Giày thường ngày' },
+  { label: 'Dụng cụ ngoài trời' },
+  { label: 'Đồ thể thao' },
+  { label: 'Giày Chelsea' },
+  { label: 'Giày lười' },
+  { label: 'Giày xỏ' },
+  { label: 'Mùa đông' },
+  { label: 'Giày cói' },
+  { label: 'Bóng rổ' },
 ];
 
 const ratings = [
@@ -58,19 +58,19 @@ export function StoreClientFiltersSheet({ trigger }: { trigger: ReactNode }) {
       <SheetTrigger asChild>{trigger}</SheetTrigger>
       <SheetContent className="sm:w-[320px] sm:max-w-none inset-5 start-auto h-auto rounded-lg p-0 [&_[data-slot=sheet-close]]:top-4.5 [&_[data-slot=sheet-close]]:end-5">
         <SheetHeader className="border-b py-3.5 px-5 border-border">
-          <SheetTitle>Filter</SheetTitle>
+          <SheetTitle>Bộ lọc</SheetTitle>
         </SheetHeader>
         <SheetBody className="py-0">
           <ScrollArea className="h-[calc(100dvh-11.5rem)] pe-3 -me-3">
             <div className="flex items-center gap-1 mb-3 px-5">
-              <span className="text-sm font-medium text-mono">Status</span>
+              <span className="text-sm font-medium text-mono">Trạng thái</span>
 
               <Tooltip>
                 <TooltipTrigger asChild>
                   <Info className="text-muted-foreground size-4" />
                 </TooltipTrigger>
                 <TooltipContent>
-                  <p>Get detailed information.</p>
+                  <p>Lấy thông tin chi tiết.</p>
                 </TooltipContent>
               </Tooltip>
             </div>
@@ -84,9 +84,14 @@ export function StoreClientFiltersSheet({ trigger }: { trigger: ReactNode }) {
               }}
               className="grid grid-cols-4 mx-5"
             >
-              {['All', 'Sale', 'New', 'Trend'].map((period) => (
-                <ToggleGroupItem key={period} value={period}>
-                  {period}
+              {[
+                { label: 'Tất cả', value: 'All' },
+                { label: 'Sale', value: 'Sale' },
+                { label: 'Mới', value: 'New' },
+                { label: 'Trend', value: 'Trend' }
+              ].map((period) => (
+                <ToggleGroupItem key={period.value} value={period.value}>
+                  {period.label}
                 </ToggleGroupItem>
               ))}
             </ToggleGroup>
@@ -94,7 +99,7 @@ export function StoreClientFiltersSheet({ trigger }: { trigger: ReactNode }) {
             <div className="border-b border-border mb-4 mt-5"></div>
 
             <div className="flex flex-col gap-2.5 px-5">
-              <span className="text-sm font-medium text-mono">Price</span>
+              <span className="text-sm font-medium text-mono">Giá</span>
 
               <InputGroup>
                 <InputAddon mode="icon">
@@ -114,7 +119,7 @@ export function StoreClientFiltersSheet({ trigger }: { trigger: ReactNode }) {
             <div className="border-b border-border mb-4 mt-5"></div>
 
             <div className="flex flex-col gap-3 px-5">
-              <span className="text-sm font-medium text-mono">Categories</span>
+              <span className="text-sm font-medium text-mono">Danh mục</span>
 
               <div className="flex flex-wrap gap-2.5 mb-2">
                 {items.map((item, index) => (
@@ -133,7 +138,7 @@ export function StoreClientFiltersSheet({ trigger }: { trigger: ReactNode }) {
             <div className="border-b border-border mt-3 mb-4"></div>
 
             <div className="flex flex-col gap-3 lg:mb-10 px-5">
-              <span className="text-sm font-medium text-mono">Rating</span>
+              <span className="text-sm font-medium text-mono">Đánh giá</span>
 
               <div className="flex flex-col gap-2.5">
                 {ratings.map((rating, index) => (
@@ -157,10 +162,10 @@ export function StoreClientFiltersSheet({ trigger }: { trigger: ReactNode }) {
         </SheetBody>
         <SheetFooter className="border-t py-3.5 px-5 border-border flex gap-3">
           <Button variant="outline" className="justify-center basis-1/2">
-            Reset
+            Thiết lập lại
           </Button>
           <Button variant="primary" className="justify-center basis-1/2">
-            Apply
+            Áp dụng
           </Button>
         </SheetFooter>
       </SheetContent>

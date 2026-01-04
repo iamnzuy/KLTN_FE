@@ -39,7 +39,7 @@ export function AvatarInput() {
                   <X className="size-3.25!" />
                 </Button>
               </TooltipTrigger>
-              <TooltipContent>Click to remove or revert</TooltipContent>
+              <TooltipContent>Nhấp để xóa hoặc hoàn tác</TooltipContent>
             </Tooltip>
           </TooltipProvider>
           <div

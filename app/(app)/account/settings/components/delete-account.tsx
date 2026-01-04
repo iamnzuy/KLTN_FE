@@ -11,30 +11,30 @@ const DeleteAccount = () => {
   return (
     <Card>
       <CardHeader id="delete_account">
-        <CardTitle>Delete Account</CardTitle>
+        <CardTitle>Xóa tài khoản</CardTitle>
       </CardHeader>
       <CardContent className="flex flex-col lg:py-7.5 lg:gap-7.5 gap-3">
         <div className="flex flex-col gap-5">
           <div className="text-sm text-foreground">
-            We regret to see you leave. Confirm account deletion below. Your
-            data will be permanently removed. Thank you for being part of our
-            community. Please check our{' '}
+            Chúng tôi rất tiếc khi bạn rời đi. Xác nhận xóa tài khoản bên dưới.
+            Dữ liệu của bạn sẽ bị xóa vĩnh viễn. Cảm ơn bạn đã là một phần của
+            cộng đồng chúng tôi. Vui lòng kiểm tra{' '}
             <Button mode="link" asChild>
-              <Link href="#">Setup Guidelines</Link>
+              <Link href="#">Hướng dẫn thiết lập</Link>
             </Button>{' '}
-            if you still wish continue.
+            nếu bạn vẫn muốn tiếp tục.
           </div>
           <div className="flex items-center space-x-2">
             <Checkbox />
-            <Label>Confirm deleting account</Label>
+            <Label>Xác nhận xóa tài khoản</Label>
           </div>
         </div>
         <div className="flex justify-end gap-2.5">
           <Button variant="outline">
-            <Link href="#">Deactivate Instead</Link>
+            <Link href="#">Vô hiệu hóa thay thế</Link>
           </Button>
           <Button variant="destructive">
-            <Link href="#">Delete Account</Link>
+            <Link href="#">Xóa tài khoản</Link>
           </Button>
         </div>
       </CardContent>

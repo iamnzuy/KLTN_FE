@@ -30,7 +30,7 @@ export function SearchResults() {
   const isChatbotOpen = !!searchParams.get("chatbot");
 
   const [searchInput, setSearchInput] = useState(searchParams.get("search") || '');
-  const [activePeriod, setActivePeriod] = useState('Week');
+  const [activePeriod, setActivePeriod] = useState('Tuần này');
   const [activeTab, setActiveTab] = useState<'card' | 'list'>("card");
   const [activeViewTab, setActiveViewTab] = useState<'results' | 'comparison'>('results');
   const [chatbotProducts, setChatbotProducts] = useState<any[]>([]);
@@ -190,7 +190,7 @@ export function SearchResults() {
             <StoreClientFiltersSheet
               trigger={
                 <Button>
-                  <Funnel /> Filter
+                  <Funnel /> Bộ lọc
                 </Button>
               }
             />
@@ -216,12 +216,12 @@ export function SearchResults() {
               {activeViewTab === 'results' && (
                 <div className="flex items-center gap-5">
                   <h3 className="text-sm text-mono font-medium">
-                    {(currentPage - 1) * pageSize + 1} - {Math.min(currentPage * pageSize, totalElements)} over {totalElements} {searchInput && 'results for'}
+                    {(currentPage - 1) * pageSize + 1} - {Math.min(currentPage * pageSize, totalElements)} trên {totalElements} {searchInput && 'kết quả cho'}
                     <span className="text-destructive"> {searchInput}</span>
                   </h3>
                   <div className="flex items-center gap-2.5">
                     <div className='flex-1'>
-                      <Selection defaultValue={'Price: High to Low'} values={['Price: Low to High', 'Price: High to Low', '$0 - $50', '$50 - $100', '$100 - $200', '$200 - $500', '$500+']} />
+                      <Selection defaultValue={'Giá: Cao đến Thấp'} values={['Giá: Thấp đến Cao', 'Giá: Cao đến Thấp', '$0 - $50', '$50 - $100', '$100 - $200', '$200 - $500', '$500+']} />
                     </div>
                     <ToggleGroup
                       type="single"
@@ -232,7 +232,7 @@ export function SearchResults() {
                       }}
                       className="grid grid-cols-4"
                     >
-                      {['Today', 'Week', 'Month', 'All'].map((period) => (
+                      {['Hôm nay', 'Tuần này', 'Tháng này', 'Tất cả'].map((period) => (
                         <ToggleGroupItem key={period} value={period}>
                           {period}
                         </ToggleGroupItem>

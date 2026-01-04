@@ -12,12 +12,12 @@ export const Deals = ({ products }: any) => {
     <div className="space-y-4">
       <div className="flex items-center justify-between gap-4">
         <span className="text-lg font-medium text-mono">
-          Limited-Time Deals
+          Ưu đãi có hạn
         </span>
 
         <Button mode="link" asChild>
           <Link href="/search-results">
-            See All <ChevronRight />
+            Xem tất cả <ChevronRight />
           </Link>
         </Button>
       </div>

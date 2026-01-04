@@ -88,7 +88,7 @@ export function OrderReceipt() {
               </Link>
 
               <h3 className="mt-6 text-2xl font-semibold text-foreground">
-                Order Confirmation
+                Xác nhận đơn hàng
               </h3>
               <span className="text-sm font-medium text-muted-foreground">
                 {order
@@ -139,21 +139,21 @@ export function OrderReceipt() {
 
                   <Card className="bg-muted/70 px-5 py-4 shadow-none">
                     <div className="grid gap-5 md:grid-cols-4">
-                      <ReceiptMeta label="Order ID" value={`#${order.id}`} />
-                      <ReceiptMeta label="Order placed" value={createdAt} />
-                      <ReceiptMeta label="Total" value={formatCurrency(total)} />
-                      <ReceiptMeta label="Status" value={order.status ?? 'PENDING'} />
+                      <ReceiptMeta label="Mã đơn hàng" value={`#${order.id}`} />
+                      <ReceiptMeta label="Thời gian đặt" value={createdAt} />
+                      <ReceiptMeta label="Tổng cộng" value={formatCurrency(total)} />
+                      <ReceiptMeta label="Trạng thái" value={order.status ?? 'ĐANG CHỜ'} />
                     </div>
                   </Card>
 
                   <Card className="bg-accent/50 px-5 py-4 shadow-none">
                     <div className="grid gap-5 md:grid-cols-2">
-                      <ReceiptMeta label="Ship to" value={recipient} details={deliveryDetails} />
+                      <ReceiptMeta label="Giao tới" value={recipient} details={deliveryDetails} />
                       <ReceiptMeta
-                        label="Payment"
+                        label="Thanh toán"
                         value={order.paymentMethod ?? 'PayOS'}
                         details={[
-                          `Status: ${order.paymentStatus ?? order.status ?? 'Pending'}`,
+                          `Trạng thái: ${order.paymentStatus ?? order.status ?? 'Đang chờ'}`,
                           order.paymentCode ? `Mã thanh toán: ${order.paymentCode}` : undefined,
                         ].filter(Boolean) as string[]}
                       />
@@ -166,7 +166,7 @@ export function OrderReceipt() {
                   vat={vat}
                   shipping={shipping}
                   total={total}
-                  shippingHeadline={deliveryDetails.length ? 'Shipping to' : undefined}
+                  shippingHeadline={deliveryDetails.length ? 'Giao tới' : undefined}
                   shippingDetails={deliveryDetails.length ? deliveryDetails : undefined}
                 />
               </>
@@ -175,7 +175,7 @@ export function OrderReceipt() {
             <Button variant="outline" className="mt-5" asChild>
               <Link href="/my-orders" className="inline-flex items-center gap-2">
                 <ListChecks />
-                My Orders
+                Đơn hàng của tôi
               </Link>
             </Button>
           </div>

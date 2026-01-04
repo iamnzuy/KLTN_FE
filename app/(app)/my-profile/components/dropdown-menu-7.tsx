@@ -19,33 +19,33 @@ export function DropdownMenu7({ trigger }: { trigger: ReactNode }) {
         <DropdownMenuItem asChild>
           <Link href="#">
             <Search />
-            <span>View</span>
+            <span>Xem</span>
           </Link>
         </DropdownMenuItem>
         <DropdownMenuItem asChild>
           <Link href="#">
             <FileUp />
-            <span>Export</span>
+            <span>Xuất</span>
           </Link>
         </DropdownMenuItem>
         <DropdownMenuSeparator />
         <DropdownMenuItem asChild>
           <Link href="#">
             <Pencil />
-            <span>Edit</span>
+            <span>Chỉnh sửa</span>
           </Link>
         </DropdownMenuItem>
         <DropdownMenuItem asChild>
           <Link href="#">
             <Copy />
-            <span>Make a copy</span>
+            <span>Tạo bản sao</span>
           </Link>
         </DropdownMenuItem>
         <DropdownMenuSeparator />
         <DropdownMenuItem asChild>
           <Link href="#">
             <Trash2 />
-            <span>Remove</span>
+            <span>Xóa</span>
           </Link>
         </DropdownMenuItem>
       </DropdownMenuContent>

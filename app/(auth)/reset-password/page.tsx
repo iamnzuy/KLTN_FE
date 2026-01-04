@@ -28,7 +28,7 @@ export default function Page() {
   const [showRecaptcha, setShowRecaptcha] = useState(false);
 
   const formSchema = z.object({
-    email: z.string().email({ message: 'Please enter a valid email address.' }),
+    email: z.string().email({ message: 'Vui lòng nhập địa chỉ email hợp lệ.' }),
   });
 
   const form = useForm<z.infer<typeof formSchema>>({
@@ -77,7 +77,7 @@ export default function Page() {
       setError(
         err instanceof Error
           ? err.message
-          : 'An unexpected error occurred. Please try again.',
+          : 'Đã xảy ra lỗi không mong muốn. Vui lòng thử lại.',
       );
     } finally {
       setIsProcessing(false);
@@ -90,10 +90,10 @@ export default function Page() {
         <form onSubmit={handleSubmit} className="block w-full space-y-5">
           <div className="text-center space-y-1 pb-3">
             <h1 className="text-2xl font-semibold tracking-tight">
-              Reset Password
+              Đặt lại mật khẩu
             </h1>
             <p className="text-sm text-muted-foreground">
-              Enter your email to receive a password reset link.
+              Nhập email của bạn để nhận liên kết đặt lại mật khẩu.
             </p>
           </div>
 
@@ -124,7 +124,7 @@ export default function Page() {
                 <FormControl>
                   <Input
                     type="email"
-                    placeholder="Enter your email address"
+                    placeholder="Nhập địa chỉ email của bạn"
                     disabled={!!success || isProcessing}
                     {...field}
                   />
@@ -149,7 +149,7 @@ export default function Page() {
                 className="w-full"
               >
                 {isProcessing ? <LoaderCircleIcon className="animate-spin" /> : null}
-                Submit
+                Gửi
               </Button>
             }
           />
@@ -157,7 +157,7 @@ export default function Page() {
           <div className="space-y-3">
             <Button type="button" variant="outline" className="w-full" asChild>
               <Link href="/signin">
-                <ArrowLeft className="size-3.5" /> Back
+                <ArrowLeft className="size-3.5" /> Quay lại
               </Link>
             </Button>
           </div>

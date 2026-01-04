@@ -22,15 +22,15 @@ const StartNow = () => {
       <Card className="flex-col gap-5 justify-between bg-[center_top_1.3rem] bg-no-repeat pt-5 lg:pt-10 px-5 start-now-bg bg-[length:700px]">
         <div className="text-center">
           <h3 className="text-mono text-lg font-semibold leading-6 mb-1.5">
-            Individually Tailored
+            Ưu đãi được thiết kế riêng
             <br />
-            Deals for Personal Satisfaction
+            cho sự hài lòng cá nhân
           </h3>
           <span className="text-secondary-foreground text-sm block mb-5">
-            Discover promotions crafted to match your preferences.
+            Khám phá các chương trình khuyến mãi được tạo ra để phù hợp với sở thích của bạn.
           </span>
           <Button variant="mono">
-            <Link href="/network/user-table/visitors">Start Now</Link>
+            <Link href="/network/user-table/visitors">Bắt đầu ngay</Link>
           </Button>
         </div>
         <div className="text-center">

@@ -318,7 +318,7 @@ export function ComparisonView() {
                       price: 'Giá',
                       rating: 'Đánh giá',
                       battery: 'Pin',
-                      chipset: 'Chipset',
+                      chipset: 'Chip xử lý',
                       screen: 'Màn hình',
                     };
                     

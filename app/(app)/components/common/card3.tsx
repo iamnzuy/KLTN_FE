@@ -35,7 +35,7 @@ export function Card3({ item }: any) {
 
               {item?.badge && (
                 <Badge size="sm" variant="destructive" className="uppercase">
-                  save {item.badgeLabel}%
+                  Giảm {item.badgeLabel}%
                 </Badge>
               )}
             </div>
@@ -62,13 +62,13 @@ export function Card3({ item }: any) {
                   </span>
                 </span>
                 <span className="text-xs font-normal text-secondary-foreground">
-                  Category:{' '}
+                  Danh mục:{' '}
                   <span className="text-xs font-medium text-foreground">
                     {item.category1}
                   </span>
                 </span>
                 <span className="text-xs font-normal text-secondary-foreground">
-                  Category:{' '}
+                  Danh mục:{' '}
                   <span className="text-xs font-medium text-foreground">
                     {item.category2}
                   </span>
@@ -88,7 +88,7 @@ export function Card3({ item }: any) {
             className="ms-2 shrink-0"
             onClick={showCartSheet}
           >
-            <ShoppingCart /> Add to Cart
+            <ShoppingCart /> Thêm vào giỏ hàng
           </Button>
         </div>
       </CardContent>

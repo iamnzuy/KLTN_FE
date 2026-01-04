@@ -30,14 +30,14 @@ export function Order({
   shipping = 0,
   vat = 0,
   total,
-  title = 'Order Summary',
+  title = 'Tóm tắt đơn hàng',
   shippingHeadline,
   shippingDetails,
 }: OrderProps) {
   const items: IOrderItems = [
-    { label: 'Subtotal', amount: subtotal },
-    { label: 'Shipping', amount: shipping },
-    { label: 'VAT', amount: vat },
+    { label: 'Tạm tính', amount: subtotal },
+    { label: 'Phí vận chuyển', amount: shipping },
+    { label: 'Thuế VAT', amount: vat },
   ];
 
   const computedTotal = total ?? subtotal + shipping + vat;
@@ -75,14 +75,14 @@ export function Order({
         ) : null}
 
         <div className="space-y-2">
-          <h4 className="text-sm font-medium text-mono">Price Details</h4>
+          <h4 className="text-sm font-medium text-mono">Chi tiết giá</h4>
           {items.map((item, index) => renderItem(item, index))}
         </div>
       </CardContent>
 
       <CardFooter className="flex justify-between items-center px-5">
         <span className="text-sm font-normal text-secondary-foreground">
-          Total
+          Tổng cộng
         </span>
         <span className="text-base font-semibold text-mono">
           {formatCurrency(computedTotal)}

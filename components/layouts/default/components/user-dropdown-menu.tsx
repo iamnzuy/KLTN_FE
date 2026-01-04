@@ -79,7 +79,7 @@ export function UserDropdownMenu({ trigger }: { trigger: ReactNode }) {
             className="flex items-center gap-2"
           >
             <User />
-            My Profile
+            Hồ sơ của tôi
           </Link>
         </DropdownMenuItem>
 
@@ -89,7 +89,7 @@ export function UserDropdownMenu({ trigger }: { trigger: ReactNode }) {
             className="flex items-center gap-2"
           >
             <Settings />
-            Settings
+            Cài đặt
           </Link>
         </DropdownMenuItem>
 
@@ -99,7 +99,7 @@ export function UserDropdownMenu({ trigger }: { trigger: ReactNode }) {
             className="flex items-center gap-2"
           >
             <BadgeInfo />
-            Billing
+            Thanh toán
           </Link>
         </DropdownMenuItem>
 
@@ -109,7 +109,7 @@ export function UserDropdownMenu({ trigger }: { trigger: ReactNode }) {
             className="flex items-center gap-2"
           >
            <LockKeyhole />
-            Security
+            Bảo mật
           </Link>
         </DropdownMenuItem>
 
@@ -119,7 +119,7 @@ export function UserDropdownMenu({ trigger }: { trigger: ReactNode }) {
             className="flex items-center gap-2"
           >
             <Blocks />
-            Integrations
+            Tích hợp
           </Link>
         </DropdownMenuItem>
 
@@ -136,7 +136,7 @@ export function UserDropdownMenu({ trigger }: { trigger: ReactNode }) {
             <Moon />
           )}
           <div className="flex items-center gap-2 justify-between grow">
-            {resolvedTheme === 'dark' ? 'Light Mode' : 'Dark Mode'}
+            {resolvedTheme === 'dark' ? 'Chế độ sáng' : 'Chế độ tối'}
             <Switch
               size="sm"
               checked={resolvedTheme === 'dark'}
@@ -150,7 +150,7 @@ export function UserDropdownMenu({ trigger }: { trigger: ReactNode }) {
             className="w-full"
             onClick={() => handleLogout()}
           >
-            Logout
+            Đăng xuất
           </Button>
         </div>
       </DropdownMenuContent>

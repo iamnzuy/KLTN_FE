@@ -58,10 +58,8 @@
 }
 
 /** Smooth scroll **/
-html, body {
+html {
   scroll-behavior: smooth;
-  height: 100% !important;
-  overflow: hidden !important;
 }
 
 /** Dark/Light Theme Variant **/

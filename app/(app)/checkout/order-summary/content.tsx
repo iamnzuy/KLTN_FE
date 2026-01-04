@@ -52,14 +52,14 @@ export function OrderSummaryContent() {
         />
         <div className="flex justify-end items-center flex-wrap gap-3">
           <Button variant="outline" onClick={() => router.back()}>
-            Cancel
+            Hủy
           </Button>
 
           <Button
             onClick={handleProceed}
             disabled={isEmpty || isLoading}
           >
-            Shipping Info
+            Thông tin giao hàng
             <MoveRight className="text-base" />
           </Button>
         </div>

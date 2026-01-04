@@ -22,10 +22,10 @@ interface StepsProps {
 
 export function Steps({ currentStep }: StepsProps) {
   const steps: IStepsItems = [
-    { title: 'Order Summary', icon: Captions },
-    { title: 'Shipping Info', icon: Truck },
-    { title: 'Payment Method', icon: WalletCards },
-    { title: 'Order Placed', icon: ScrollText },
+    { title: 'Tóm tắt đơn hàng', icon: Captions },
+    { title: 'Thông tin giao hàng', icon: Truck },
+    { title: 'Phương thức thanh toán', icon: WalletCards },
+    { title: 'Đặt hàng thành công', icon: ScrollText },
   ];
 
   return (

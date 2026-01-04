@@ -25,28 +25,28 @@ type ICommunityBadgesItems = Array<ICommunityBadgesItem>;
 const CommunityBadges = () => {
   const items: ICommunityBadgesItems = [
     {
-      title: 'Expert Contributor Badge',
+      title: 'Huy hiệu Người đóng góp chuyên gia',
       stroke: 'stroke-blue-200 dark:stroke-blue-950',
       fill: 'fill-blue-50 dark:fill-blue-950/30',
       icon: Volleyball,
       iconColor: 'text-primary',
     },
     {
-      title: 'Innovation Trailblazer',
+      title: 'Người tiên phong đổi mới',
       stroke: 'stroke-orange-200 dark:stroke-orange-950',
       fill: 'fill-orange-50 dark:fill-orange-950/30',
       icon: Zap,
       iconColor: 'text-orange-500',
     },
     {
-      title: 'Impact Recognition',
+      title: 'Ghi nhận tác động',
       stroke: 'stroke-green-200 dark:stroke-green-950',
       fill: 'fill-green-50 dark:fill-green-950/30',
       icon: MessagesSquare,
       iconColor: 'text-green-500',
     },
     {
-      title: 'Performance Honor',
+      title: 'Vinh danh hiệu suất',
       stroke: 'stroke-violet-200 dark:stroke-violet-950',
       fill: 'fill-violet-50 dark:fill-violet-950/30',
       icon: Truck,
@@ -106,7 +106,7 @@ const CommunityBadges = () => {
   return (
     <Card>
       <CardHeader className="gap-2">
-        <CardTitle>Badges</CardTitle>
+        <CardTitle>Huy hiệu</CardTitle>
         <DropdownMenu2
           trigger={
             <Button variant="ghost" mode="icon">

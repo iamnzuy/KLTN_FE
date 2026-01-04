@@ -19,7 +19,7 @@ export default function OrderSummaryPage() {
           <ToolbarHeading>
             <ToolbarPageTitle />
             <ToolbarDescription>
-              Review your items before checkout
+              Kiểm tra giỏ hàng của bạn trước khi thanh toán
             </ToolbarDescription>
           </ToolbarHeading>
         </Toolbar>

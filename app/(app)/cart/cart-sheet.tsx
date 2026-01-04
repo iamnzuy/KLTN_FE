@@ -73,7 +73,7 @@ export function CartSheet() {
       >
         <div ref={ref} className='flex flex-col gap-4 h-full w-full rounded-lg'>
           <div className='border-b py-3.5 px-5 border-border flex items-center justify-between text-base font-medium'>
-            Cart
+            Giỏ hàng
             <X className="text-foreground opacity-70 hover:opacity-100 transition-opacity cursor-pointer w-5 h-5" onClick={() => setIsOpen(false)} />
           </div>
           <div className='px-5 py-0 h-[calc(100dvh-12rem)] pe-3 -me-3 space-y-5 overflow-y-scroll'>
@@ -127,7 +127,7 @@ export function CartSheet() {
                                 variant="destructive"
                                 className="uppercase shrink-0"
                               >
-                                save {calculateDiscount(item?.unitPrice, item?.product?.sale || 0)}%
+                                Sale {calculateDiscount(item?.unitPrice, item?.product?.sale || 0)}%
                               </Badge>
                             )}
                           </div>
@@ -158,17 +158,17 @@ export function CartSheet() {
                 ))}
 
                 <div className="flex items-center justify-end border-none rounded-md bg-accent/50 gap-5 py-2 px-3 !mt-[30px]">
-                  <span className="text-sm font-medium text-mono">Total</span>
+                  <span className="text-sm font-medium text-mono">Tổng cộng</span>
                   <span className="text-sm font-semibold text-foreground">{formatCurrency(totalCostCart)}</span>
                 </div>
               </>
             )}
           </div>
           <div className="flex flex-row border-t py-3.5 px-5 border-border gap-2">
-            <Button onClick={clearAllCart} variant="outline" disabled={isEmpty}>Clear Cart</Button>
+            <Button onClick={clearAllCart} variant="outline" disabled={isEmpty}>Xóa giỏ hàng</Button>
             <Button onClick={checkoutCart} variant="primary" className="grow" disabled={isEmpty}>
               <ShoppingCart />
-              Checkout
+              Thanh toán
             </Button>
           </div>
         </div>

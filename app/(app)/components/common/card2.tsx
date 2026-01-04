@@ -153,7 +153,7 @@ export function Card2({ item }: any) {
                 className="ms-1"
                 onClick={addToCart}
               >
-                <ShoppingCart /> Add
+                <ShoppingCart /> Thêm
               </Button>
             </div>
           </div>

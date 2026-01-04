@@ -64,13 +64,13 @@ const CalendarAccounts = () => {
     <Card>
       <CardHeader>
         <CardTitle>
-          Calendar Accounts{' '}
+          Tài khoản lịch{' '}
           <span className="text-secondary-foreground font-medium text-sm">
             1/5
           </span>
         </CardTitle>
         <Button variant="outline">
-          <CalendarCog size={16} /> Add New
+          <CalendarCog size={16} /> Thêm mới
         </Button>
       </CardHeader>
       <CardContent>

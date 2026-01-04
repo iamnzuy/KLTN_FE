@@ -19,7 +19,7 @@ const BasicSettings = ({ title }: IBasicSettingsProps) => {
         <CardTitle>{title}</CardTitle>
         <div className="flex items-center gap-2">
           <Label htmlFor="auto-update" className="text-sm">
-            Public Profile
+            Hồ sơ công khai
           </Label>
           <Switch defaultChecked size="sm" />
         </div>
@@ -47,10 +47,10 @@ const BasicSettings = ({ title }: IBasicSettingsProps) => {
             </TableRow>
             <TableRow>
               <TableCell className="py-2 text-secondary-foreground font-normal">
-                Password
+                Mật khẩu
               </TableCell>
               <TableCell className="py-2 text-secondary-foreground font-normal">
-                Password last changed 2 months ago
+                Mật khẩu được thay đổi 2 tháng trước
               </TableCell>
               <TableCell className="py-2 text-end">
                 <Button variant="ghost" mode="icon">
@@ -60,20 +60,20 @@ const BasicSettings = ({ title }: IBasicSettingsProps) => {
             </TableRow>
             <TableRow>
               <TableCell className="py-3.5text-secondary-foreground font-normal">
-                2FA
+                Xác thực 2 lớp
               </TableCell>
               <TableCell className="py-3.5 text-secondary-foreground font-normal">
-                To be set
+                Chưa thiết lập
               </TableCell>
               <TableCell className="py-3 text-end">
                 <Button mode="link" size="sm" underlined="dashed" asChild>
-                  <Link href="#">Setup</Link>
+                  <Link href="#">Thiết lập</Link>
                 </Button>
               </TableCell>
             </TableRow>
             <TableRow>
               <TableCell className="py-2text-secondary-foreground font-normal">
-                Sign-in with
+                Đăng nhập với
               </TableCell>
               <TableCell className="py-0.5">
                 <div className="flex items-center gap-2.5">
@@ -122,20 +122,20 @@ const BasicSettings = ({ title }: IBasicSettingsProps) => {
             </TableRow>
             <TableRow>
               <TableCell className="py-3text-secondary-foreground font-normal">
-                Team Account
+                Tài khoản nhóm
               </TableCell>
               <TableCell className="py-3 text-secondary-foreground font-normal">
-                To be set
+                Chưa thiết lập
               </TableCell>
               <TableCell className="py-3 text-end">
                 <Button mode="link" size="sm" underlined="dashed" asChild>
-                  <Link href="#">Setup</Link>
+                  <Link href="#">Thiết lập</Link>
                 </Button>
               </TableCell>
             </TableRow>
             <TableRow>
               <TableCell className="py-2 text-secondary-foreground font-normal">
-                Social Profiles
+                Hồ sơ mạng xã hội
               </TableCell>
               <TableCell className="py-0.5">
                 <div className="flex items-center gap-2.5">
@@ -194,7 +194,7 @@ const BasicSettings = ({ title }: IBasicSettingsProps) => {
             </TableRow>
             <TableRow>
               <TableCell className="py-3 text-secondary-foreground text-sm font-normal">
-                Referral Link
+                Liên kết giới thiệu
               </TableCell>
               <TableCell className="py-3 text-secondary-foreground text-sm font-normal">
                 <div className="flex items-center gap-0.5">
@@ -211,7 +211,7 @@ const BasicSettings = ({ title }: IBasicSettingsProps) => {
               </TableCell>
               <TableCell className="py-3 text-end">
                 <Button mode="link" underlined="dashed" asChild>
-                  <Link href="#">Re-create</Link>
+                  <Link href="#">Tạo lại</Link>
                 </Button>
               </TableCell>
             </TableRow>

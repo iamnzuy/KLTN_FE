@@ -12,14 +12,14 @@ const PersonalInfo = () => {
   return (
     <Card className="min-w-full">
       <CardHeader>
-        <CardTitle>Personal Info</CardTitle>
+        <CardTitle>Thông tin cá nhân</CardTitle>
       </CardHeader>
       <CardContent className="kt-scrollable-x-auto pb-3 p-0">
         <Table className="align-middle text-sm text-muted-foreground">
           <TableBody>
             <TableRow>
               <TableCell className="py-2 min-w-28 text-secondary-foreground font-normal">
-                Photo
+                Ảnh đại diện
               </TableCell>
               <TableCell className="py-2 text-gray700 font-normal min-w-32 text-sm">
                 150x150px JPEG, PNG Image
@@ -32,7 +32,7 @@ const PersonalInfo = () => {
             </TableRow>
             <TableRow>
               <TableCell className="py-2 text-secondary-foreground font-normal">
-                Name
+                Họ và tên
               </TableCell>
               <TableCell className="py-2 text-foreground font-normaltext-sm">
                 Jason Tatum
@@ -45,11 +45,11 @@ const PersonalInfo = () => {
             </TableRow>
             <TableRow>
               <TableCell className="py-3 text-secondary-foreground font-normal">
-                Availability
+                Trạng thái
               </TableCell>
               <TableCell className="py-3 text-foreground font-normal">
                 <Badge size="md" variant="success" appearance="outline">
-                  Available now
+                  Đang hoạt động
                 </Badge>
               </TableCell>
               <TableCell className="py-3 text-center">
@@ -60,10 +60,10 @@ const PersonalInfo = () => {
             </TableRow>
             <TableRow>
               <TableCell className="py-3 text-secondary-foreground font-normal">
-                Birthday
+                Ngày sinh
               </TableCell>
               <TableCell className="py-3 text-secondary-foreground text-sm font-normal">
-                28 May 1996
+                28/05/1996
               </TableCell>
               <TableCell className="py-3 text-center">
                 <Button variant="ghost" mode="icon">
@@ -73,10 +73,10 @@ const PersonalInfo = () => {
             </TableRow>
             <TableRow>
               <TableCell className="py-3 text-secondary-foreground font-normal">
-                Gender
+                Giới tính
               </TableCell>
               <TableCell className="py-3 text-secondary-foreground text-sm font-normal">
-                Male
+                Nam
               </TableCell>
               <TableCell className="py-3 text-center">
                 <Button variant="ghost" mode="icon">
@@ -85,13 +85,13 @@ const PersonalInfo = () => {
               </TableCell>
             </TableRow>
             <TableRow>
-              <TableCell className="py-3">Address</TableCell>
+              <TableCell className="py-3">Địa chỉ</TableCell>
               <TableCell className="py-3 text-secondary-foreground text-sm font-normal">
-                You have no an address yet
+                Bạn chưa cập nhật địa chỉ
               </TableCell>
               <TableCell className="py-3 text-center">
                 <Button mode="link" underlined="dashed" asChild>
-                  <Link href="#">Add</Link>
+                  <Link href="#">Thêm</Link>
                 </Button>
               </TableCell>
             </TableRow>

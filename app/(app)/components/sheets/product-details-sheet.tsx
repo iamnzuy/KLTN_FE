@@ -15,10 +15,10 @@ import { HeartWishlist } from '../heart-wishlist';
 
 const items = [
   {
-    text: 'Availability',
+    text: 'Tình trạng',
     info: (
       <Badge size="sm" variant="success">
-        In Stock
+        Còn hàng
       </Badge>
     ),
   },
@@ -29,15 +29,15 @@ const items = [
     ),
   },
   {
-    text: 'Category',
+    text: 'Danh mục',
     info: <span className="text-xs font-medium text-foreground">Sneakers</span>,
   },
   {
-    text: 'Rating',
+    text: 'Đánh giá',
     info: null, // rating uchun alohida component bor
   },
   {
-    text: 'More Info',
+    text: 'Thêm thông tin',
     info: (
       <span className="text-xs font-normal text-foreground">
         10g powder, powder measure & water dispensing bottle (empty)
@@ -72,7 +72,7 @@ export const ProductDetailsSheet = ({
       >
         <div ref={ref} className='flex flex-col gap-4 h-full w-full rounded-lg'>
           <div className='border-b py-3.5 px-5 border-border flex items-center justify-between text-base font-medium'>
-            Product Details
+            Chi tiết sản phẩm
             <X className="text-foreground opacity-70 hover:opacity-100 transition-opacity cursor-pointer w-5 h-5" onClick={() => onOpenChange(false)} />
           </div>
           <div className='px-5 py-0 h-[calc(100dvh-12rem)] pe-3 -me-3 space-y-5 overflow-y-scroll'>
@@ -84,7 +84,7 @@ export const ProductDetailsSheet = ({
                   variant="destructive"
                   className="absolute top-4 right-4 uppercase"
                 >
-                  save {calculateDiscount(product?.price, product?.sale)}%
+                  Giảm {calculateDiscount(product?.price, product?.sale)}%
                 </Badge>
               )}
               <Card className="absolute items-center justify-center bg-card w-[75px] h-[45px] overflow-hidden rounded-sm bottom-4 right-4">
@@ -119,10 +119,10 @@ export const ProductDetailsSheet = ({
                     {item.text}
                   </span>
                   <div>
-                    {item.text === 'Rating' ? (
+                    {item.text === 'Đánh giá' ? (
                       <Rating rating={product?.averageRating} />
                     ) : (
-                      item.text === "Category" ? (
+                      item.text === "Danh mục" ? (
                         product?.categories?.join(', ')
                       ) : (
                         item.info
@@ -143,7 +143,7 @@ export const ProductDetailsSheet = ({
           </div>
           <div className='w-full flex items-center justify-center px-5 py-3.5 gap-2'>
             <HeartWishlist className='rounded-lg' productId={product?.id}>
-              <span className="wishlist-heart-label">Wishlist</span>
+              <span className="wishlist-heart-label">Yêu thích</span>
             </HeartWishlist>
             <Button
               onClick={() => {
@@ -153,7 +153,7 @@ export const ProductDetailsSheet = ({
               className="w-full"
             >
               <ShoppingCart />
-              Add to Cart
+              Thêm vào giỏ hàng
             </Button>
           </div>
         </div>

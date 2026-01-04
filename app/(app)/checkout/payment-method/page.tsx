@@ -18,7 +18,7 @@ export default function PaymentMethodPage() {
         <Toolbar>
           <ToolbarHeading>
             <ToolbarPageTitle />
-            <ToolbarDescription>Select how you want to pay</ToolbarDescription>
+            <ToolbarDescription>Chọn phương thức thanh toán</ToolbarDescription>
           </ToolbarHeading>
         </Toolbar>
       </div>

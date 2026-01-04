@@ -306,7 +306,7 @@ export function PaymentMethodContent() {
         <div className="flex justify-end items-center flex-wrap gap-3">
           <Button variant="outline" onClick={() => router.push('/checkout/shipping-info')}>
             <MoveLeft className="text-base" />
-            Shipping Info
+            Thông tin giao hàng
           </Button>
 
           <Button onClick={handlePlaceOrder} disabled={isActionDisabled}>
@@ -322,7 +322,7 @@ export function PaymentMethodContent() {
             subtotal={subtotal}
             shipping={shippingFee}
             vat={vat}
-            shippingHeadline={shippingDetails ? 'Shipping to' : undefined}
+            shippingHeadline={shippingDetails ? 'Giao hàng đến' : undefined}
             shippingDetails={shippingDetails}
           />
         </div>

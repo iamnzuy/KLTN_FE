@@ -41,7 +41,7 @@ const Connections = ({ url }: IConnectionsProps) => {
       avatar: '300-1.png',
       name: 'Esther Howard',
       connections: 639,
-      jointLinks: 'none',
+      jointLinks: 'không có',
       connected: false,
     },
     {
@@ -55,7 +55,7 @@ const Connections = ({ url }: IConnectionsProps) => {
       avatar: '300-2.png',
       name: 'Cody Fisher',
       connections: 81,
-      jointLinks: 'none',
+      jointLinks: 'không có',
       connected: true,
     },
     {
@@ -69,7 +69,7 @@ const Connections = ({ url }: IConnectionsProps) => {
       avatar: '300-9.png',
       name: 'Guy Hawkins',
       connections: 2,
-      jointLinks: 'none',
+      jointLinks: 'không có',
       connected: true,
     },
   ]);
@@ -99,7 +99,7 @@ const Connections = ({ url }: IConnectionsProps) => {
               {item.name}
             </Link>
             <span className="text-xs font-normal text-secondary-foreground leading-3">
-              {item.connections} connections
+              {item.connections} kết nối
             </span>
           </div>
         </div>
@@ -135,7 +135,7 @@ const Connections = ({ url }: IConnectionsProps) => {
   return (
     <Card className="min-w-full">
       <CardHeader>
-        <CardTitle>Connections</CardTitle>
+        <CardTitle>Kết nối</CardTitle>
         <DropdownMenu4
           trigger={
             <Button variant="ghost" mode="icon">
@@ -150,13 +150,13 @@ const Connections = ({ url }: IConnectionsProps) => {
             <TableBody>
               <TableRow className="bg-accent/60">
                 <TableCell className="text-start font-normal min-w-48 py-2.5">
-                  Name
+                  Tên
                 </TableCell>
                 <TableCell className="text-end font-medium min-w-20 py-2.5">
-                  Joint Links
+                  Liên kết chung
                 </TableCell>
                 <TableCell className="text-end font-medium min-w-20 py-2.5">
-                  Status
+                  Trạng thái
                 </TableCell>
                 <TableCell className="min-w-16" />
               </TableRow>
@@ -167,7 +167,7 @@ const Connections = ({ url }: IConnectionsProps) => {
       </CardContent>
       <CardFooter className="justify-center">
         <Button mode="link" underlined="dashed" asChild>
-          <Link href={url}>View 64 more</Link>
+          <Link href={url}>Xem thêm 64 kết nối</Link>
         </Button>
       </CardFooter>
     </Card>

@@ -16,15 +16,15 @@ const Plan = () => {
   const statistics: IPlanItems = [
     {
       total: '$769.00',
-      description: 'Annual Total',
+      description: 'Tổng hàng năm',
     },
     {
       total: '$69.00',
-      description: 'Next Bill Amount',
+      description: 'Số tiền thanh toán tiếp theo',
     },
     {
-      total: '23 Aug, 24',
-      description: 'Next Billing Date',
+      total: '23 Th8, 24',
+      description: 'Ngày thanh toán tiếp theo',
     },
   ];
 
@@ -51,21 +51,21 @@ const Plan = () => {
           <div className="flex flex-wrap items-center gap-5 justify-between">
             <div className="flex flex-col gap-1">
               <div className="flex items-center gap-2.5">
-                <h2 className="text-2xl font-semibold text-mono">Basic Plan</h2>
+                <h2 className="text-2xl font-semibold text-mono">Gói Cơ bản</h2>
                 <Badge size="md" variant="success" appearance="outline">
-                  Monthly
+                  Hàng tháng
                 </Badge>
               </div>
               <p className="text-sm text-secondary-foreground">
-                Essential Features for Startups and Individuals
+                Các tính năng cơ bản cho người mới bắt đầu
               </p>
             </div>
             <div className="flex gap-2.5">
               <Button variant="outline">
-                <Link href="#">Cancel Plan</Link>
+                <Link href="#">Hủy gói</Link>
               </Button>
               <Button>
-                <Link href="#">Upgrade Plan</Link>
+                <Link href="#">Nâng cấp gói</Link>
               </Button>
             </div>
           </div>
@@ -76,7 +76,7 @@ const Plan = () => {
           </div>
           <div className="flex flex-col gap-3.5">
             <span className="text-sm text-secondary-foreground">
-              Usage (32 of 40 users)
+              Sử dụng (32 của 40 người dùng)
             </span>
             <Slider defaultValue={[80]} max={100} step={1}></Slider>
           </div>

@@ -49,7 +49,7 @@ export default function Page() {
       setError(
         err instanceof Error
           ? err.message
-          : 'An unexpected error occurred. Please try again.',
+          : 'Đã xảy ra lỗi không mong muốn. Vui lòng thử lại.',
       );
     } finally {
       setIsProcessing(false);
@@ -64,40 +64,9 @@ export default function Page() {
       >
         <div className="space-y-1.5 pb-3">
           <h1 className="text-2xl font-semibold tracking-tight text-center">
-            Sign in to Storely
+            Đăng nhập vào Storely
           </h1>
         </div>
-
-        {/* <Alert size="sm" close={false}>
-          <AlertIcon>
-            <RiErrorWarningFill className="text-primary" />
-          </AlertIcon>
-          <AlertTitle className="text-accent-foreground">
-            Use <span className="text-mono font-semibold">demo@kt.com</span>{' '}
-            username and{' '}
-            <span className="text-mono font-semibold">demo123</span> for demo
-            access.
-          </AlertTitle>
-        </Alert> */}
-
-        {/* <div className="flex flex-col gap-3.5">
-          <Button
-            variant="outline"
-            type="button"
-          >
-            <Icons.googleColorful className="size-5! opacity-100!" /> Sign in
-            with Google
-          </Button>
-        </div> */}
-
-        {/* <div className="relative py-1.5">
-          <div className="absolute inset-0 flex items-center">
-            <span className="w-full border-t" />
-          </div>
-          <div className="relative flex justify-center text-xs uppercase">
-            <span className="bg-background px-2 text-muted-foreground">or</span>
-          </div>
-        </div> */}
 
         {error && (
           <Alert variant="destructive">
@@ -113,9 +82,9 @@ export default function Page() {
           name="username"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Username</FormLabel>
+              <FormLabel>Tên đăng nhập</FormLabel>
               <FormControl>
-                <Input placeholder="Your username" {...field} />
+                <Input placeholder="Nhập tên đăng nhập" {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -128,17 +97,11 @@ export default function Page() {
           render={({ field }) => (
             <FormItem>
               <div className="flex justify-between items-center gap-2.5">
-                <FormLabel>Password</FormLabel>
-                {/* <Link
-                  href="/reset-password"
-                  className="text-sm font-semibold text-foreground hover:text-primary"
-                >
-                  Forgot Password?
-                </Link> */}
+                <FormLabel>Mật khẩu</FormLabel>
               </div>
               <div className="relative">
                 <Input
-                  placeholder="Your password"
+                  placeholder="Nhập mật khẩu"
                   type={passwordVisible ? 'text' : 'password'} // Toggle input type
                   {...field}
                 />
@@ -150,7 +113,7 @@ export default function Page() {
                   onClick={() => setPasswordVisible(!passwordVisible)} // Toggle visibility
                   className="absolute end-0 top-1/2 -translate-y-1/2 h-7 w-7 me-1.5 bg-transparent!"
                   aria-label={
-                    passwordVisible ? 'Hide password' : 'Show password'
+                    passwordVisible ? 'Ẩn mật khẩu' : 'Hiện mật khẩu'
                   }
                 >
                   {passwordVisible ? (
@@ -180,7 +143,7 @@ export default function Page() {
                   htmlFor="remember-me"
                   className="text-sm leading-none text-muted-foreground"
                 >
-                  Remember me
+                  Ghi nhớ đăng nhập
                 </label>
               </>
             )}
@@ -190,17 +153,17 @@ export default function Page() {
         <div className="flex flex-col gap-2.5">
           <Button type="submit" disabled={isProcessing}>
             {isProcessing ? <LoaderCircleIcon className="size-4 animate-spin" /> : null}
-            Continue
+            Tiếp tục
           </Button>
         </div>
 
         <p className="text-sm text-muted-foreground text-center">
-          Don&apos;t have an account?{' '}
+          Chưa có tài khoản?{' '}
           <Link
             href="/signup"
             className="text-sm font-semibold text-foreground hover:text-primary"
           >
-            Sign Up
+            Đăng ký
           </Link>
         </p>
       </form>

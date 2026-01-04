@@ -24,12 +24,12 @@ function DataGridPagination(props: DataGridPaginationProps) {
 
   const defaultProps: Partial<DataGridPaginationProps> = {
     sizes: [5, 10, 25, 50, 100],
-    sizesLabel: 'Show',
-    sizesDescription: 'per page',
+    sizesLabel: 'Hiển thị',
+    sizesDescription: 'mỗi trang',
     sizesSkeleton: <Skeleton className="h-8 w-44" />,
     moreLimit: 5,
     more: false,
-    info: '{from} - {to} of {count}',
+    info: '{from} - {to} của {count}',
     infoSkeleton: <Skeleton className="h-8 w-60" />,
   };
 
@@ -49,7 +49,7 @@ function DataGridPagination(props: DataGridPaginationProps) {
         .replace('{from}', from.toString())
         .replace('{to}', to.toString())
         .replace('{count}', recordCount.toString())
-    : `${from} - ${to} of ${recordCount}`;
+    : `${from} - ${to} của ${recordCount}`;
 
   // Pagination limit logic
   const paginationMoreLimit = mergedProps?.moreLimit || 5;
@@ -130,7 +130,7 @@ function DataGridPagination(props: DataGridPaginationProps) {
           mergedProps?.sizesSkeleton
         ) : (
           <>
-            <div className="text-sm text-muted-foreground">Rows per page</div>
+            <div className="text-sm text-muted-foreground">Số dòng mỗi trang</div>
             <Select
               value={`${pageSize}`}
               indicatorPosition="right"
@@ -169,7 +169,7 @@ function DataGridPagination(props: DataGridPaginationProps) {
                   onClick={() => table.previousPage()}
                   disabled={!table.getCanPreviousPage()}
                 >
-                  <span className="sr-only">Go to previous page</span>
+                  <span className="sr-only">Trang trước</span>
                   <ChevronLeftIcon className="size-4" />
                 </Button>
 
@@ -187,7 +187,7 @@ function DataGridPagination(props: DataGridPaginationProps) {
                   onClick={() => table.nextPage()}
                   disabled={!table.getCanNextPage()}
                 >
-                  <span className="sr-only">Go to next page</span>
+                  <span className="sr-only">Trang sau</span>
                   <ChevronRightIcon className="size-4" />
                 </Button>
               </div>
