@@ -21,19 +21,19 @@ export function DropdownMenu5({ trigger }: { trigger: ReactNode }) {
         <DropdownMenuItem asChild>
           <Link href="/account/home/settings-plain">
             <FilePlus />
-            <span>Add</span>
+            <span>Thêm</span>
           </Link>
         </DropdownMenuItem>
         <DropdownMenuItem asChild>
           <Link href="/account/members/import-members">
             <FileDown />
-            <span>Import</span>
+            <span>Nhập</span>
           </Link>
         </DropdownMenuItem>
         <DropdownMenuSub>
           <DropdownMenuSubTrigger>
             <FileUp />
-            <span>Export</span>
+            <span>Xuất</span>
           </DropdownMenuSubTrigger>
           <DropdownMenuSubContent className="w-[150px]">
             <DropdownMenuItem asChild>
@@ -56,7 +56,7 @@ export function DropdownMenu5({ trigger }: { trigger: ReactNode }) {
         <DropdownMenuItem asChild>
           <Link href="/account/security/privacy-settings">
             <Settings />
-            <span>Settings</span>
+            <span>Cài đặt</span>
           </Link>
         </DropdownMenuItem>
       </DropdownMenuContent>

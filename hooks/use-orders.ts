@@ -51,7 +51,7 @@ export function useOrders(userId: number | null) {
         setOrders(orderList);
       }
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to fetch orders');
+      setError(err instanceof Error ? err.message : 'Không thể tải danh sách đơn hàng');
     } finally {
       setLoading(false);
     }
@@ -64,10 +64,11 @@ export function useOrders(userId: number | null) {
   const createOrder = useCallback(async (orderData: {
     shippingAddress: string;
     paymentMethod: string;
-    items: Array<{ productId: string; quantity: number }>;
+    totalAmount: number;
+    items: Array<{ productId: string; quantity: number; unitPrice: number }>;
   }) => {
     if (!userId) {
-      setError('User not logged in');
+      setError('Người dùng chưa đăng nhập');
       return;
     }
 
@@ -82,7 +83,7 @@ export function useOrders(userId: number | null) {
         return response.data;
       }
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to create order');
+      setError(err instanceof Error ? err.message : 'Không thể tạo đơn hàng');
       return null;
     } finally {
       setLoading(false);
@@ -119,7 +120,7 @@ export function useOrder(orderId: number | null) {
           setOrder(response.data || null);
         }
       } catch (err) {
-        setError(err instanceof Error ? err.message : 'Failed to fetch order');
+        setError(err instanceof Error ? err.message : 'Không thể tải thông tin đơn hàng');
       } finally {
         setLoading(false);
       }

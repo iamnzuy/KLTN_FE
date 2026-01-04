@@ -11,11 +11,11 @@ export function SpecialOffers({ products }: any) {
   return (
     <div className="space-y-5">
       <div className="flex items-center justify-between gap-4">
-        <span className="text-lg font-medium text-mono">Special Offers</span>
+        <span className="text-lg font-medium text-mono">Ưu đãi đặc biệt</span>
 
         <Button mode="link" asChild>
           <Link href="/search-results" className="text-xs">
-            See All <ChevronRight />
+            Xem tất cả <ChevronRight />
           </Link>
         </Button>
       </div>

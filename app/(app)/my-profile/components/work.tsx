@@ -12,10 +12,10 @@ const Work = () => {
   return (
     <Card className="min-w-full">
       <CardHeader>
-        <CardTitle>Work</CardTitle>
+        <CardTitle>Công việc</CardTitle>
         <div className="flex items-center gap-2">
           <Label htmlFor="auto-update" className="text-sm">
-            Available now
+            Sẵn sàng ngay
           </Label>
           <Switch defaultChecked size="sm" />
         </div>
@@ -25,12 +25,12 @@ const Work = () => {
           <TableBody>
             <TableRow>
               <TableCell className="py-2 min-w-36text-secondary-foreground font-normal">
-                Language
+                Ngôn ngữ
               </TableCell>
               <TableCell className="py-2 min-w-72 w-full text-foreground font-normal">
-                English{' '}
+                Tiếng Anh{' '}
                 <span className="text-secondary-foreground font-normal">
-                  -Fluent
+                  - Thành thạo
                 </span>
               </TableCell>
               <TableCell className="py-2 text-end min-w-24">
@@ -41,10 +41,10 @@ const Work = () => {
             </TableRow>
             <TableRow>
               <TableCell className="py-2 text-secondary-foreground font-normal">
-                Hourly Rate
+                Mức lương theo giờ
               </TableCell>
               <TableCell className="py-2 text-foreground font-normal">
-                $28 / hour
+                $28 / giờ
               </TableCell>
               <TableCell className="py-2 text-end">
                 <Button variant="ghost" mode="icon">
@@ -54,10 +54,10 @@ const Work = () => {
             </TableRow>
             <TableRow>
               <TableCell className="py-2text-secondary-foreground font-normal">
-                Avaibilaty
+                Thời gian rảnh
               </TableCell>
               <TableCell className="py-2 text-foreground font-normal">
-                32 hours a week
+                32 giờ mỗi tuần
               </TableCell>
               <TableCell className="py-2 text-end">
                 <Button variant="ghost" mode="icon">
@@ -67,18 +67,18 @@ const Work = () => {
             </TableRow>
             <TableRow>
               <TableCell className="py-3 text-secondary-foreground font-normal">
-                Skills
+                Kỹ năng
               </TableCell>
               <TableCell className="py-3 text-secondary-foreground">
                 <div className="flex flex-wrap gap-2.5">
-                  <Badge variant="secondary">Web Design</Badge>
-                  <Badge variant="secondary">Code Review</Badge>
+                  <Badge variant="secondary">Thiết kế Web</Badge>
+                  <Badge variant="secondary">Đánh giá mã</Badge>
                   <Badge variant="secondary">noCode</Badge>
                   <Badge variant="secondary">UX</Badge>
                   <Badge variant="secondary">Figma</Badge>
                   <Badge variant="secondary">Webflow</Badge>
                   <Badge variant="secondary">AI</Badge>
-                  <Badge variant="secondary">Management</Badge>
+                  <Badge variant="secondary">Quản lý</Badge>
                 </div>
               </TableCell>
               <TableCell className="py-3 text-end">
@@ -89,12 +89,12 @@ const Work = () => {
             </TableRow>
             <TableRow>
               <TableCell className="py-4 text-secondary-foreground font-normal">
-                About
+                Giới thiệu
               </TableCell>
               <TableCell className="py-4 text-foreground font-normal">
-                We're open to partnerships, guest posts, and <br />
-                more. Join us to share your insights and grow <br />
-                your audience.
+                Chúng tôi sẵn sàng hợp tác, bài viết khách mời và nhiều hơn nữa. <br />
+                Hãy tham gia cùng chúng tôi để chia sẻ thông tin chi tiết của bạn <br />
+                và phát triển đối tượng của bạn.
               </TableCell>
               <TableCell className="py-4 text-end">
                 <Button variant="ghost" mode="icon">

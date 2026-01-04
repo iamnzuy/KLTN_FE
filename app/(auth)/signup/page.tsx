@@ -58,7 +58,7 @@ export default function Page() {
       setError(
         err instanceof Error
           ? err.message
-          : 'An unexpected error occurred. Please try again.',
+          : 'Đã xảy ra lỗi không mong muốn. Vui lòng thử lại.',
       );
     } finally {
       setIsProcessing(false);
@@ -92,29 +92,9 @@ export default function Page() {
         <form onSubmit={form.handleSubmit(handleSubmit)} className="block w-full space-y-5">
           <div className="space-y-1.5 pb-3">
             <h1 className="text-2xl font-semibold tracking-tight text-center">
-              Sign Up to Storely
+              Đăng ký vào Storely
             </h1>
           </div>
-
-          {/* <div className="flex flex-col gap-3.5">
-            <Button
-              variant="outline"
-              type="button"
-            >
-              <Icons.googleColorful className="size-4!" /> Sign up with Google
-            </Button>
-          </div> */}
-
-          {/* <div className="relative py-1.5">
-            <div className="absolute inset-0 flex items-center">
-              <span className="w-full border-t" />
-            </div>
-            <div className="relative flex justify-center text-xs uppercase">
-              <span className="bg-background px-2 text-muted-foreground">
-                or
-              </span>
-            </div>
-          </div> */}
 
           {error && (
             <Alert variant="destructive" onClose={() => setError(null)}>
@@ -130,9 +110,9 @@ export default function Page() {
             name="name"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Name</FormLabel>
+                <FormLabel>Họ và tên</FormLabel>
                 <FormControl>
-                  <Input placeholder="Your Name" {...field} />
+                  <Input placeholder="Nhập họ và tên" {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -146,7 +126,7 @@ export default function Page() {
               <FormItem>
                 <FormLabel>Email</FormLabel>
                 <FormControl>
-                  <Input placeholder="Your email" {...field} />
+                  <Input placeholder="Nhập địa chỉ email" {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -158,10 +138,10 @@ export default function Page() {
             name="password"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Password</FormLabel>
+                <FormLabel>Mật khẩu</FormLabel>
                 <div className="relative">
                   <Input
-                    placeholder="Your password"
+                    placeholder="Nhập mật khẩu"
                     type={passwordVisible ? 'text' : 'password'}
                     {...field}
                   />
@@ -173,7 +153,7 @@ export default function Page() {
                     onClick={() => setPasswordVisible(!passwordVisible)}
                     className="absolute end-0 top-1/2 -translate-y-1/2 h-7 w-7 me-1.5 bg-transparent!"
                     aria-label={
-                      passwordVisible ? 'Hide password' : 'Show password'
+                      passwordVisible ? 'Ẩn mật khẩu' : 'Hiện mật khẩu'
                     }
                   >
                     {passwordVisible ? (
@@ -193,12 +173,12 @@ export default function Page() {
             name="passwordConfirmation"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Confirm Password</FormLabel>
+                <FormLabel>Xác nhận mật khẩu</FormLabel>
                 <div className="relative">
                   <Input
                     type={passwordConfirmationVisible ? 'text' : 'password'}
                     {...field}
-                    placeholder="Confirm your password"
+                    placeholder="Nhập lại mật khẩu"
                   />
                   <Button
                     type="button"
@@ -213,8 +193,8 @@ export default function Page() {
                     className="absolute end-0 top-1/2 -translate-y-1/2 h-7 w-7 me-1.5 bg-transparent!"
                     aria-label={
                       passwordConfirmationVisible
-                        ? 'Hide password confirmation'
-                        : 'Show password confirmation'
+                        ? 'Ẩn mật khẩu xác nhận'
+                        : 'Hiện mật khẩu xác nhận'
                     }
                   >
                     {passwordConfirmationVisible ? (
@@ -246,18 +226,11 @@ export default function Page() {
                         htmlFor="accept"
                         className="text-sm leading-none text-muted-foreground"
                       >
-                        I agree to the
+                        Tôi đồng ý với
                       </label>
                       <div className="-ms-0.5 text-sm font-semibold text-foreground hover:text-primary">
-                        Privacy Policy
+                        Chính sách bảo mật
                       </div>
-                      {/* <Link
-                        href="/privacy-policy"
-                        target="_blank"
-                        className="-ms-0.5 text-sm font-semibold text-foreground hover:text-primary"
-                      >
-                        Privacy Policy
-                      </Link> */}
                     </div>
                   </FormControl>
                   <FormMessage />
@@ -270,16 +243,16 @@ export default function Page() {
             {isProcessing ? (
               <LoaderCircleIcon className="size-4 animate-spin" />
             ) : null}
-            Continue
+            Tiếp tục
           </Button>
 
           <div className="text-sm text-muted-foreground text-center">
-            Already have an account?{' '}
+            Đã có tài khoản?{' '}
             <Link
               href="/signin"
               className="text-sm font-semibold text-foreground hover:text-primary"
             >
-              Sign In
+              Đăng nhập
             </Link>
           </div>
         </form>

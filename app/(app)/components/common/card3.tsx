@@ -5,12 +5,32 @@ import { ShoppingCart, Star } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
-import { useStoreClient } from '@/app/(app)/components/context';
-
-
+import AxiosAPI from '@/lib/axios';
+import { toast } from 'sonner';
+import useSWR from 'swr';
+import { configSWR } from '@/lib/utils';
 
 export function Card3({ item }: any) {
-  const { showCartSheet } = useStoreClient();
+  const { mutate } = useSWR('/api/carts', {
+    ...configSWR,
+    revalidateOnMount: false,
+  });
+
+  const addToCart = () => {
+    AxiosAPI.post(`/api/carts/items`, {
+      productId: item?.id,
+      quantity: 1,
+      unitPrice: item?.sale ? item?.sale : item?.price,
+    })
+      .then((res) => {
+        toast.success('Đã thêm sản phẩm vào giỏ hàng');
+        mutate();
+      })
+      .catch((err) => {
+        toast.error('Không thể thêm sản phẩm vào giỏ hàng');
+        console.log('err', err);
+      });
+  };
 
   return (
     <Card>
@@ -35,7 +55,7 @@ export function Card3({ item }: any) {
 
               {item?.badge && (
                 <Badge size="sm" variant="destructive" className="uppercase">
-                  save {item.badgeLabel}%
+                  Giảm {item.badgeLabel}%
                 </Badge>
               )}
             </div>
@@ -62,13 +82,13 @@ export function Card3({ item }: any) {
                   </span>
                 </span>
                 <span className="text-xs font-normal text-secondary-foreground">
-                  Category:{' '}
+                  Danh mục:{' '}
                   <span className="text-xs font-medium text-foreground">
                     {item.category1}
                   </span>
                 </span>
                 <span className="text-xs font-normal text-secondary-foreground">
-                  Category:{' '}
+                  Danh mục:{' '}
                   <span className="text-xs font-medium text-foreground">
                     {item.category2}
                   </span>
@@ -86,9 +106,9 @@ export function Card3({ item }: any) {
           <Button
             variant="outline"
             className="ms-2 shrink-0"
-            onClick={showCartSheet}
+            onClick={addToCart}
           >
-            <ShoppingCart /> Add to Cart
+            <ShoppingCart /> Thêm vào giỏ hàng
           </Button>
         </div>
       </CardContent>

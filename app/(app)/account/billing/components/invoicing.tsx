@@ -33,37 +33,37 @@ const Invoicing = () => {
   const tables: IInvoicingItems = [
     {
       number: 'Invoice-2024-xd912c',
-      date: '6 Aug, 2024',
+      date: '6 Th8, 2024',
       amount: '24.00',
-      label: 'Upcoming',
+      label: 'Sắp tới',
       color: 'warning',
     },
     {
       number: 'Invoice-2024-rq857m',
-      date: '17 Jun, 2024',
+      date: '17 Th6, 2024',
       amount: '29.99',
-      label: 'Paid',
+      label: 'Đã thanh toán',
       color: 'success',
     },
     {
       number: 'Invoice-2024-jk563z',
-      date: '30 Apr, 2024',
+      date: '30 Th4, 2024',
       amount: '24.00',
-      label: 'Paid',
+      label: 'Đã thanh toán',
       color: 'success',
     },
     {
       number: 'Invoice-2024-hg234x',
-      date: '21 Apr, 2024',
+      date: '21 Th4, 2024',
       amount: '6.59',
-      label: 'Declined',
+      label: 'Bị từ chối',
       color: 'destructive',
     },
     {
       number: 'Invoice-2024-lp098y',
-      date: '14 mar, 2024',
+      date: '14 Th3, 2024',
       amount: '24.00',
-      label: 'Paid',
+      label: 'Đã thanh toán',
       color: 'success',
     },
   ];
@@ -97,20 +97,20 @@ const Invoicing = () => {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Billing and Invoicing</CardTitle>
+        <CardTitle>Thanh toán và Hóa đơn</CardTitle>
         <Button variant="outline">
           <CloudDownload size={16} />
-          Download All
+          Tải xuống tất cả
         </Button>
       </CardHeader>
       <CardContent className="kt-scrollable-x-auto p-0">
         <Table>
           <TableHeader>
             <TableRow className="bg-accent/60">
-              <TableHead className="min-w-52 h-10">Invoice</TableHead>
-              <TableHead className="min-w-24 text-end h-10">Status</TableHead>
-              <TableHead className="min-w-32 text-end h-10">Date</TableHead>
-              <TableHead className="min-w-20 text-end h-10">Amount</TableHead>
+              <TableHead className="min-w-52 h-10">Hóa đơn</TableHead>
+              <TableHead className="min-w-24 text-end h-10">Trạng thái</TableHead>
+              <TableHead className="min-w-32 text-end h-10">Ngày</TableHead>
+              <TableHead className="min-w-20 text-end h-10">Số tiền</TableHead>
               <TableHead className="w-8 h-10"></TableHead>
             </TableRow>
           </TableHeader>
@@ -123,7 +123,7 @@ const Invoicing = () => {
       </CardContent>
       <CardFooter className="justify-center">
         <Button mode="link" underlined="dashed" asChild>
-          <Link href="/checkout/payment-method">View all Payments</Link>
+          <Link href="/checkout/payment-method">Xem tất cả thanh toán</Link>
         </Button>
       </CardFooter>
     </Card>

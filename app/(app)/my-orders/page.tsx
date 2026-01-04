@@ -20,12 +20,12 @@ export default function MyOrdersPage() {
         <Toolbar>
           <ToolbarHeading>
             <ToolbarPageTitle />
-            <ToolbarDescription>View and manage your orders</ToolbarDescription>
+            <ToolbarDescription>Xem và quản lý đơn hàng của bạn</ToolbarDescription>
           </ToolbarHeading>
           <ToolbarActions>
             <Button variant="outline">
               <BaggageClaim />
-              <Link href="#">Continue Shopping</Link>
+              <Link href="/">Tiếp tục mua sắm</Link>
             </Button>
           </ToolbarActions>
         </Toolbar>

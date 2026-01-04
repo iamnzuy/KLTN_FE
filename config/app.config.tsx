@@ -3,12 +3,12 @@ import { Home, Hourglass } from 'lucide-react';
 
 export const MAIN_MENU: MenuConfig = [
   {
-    title: 'Home',
+    title: 'Trang chủ',
     path: '/',
     icon: Home,
   },
   { 
-    title: 'My Orders', 
+    title: 'Đơn hàng của tôi', 
     icon: Hourglass,
     path: '/my-orders' 
   }

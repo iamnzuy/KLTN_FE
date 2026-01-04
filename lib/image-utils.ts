@@ -7,34 +7,47 @@
 const MOCK_IMAGES = Array.from({ length: 20 }, (_, index) => `/prod${index + 1}.jpg`);
 const FALLBACK_IMAGE = '/no_photo.png';
 
-/**
- * Simple hash function to convert string to number
- */
-function hashString(str: string): number {
-  let hash = 0;
-  for (let i = 0; i < str.length; i++) {
-    const char = str.charCodeAt(i);
-    hash = ((hash << 5) - hash) + char;
-    hash = hash & hash; // Convert to 32bit integer
+// Shuffle function for randomization
+function shuffleArray<T>(array: T[]): T[] {
+  const copy = [...array];
+  for (let i = copy.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [copy[i], copy[j]] = [copy[j], copy[i]];
   }
-  return Math.abs(hash);
+  return copy;
 }
+
+// Create a consistent mapping from product ID to image
+const productImageMap = new Map<string, string>();
+let shuffledImages = shuffleArray([...MOCK_IMAGES]);
+let imageIndex = 0;
 
 /**
  * Get a mock image for a product based on its ID
- * Uses hash-based mapping so the same product always gets the same image
- * but different products get different images
+ * Uses consistent mapping so the same product always gets the same image
  */
 export function getMockImageForProduct(productId: string | undefined): string {
   if (!productId) {
     return FALLBACK_IMAGE;
   }
 
-  // Use hash to deterministically select an image based on product ID
-  const hash = hashString(productId);
-  const imageIndex = hash % MOCK_IMAGES.length;
-  
-  return MOCK_IMAGES[imageIndex];
+  // Check if we already have a mapping for this product
+  if (productImageMap.has(productId)) {
+    return productImageMap.get(productId)!;
+  }
+
+  // Assign a new image from the shuffled pool
+  const mockImage = shuffledImages[imageIndex % shuffledImages.length];
+  productImageMap.set(productId, mockImage);
+  imageIndex++;
+
+  // Reshuffle when we've used all images
+  if (imageIndex >= shuffledImages.length * 2) {
+    shuffledImages = shuffleArray([...MOCK_IMAGES]);
+    imageIndex = 0;
+  }
+
+  return mockImage;
 }
 
 /**
@@ -44,13 +57,6 @@ export function enrichProductWithMockImage(product: any): any {
   if (!product) return product;
 
   const mockImage = getMockImageForProduct(product.id);
-  
-  // Generate additional images for gallery using product ID variations
-  const additionalImages = Array.from({ length: 3 }, (_, index) => {
-    const variantId = `${product.id}-img${index + 1}`;
-    const hash = hashString(variantId);
-    return MOCK_IMAGES[hash % MOCK_IMAGES.length];
-  });
   
   return {
     ...product,
@@ -64,16 +70,9 @@ export function enrichProductWithMockImage(product: any): any {
       ? product.images.map((img: any, index: number) => ({
           ...img,
           originalUrl: img.url,
-          url: index === 0 ? mockImage : additionalImages[index - 1] || additionalImages[0]
+          url: index === 0 ? mockImage : MOCK_IMAGES[(imageIndex + index) % MOCK_IMAGES.length]
         }))
-      : [
-          { url: mockImage, altText: product.title || 'Product image', order: 0 },
-          ...additionalImages.map((img, idx) => ({
-            url: img,
-            altText: `${product.title || 'Product'} - Image ${idx + 2}`,
-            order: idx + 1
-          }))
-        ]
+      : [{ url: mockImage, altText: product.title || 'Product image', order: 0 }]
   };
 }
 
@@ -90,5 +89,14 @@ export function enrichProductsWithMockImages(products: any[]): any[] {
  */
 export function getRandomMockImage(): string {
   return MOCK_IMAGES[Math.floor(Math.random() * MOCK_IMAGES.length)];
+}
+
+/**
+ * Reset the image mapping (useful for testing)
+ */
+export function resetImageMapping(): void {
+  productImageMap.clear();
+  shuffledImages = shuffleArray([...MOCK_IMAGES]);
+  imageIndex = 0;
 }
 

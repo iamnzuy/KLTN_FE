@@ -61,10 +61,10 @@ export default function Page() {
           setIsValidToken(true);
         } else {
           const errorData = await response.json();
-          setError(errorData.message || 'Invalid or expired token.');
+          setError(errorData.message || 'Mã thông báo không hợp lệ hoặc đã hết hạn.');
         }
       } catch {
-        setError('Unable to verify the reset token.');
+        setError('Không thể xác minh mã thông báo đặt lại.');
       } finally {
         setVerifyingToken(false);
       }
@@ -73,7 +73,7 @@ export default function Page() {
     if (token) {
       verifyToken();
     } else {
-      setError('No reset token provided.');
+      setError('Không có mã thông báo đặt lại được cung cấp.');
     }
   }, [token]);
 
@@ -90,14 +90,14 @@ export default function Page() {
       });
 
       if (response.ok) {
-        setSuccessMessage('Password reset successful! Redirecting to login...');
+        setSuccessMessage('Đặt lại mật khẩu thành công! Đang chuyển hướng đến trang đăng nhập...');
         setTimeout(() => router.push('/signin'), 3000);
       } else {
         const errorData = await response.json();
-        setError(errorData.message || 'Password reset failed.');
+        setError(errorData.message || 'Đặt lại mật khẩu thất bại.');
       }
     } catch {
-      setError('An error occurred while resetting the password.');
+      setError('Đã xảy ra lỗi khi đặt lại mật khẩu.');
     } finally {
       setIsProcessing(false);
     }
@@ -110,9 +110,9 @@ export default function Page() {
         className="block w-full space-y-4"
       >
         <div className="text-center space-y-1 pb-3">
-          <h1 className="text-2xl font-semibold tracking-tight">Reset Password</h1>
+          <h1 className="text-2xl font-semibold tracking-tight">Đặt lại mật khẩu</h1>
           <p className="text-sm text-muted-foreground">
-            Enter your new password below.
+            Nhập mật khẩu mới của bạn bên dưới.
           </p>
         </div>
 
@@ -126,7 +126,7 @@ export default function Page() {
             </Alert>
             <Button asChild>
               <Link href="/signin" className="text-primary">
-                Go back to Login
+                Quay lại trang đăng nhập
               </Link>
             </Button>
           </div>
@@ -146,7 +146,7 @@ export default function Page() {
             <AlertIcon>
               <LoaderCircleIcon className="size-4 animate-spin" />
             </AlertIcon>
-            <AlertTitle>Verifing...</AlertTitle>
+            <AlertTitle>Đang xác minh...</AlertTitle>
           </Alert>
         )}
 
@@ -157,12 +157,12 @@ export default function Page() {
               name="newPassword"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>New Password</FormLabel>
+                  <FormLabel>Mật khẩu mới</FormLabel>
                   <div className="relative">
                     <FormControl>
                       <Input
                         type={passwordVisible ? 'text' : 'password'}
-                        placeholder="Enter new password"
+                        placeholder="Nhập mật khẩu mới"
                         {...field}
                       />
                     </FormControl>
@@ -173,7 +173,7 @@ export default function Page() {
                       onClick={() => setPasswordVisible(!passwordVisible)}
                       className="absolute end-0 top-1/2 -translate-y-1/2 h-7 w-7 me-1.5 bg-transparent!"
                       aria-label={
-                        passwordVisible ? 'Hide password' : 'Show password'
+                        passwordVisible ? 'Ẩn mật khẩu' : 'Hiện mật khẩu'
                       }
                     >
                       {passwordVisible ? (
@@ -193,12 +193,12 @@ export default function Page() {
               name="confirmPassword"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Confirm New Password</FormLabel>
+                  <FormLabel>Xác nhận mật khẩu mới</FormLabel>
                   <div className="relative">
                     <FormControl>
                       <Input
                         type={passwordConfirmationVisible ? 'text' : 'password'}
-                        placeholder="Confirm new password"
+                        placeholder="Xác nhận mật khẩu mới"
                         {...field}
                       />
                     </FormControl>
@@ -214,8 +214,8 @@ export default function Page() {
                       className="absolute end-0 top-1/2 -translate-y-1/2 h-7 w-7 me-1.5 bg-transparent!"
                       aria-label={
                         passwordConfirmationVisible
-                          ? 'Hide password confirmation'
-                          : 'Show password confirmation'
+                          ? 'Ẩn mật khẩu xác nhận'
+                          : 'Hiện mật khẩu xác nhận'
                       }
                     >
                       {passwordConfirmationVisible ? (
@@ -232,7 +232,7 @@ export default function Page() {
 
             <Button type="submit" disabled={isProcessing} className="w-full">
               {isProcessing && <LoaderCircleIcon className="size-4 animate-spin" />}
-              Reset Password
+              Đặt lại mật khẩu
             </Button>
           </>
         )}

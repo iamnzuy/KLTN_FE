@@ -19,26 +19,26 @@ export function DropdownMenu4({ trigger }: { trigger: ReactNode }) {
         <DropdownMenuItem asChild>
           <Link href="#">
             <Search />
-            <span>View</span>
+            <span>Xem</span>
           </Link>
         </DropdownMenuItem>
         <DropdownMenuItem asChild>
           <Link href="#">
             <Pencil />
-            <span>Edit</span>
+            <span>Chỉnh sửa</span>
           </Link>
         </DropdownMenuItem>
         <DropdownMenuItem asChild>
           <Link href="#">
             <FileUp />
-            <span>Export</span>
+            <span>Xuất</span>
           </Link>
         </DropdownMenuItem>
         <DropdownMenuSeparator />
         <DropdownMenuItem asChild>
           <Link href="#">
             <Trash2 />
-            <span>Delete</span>
+            <span>Xóa</span>
           </Link>
         </DropdownMenuItem>
       </DropdownMenuContent>

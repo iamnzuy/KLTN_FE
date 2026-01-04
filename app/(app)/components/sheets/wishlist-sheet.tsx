@@ -16,6 +16,7 @@ import { configSWR } from '@/lib/utils';
 import { formatCurrency } from '@/utils/currency';
 import AxiosAPI from '@/lib/axios';
 import { useStoreClient } from '@/app/(app)/components/context';
+import { toast } from 'sonner';
 
 const FALLBACK_IMAGE = '/no_photo.png';
 
@@ -97,9 +98,11 @@ export function WishlistSheet({ open, onOpenChange }: WishlistSheetProps) {
           quantity: 1,
           unitPrice,
         });
+        toast.success('Đã thêm sản phẩm vào giỏ hàng');
         mutate('/api/carts');
         showCartSheet();
       } catch (err) {
+        toast.error('Không thể thêm sản phẩm vào giỏ hàng');
         console.error('Failed to add wishlist item to cart', err);
       }
     },
@@ -129,7 +132,7 @@ export function WishlistSheet({ open, onOpenChange }: WishlistSheetProps) {
         <div className="flex h-full w-full flex-col gap-4 rounded-lg">
           <div className="flex items-center justify-between border-b border-border px-5 py-3.5">
             <div>
-              <p className="text-base font-semibold text-foreground">Wishlist</p>
+              <p className="text-base font-semibold text-foreground">Sản phẩm yêu thích</p>
               <p className="text-xs text-muted-foreground">{headerSubtitle}</p>
             </div>
             <X
@@ -141,7 +144,7 @@ export function WishlistSheet({ open, onOpenChange }: WishlistSheetProps) {
           <div className="h-[calc(100dvh-12rem)] space-y-5 overflow-y-auto px-5 py-0 pe-3">
             {error && (
               <Alert variant="destructive">
-                <AlertTitle>Không tải được wishlist</AlertTitle>
+                <AlertTitle>Không tải được danh sách</AlertTitle>
                 <AlertDescription>
                   Vui lòng thử lại sau vài phút hoặc tải lại trang.
                 </AlertDescription>
@@ -218,7 +221,7 @@ export function WishlistSheet({ open, onOpenChange }: WishlistSheetProps) {
                             </Link>
                             {product.sale && basePrice > 0 && (
                               <Badge size="sm" variant="destructive" className="uppercase">
-                                save {Math.round(((basePrice - price) / basePrice) * 100)}%
+                                Sale {Math.round(((basePrice - price) / basePrice) * 100)}%
                               </Badge>
                             )}
                           </div>
@@ -262,7 +265,7 @@ export function WishlistSheet({ open, onOpenChange }: WishlistSheetProps) {
                             onClick={() => handleRemove(product.id)}
                           >
                             <TrashIcon className="h-4 w-4" />
-                            Remove
+                            Xóa
                           </Button>
                           <Button
                             variant="primary"
@@ -270,7 +273,7 @@ export function WishlistSheet({ open, onOpenChange }: WishlistSheetProps) {
                             onClick={() => handleMoveToCart(product)}
                           >
                             <ShoppingCart className="h-4 w-4" />
-                            Add
+                            Thêm
                           </Button>
                         </div>
                       </div>
@@ -287,7 +290,7 @@ export function WishlistSheet({ open, onOpenChange }: WishlistSheetProps) {
               disabled={isLoading || isEmpty}
               onClick={handleClear}
             >
-              Remove All
+              Xóa tất cả
             </Button>
           </div>
         </div>

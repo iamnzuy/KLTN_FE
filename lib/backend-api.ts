@@ -2,7 +2,7 @@ import { getCookie } from 'cookies-next';
 import { enrichProductWithMockImage, enrichProductsWithMockImages } from './image-utils';
 
 const API_BASE_URL =
-  process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080/api';
+  process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080/';
 
 interface ApiResponse<T> {
   data?: T;
@@ -106,29 +106,6 @@ function enrichApiResponse(data: any): any {
     };
   }
 
-  // Handle homepage response structure
-  if (data.specialOffers || data.newArrivals || data.popularProducts || data.limitedDeals) {
-    const enrichedData = { ...data };
-    
-    if (data.specialOffers && Array.isArray(data.specialOffers)) {
-      enrichedData.specialOffers = enrichProductsWithMockImages(data.specialOffers);
-    }
-    
-    if (data.newArrivals && Array.isArray(data.newArrivals)) {
-      enrichedData.newArrivals = enrichProductsWithMockImages(data.newArrivals);
-    }
-    
-    if (data.popularProducts && Array.isArray(data.popularProducts)) {
-      enrichedData.popularProducts = enrichProductsWithMockImages(data.popularProducts);
-    }
-    
-    if (data.limitedDeals && Array.isArray(data.limitedDeals)) {
-      enrichedData.limitedDeals = enrichProductsWithMockImages(data.limitedDeals);
-    }
-    
-    return enrichedData;
-  }
-
   // Handle reviews with products
   if (data.reviews && Array.isArray(data.reviews)) {
     return {
@@ -179,14 +156,15 @@ export const orderApi = {
   create: (order: {
     shippingAddress: string;
     paymentMethod: string;
-    items: Array<{ productId: string; quantity: number }>;
+    totalAmount: number;
+    items: Array<{ productId: string; quantity: number; unitPrice: number }>;
   }) =>
     apiCall<any>(
       '/api/orders',
       {
         method: 'POST',
         body: JSON.stringify(order),
-      }
+      },
     ),
   getUserOrders: (params?: {
     page?: number;
@@ -213,7 +191,7 @@ export const orderApi = {
   updateStatus: (orderId: number, status: string) =>
     apiCall<any>(
       `/api/orders/${orderId}/status?status=${encodeURIComponent(status)}`,
-      { method: 'PUT' }
+      { method: 'PUT' },
     ),
 };
 
@@ -234,7 +212,7 @@ export const paymentApi = {
       }),
     }),
   getPaymentStatus: (orderCode: number) =>
-    apiCall<any>(`/api/payments/status/${orderCode}`, {}, { baseUrl: '' }),
+    apiCall<any>(`/api/payments/status/${orderCode}`),
 };
 
 // Review API

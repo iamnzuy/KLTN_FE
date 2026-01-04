@@ -75,7 +75,7 @@ export function OrderPlacedContent() {
               <CardHeader className="justify-start bg-muted/70 gap-9 h-auto py-5">
                 <div className="flex flex-col gap-1.5">
                   <span className="text-xs text-secondary-foreground">
-                    Order ID
+                    Mã đơn hàng
                   </span>
                   <span className="text-sm font-medium text-mono">
                     {order?.id ?? '—'}
@@ -83,7 +83,7 @@ export function OrderPlacedContent() {
                 </div>
                 <div className="flex flex-col gap-1.5">
                   <span className="text-xs text-secondary-foreground">
-                    Order placed
+                    Thời gian đặt
                   </span>
                   <span className="text-sm font-medium text-mono">
                     {createdAt}
@@ -91,7 +91,7 @@ export function OrderPlacedContent() {
                 </div>
                 <div className="flex flex-col gap-1.5">
                   <span className="text-xs text-secondary-foreground">
-                    Total
+                    Tổng cộng
                   </span>
                   <span className="text-sm font-medium text-mono">
                     {formatCurrency(orderTotal)}
@@ -99,10 +99,10 @@ export function OrderPlacedContent() {
                 </div>
                 <div className="flex flex-col gap-1.5">
                   <span className="text-xs text-secondary-foreground">
-                    Status
+                    Trạng thái
                   </span>
                   <span className="text-sm font-medium text-mono uppercase">
-                    {order?.status || 'PENDING'}
+                    {order?.status === 'PENDING' ? 'ĐANG CHỜ' : order?.status || 'ĐANG CHỜ'}
                   </span>
                 </div>
               </CardHeader>
@@ -137,7 +137,7 @@ export function OrderPlacedContent() {
             shipping={shippingFee}
             vat={vat}
             total={orderTotal}
-            shippingHeadline={deliveryDetails.length ? 'Shipping to' : undefined}
+            shippingHeadline={deliveryDetails.length ? 'Giao hàng đến' : undefined}
             shippingDetails={deliveryDetails.length ? deliveryDetails : undefined}
           />
         </div>

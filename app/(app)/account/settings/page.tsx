@@ -18,24 +18,24 @@ export default function AccountSettingsPlainPage() {
       <div className="container">
         <Toolbar>
           <ToolbarHeading>
-            <ToolbarPageTitle text="Settings"/>
+            <ToolbarPageTitle text="Cài đặt"/>
             <ToolbarDescription>
-              Clean, Efficient User Experience
+              Trải nghiệm người dùng gọn gàng và hiệu quả
             </ToolbarDescription>
           </ToolbarHeading>
           <ToolbarActions>
             <Button variant="outline" asChild>
-              <Link href="/my-profile">My Profile</Link>
+              <Link href="/my-profile">Hồ sơ của tôi</Link>
             </Button>
             <Button asChild>
-              <Link href="/account/billing">Billing</Link>
+              <Link href="/account/billing">Thanh toán</Link>
             </Button>
           </ToolbarActions>
         </Toolbar>
       </div>
       <div className="container">
         <div className="grid gap-5 lg:gap-7.5 xl:w-[38.75rem] mx-auto">
-          <BasicSettings title="General Settings" />
+          <BasicSettings title="Cài đặt chung" />
           <Password />
           <DeleteAccount />
         </div>

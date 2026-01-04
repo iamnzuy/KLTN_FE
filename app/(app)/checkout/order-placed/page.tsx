@@ -23,17 +23,17 @@ export default function OrderPlacedPage() {
           <ToolbarHeading>
             <ToolbarPageTitle />
             <ToolbarDescription>
-              Your purchase has been successfully completed
+              Đơn hàng của bạn đã được đặt thành công
             </ToolbarDescription>
           </ToolbarHeading>
           <ToolbarActions>
             <Button variant="outline">
               <Captions />
-              <Link href="/my-orders">My Orders</Link>
+              <Link href="/my-orders">Đơn hàng của tôi</Link>
             </Button>
             <Button>
               <Captions />
-              <Link href="/search-results">Continue Shopping</Link>
+              <Link href="/search-results">Tiếp tục mua sắm</Link>
             </Button>
           </ToolbarActions>
         </Toolbar>

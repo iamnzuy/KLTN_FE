@@ -37,14 +37,10 @@ export const ComparisonStore = create<ComparisonState>((set, get) => ({
   },
   addProduct: (product: ComparisonProduct) => {
     const { products } = get();
-    // Chỉ cho phép tối đa 2 sản phẩm
     if (products.length >= 2) {
-      // Thay thế sản phẩm đầu tiên nếu đã đủ 2
       set({ products: [products[1], product], comparisonData: null, productsKey: null });
     } else if (!products.find(p => p.id === product.id)) {
-      // Chỉ thêm nếu chưa có trong danh sách
       const newProducts = [...products, product];
-      // Clear comparison data nếu products thay đổi
       if (newProducts.length < 2) {
         set({ products: newProducts, comparisonData: null, productsKey: null });
       } else {

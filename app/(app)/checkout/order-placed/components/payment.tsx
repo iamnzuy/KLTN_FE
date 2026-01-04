@@ -29,7 +29,7 @@ export function Payment({
   return (
     <Card>
       <CardHeader className="px-5 min-h-[44px] flex items-center justify-between">
-        <CardTitle className="text-sm">Payment</CardTitle>
+        <CardTitle className="text-sm">Thanh toán</CardTitle>
         <Badge variant={normalizedStatus === 'PAID' ? 'success' : 'secondary'}>
           {normalizedStatus}
         </Badge>

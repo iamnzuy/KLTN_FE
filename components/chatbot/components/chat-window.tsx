@@ -69,11 +69,9 @@ const ChatWindow = ({ setChatbotProducts }: { setChatbotProducts: (products: any
         setMessages((prev) => [...prev, { role: "user", reply: message }]);
 
         setIsLoading(true);
-        
-        // Nếu có 2 sản phẩm trong chatbot và message liên quan đến so sánh
+
         if (productInChatbot.length === 2 && isComparisonMessage(message)) {
             try {
-                // Gọi API so sánh
                 const compareResponse = await AxiosChatbot.post('/compare', {
                     product_a_id: productInChatbot[0].id,
                     product_b_id: productInChatbot[1].id,
@@ -83,11 +81,10 @@ const ChatWindow = ({ setChatbotProducts }: { setChatbotProducts: (products: any
                 const productsKey = `${selectedProducts[0].id}-${selectedProducts[1].id}`;
                 prefillComparison(selectedProducts, compareResponse.data, productsKey);
 
-                // Thêm summary vào chatbot message
                 const summaryMessage = `💡 **So sánh ${productInChatbot[0].title} và ${productInChatbot[1].title}:**\n\n${compareResponse.data.summary}\n\n${compareResponse.data.follow_up || ''}\n\n*Đã mở bảng so sánh chi tiết bên cạnh để bạn xem thêm.*`;
-                
-                setMessages((prev) => [...prev, { 
-                    role: "assistant", 
+
+                setMessages((prev) => [...prev, {
+                    role: "assistant",
                     reply: summaryMessage,
                     products: [],
                     comparisonData: compareResponse.data
@@ -96,11 +93,9 @@ const ChatWindow = ({ setChatbotProducts }: { setChatbotProducts: (products: any
                 return;
             } catch (err: any) {
                 console.error('Error comparing products:', err);
-                // Fallback to normal chat if comparison fails
             }
         }
 
-        // Normal chat flow
         await AxiosChatbot.post("/chat",
             {
                 message: message,
@@ -241,38 +236,38 @@ const ChatWindow = ({ setChatbotProducts }: { setChatbotProducts: (products: any
                                 </motion.div>
                             )}
                         </AnimatePresence>
-                        {productInChatbot && productInChatbot.length > 0 && (
-  <div className="sticky bottom-0 left-0 right-0 mt-auto border-t bg-background/95 px-3 py-3 z-30 backdrop-blur-md">
-    <div className="flex flex-wrap gap-2 justify-start items-center">
-      {productInChatbot.map((product: any) => (
-        <div
-          key={product?.id}
-          className="relative flex flex-col items-center w-[90px] p-2 bg-background border border-border/60 rounded-lg transition-all hover:border-primary hover:shadow-sm"
-        >
-          <button
-            className="absolute -top-2 -right-2 w-5 h-5 rounded-full bg-gray-500/90 hover:bg-red-500 text-white shadow-sm transition-colors duration-150 flex items-center justify-center"
-            onClick={(event) => handleRemoveProductFromChatbot(product, event)}
-            aria-label="Xóa sản phẩm"
-            title="Xóa"
-          >
-            <X className="w-3 h-3" strokeWidth={3} />
-          </button>
-          <Image
-            unoptimized
-            src={product?.imurl || '/no_photo.png'}
-            alt={product?.title || 'Product'}
-            width={50}
-            height={50}
-            className="object-contain rounded-md"
-          />
-          <span className="block w-full text-xs text-center mt-1.5 truncate font-medium text-foreground/80">
-            {product?.title}
-          </span>
-        </div>
-      ))}
-    </div>
-  </div>
-)}
+                        {productInChatbot && productInChatbot.length > 0 && productInChatbot.length !== 2 && (
+                            <div className="sticky bottom-0 left-0 right-0 mt-auto border-t bg-background/95 px-3 py-3 z-30 backdrop-blur-md">
+                                <div className="flex flex-wrap gap-2 justify-start items-center">
+                                    {productInChatbot.map((product: any) => (
+                                        <div
+                                            key={product?.id}
+                                            className="relative flex flex-col items-center w-[90px] p-2 bg-background border border-border/60 rounded-lg transition-all hover:border-primary hover:shadow-sm"
+                                        >
+                                            <button
+                                                className="absolute -top-2 -right-2 w-5 h-5 rounded-full bg-gray-500/90 hover:bg-red-500 text-white shadow-sm transition-colors duration-150 flex items-center justify-center"
+                                                onClick={(event) => handleRemoveProductFromChatbot(product, event)}
+                                                aria-label="Xóa sản phẩm"
+                                                title="Xóa"
+                                            >
+                                                <X className="w-3 h-3" strokeWidth={3} />
+                                            </button>
+                                            <Image
+                                                unoptimized
+                                                src={product?.imurl || '/no_photo.png'}
+                                                alt={product?.title || 'Product'}
+                                                width={50}
+                                                height={50}
+                                                className="object-contain rounded-md"
+                                            />
+                                            <span className="block w-full text-xs text-center mt-1.5 truncate font-medium text-foreground/80">
+                                                {product?.title}
+                                            </span>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                        )}
                     </div>
                     <div className="flex items-center gap-4 px-4 py-5 border-t border-border">
                         <TextareaAutoResize ref={chatElementRef} className="w-full h-16 p-2 rounded-md focus:placeholder:opacity-0 resize-none text-foreground text-t4-bold placeholder:text-t4-bold placeholder:text-foreground/50 max-h-40 outline-2 outline-border outline-offset-[3px]" placeholder="Nhập tin nhắn..." />

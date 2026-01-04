@@ -27,17 +27,17 @@ export default function Page() {
       <div className="container">
         <Toolbar>
           <ToolbarHeading>
-            <ToolbarPageTitle text="My Profile" />
+            <ToolbarPageTitle text="Hồ sơ của tôi" />
             <ToolbarDescription>
-              Central Hub for Personal Customization
+              Trung tâm tùy chỉnh thông tin cá nhân
             </ToolbarDescription>
           </ToolbarHeading>
           <ToolbarActions>
             <Button variant="outline" asChild>
-              <Link href="/account/billing">Billing</Link>
+              <Link href="/account/billing">Thanh toán</Link>
             </Button>
             <Button asChild>
-              <Link href="/account/security">Security</Link>
+              <Link href="/account/security">Bảo mật</Link>
             </Button>
           </ToolbarActions>
         </Toolbar>
@@ -47,7 +47,7 @@ export default function Page() {
           <div className="col-span-1">
             <div className="grid gap-5 lg:gap-7.5">
               <PersonalInfo />
-              <BasicSettings title="Basic Settings" />
+              <BasicSettings title="Cài đặt cơ bản" />
               <Work />
               <CommunityBadges />
             </div>
@@ -57,7 +57,7 @@ export default function Page() {
               <StartNow />
               <CalendarAccounts />
               <Connections url="#" />
-              <RecentUploads title="My Files" />
+              <RecentUploads title="Tệp của tôi" />
             </div>
           </div>
         </div>

@@ -17,14 +17,14 @@ export default function AccountBasicPage() {
       <div className="container">
         <Toolbar>
           <ToolbarHeading>
-            <ToolbarPageTitle text="My Billing" />
+            <ToolbarPageTitle text="Thanh toán của tôi" />
             <ToolbarDescription>
-              Central Hub for Personal Customization
+              Trung tâm tùy chỉnh thông tin cá nhân
             </ToolbarDescription>
           </ToolbarHeading>
           <ToolbarActions>
             <Button variant="outline" asChild>
-              <Link href="/account/settings">Settings</Link>
+              <Link href="/account/settings">Cài đặt</Link>
             </Button>
           </ToolbarActions>
         </Toolbar>

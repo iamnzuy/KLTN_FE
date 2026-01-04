@@ -11,6 +11,7 @@ const inter = Inter({ subsets: ['latin'] });
 
 import '@/css/styles.css';
 import '@/components/keenicons/assets/styles.css';
+import { CartSheet } from './(app)/cart/cart-sheet';
 
 export const metadata: Metadata = {
   title: {
@@ -41,6 +42,7 @@ export default async function RootLayout({
               disableTransitionOnChange
             >
               {children}
+              <CartSheet />
               <Toaster />
             </ThemeProvider>
           </QueryProvider>

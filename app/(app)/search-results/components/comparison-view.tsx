@@ -10,15 +10,19 @@ import { formatCurrency } from '@/utils/currency';
 import { Rating } from '@/app/(app)/components/rating';
 import { ComparisonStore } from '@/app/(app)/search-results/hooks/comparison-store';
 import { ChatbotStore } from '@/app/(app)/search-results/hooks/chatbot-store';
-import { AxiosChatbot, AxiosAPI } from '@/lib/axios';
+import { AxiosChatbot } from '@/lib/axios';
 import Link from 'next/link';
 import { ShoppingCart } from 'lucide-react';
 import { useSearchParams } from 'next/navigation';
+import AxiosAPI from '@/lib/axios';
+import { toast } from 'sonner';
 import useSWR from 'swr';
 import { configSWR } from '@/lib/utils';
-import { useStoreClient } from '@/app/(app)/components/context';
+import { useStoreClient } from '../../components/context';
 
 export function ComparisonView() {
+  const clearProductInChatbot = ChatbotStore((state: any) => state.clearProductInChatbot);
+  const removeProductFromChatbot = ChatbotStore((state: any) => state.removeProductFromChatbot);
   const { products, removeProduct, clearProducts, comparisonData: cachedData, productsKey, setComparisonData } = ComparisonStore();
   const addPendingMessage = ChatbotStore((state: any) => state.addPendingMessage);
   const searchParams = useSearchParams();
@@ -30,11 +34,26 @@ export function ComparisonView() {
   const { showCartSheet } = useStoreClient();
   const { mutate } = useSWR('/api/carts', { ...configSWR, revalidateOnMount: false });
 
-  // Tạo key để check cache
+  const addToCart = (product: any) => {
+    AxiosAPI.post(`/api/carts/items`, {
+      productId: product?.id,
+      quantity: 1,
+      unitPrice: product?.sale || product?.price || 0
+    })
+      .then((res) => {
+        toast.success('Đã thêm sản phẩm vào giỏ hàng');
+        mutate();
+        showCartSheet();
+      })
+      .catch((err) => {
+        toast.error('Không thể thêm sản phẩm vào giỏ hàng');
+        console.log('err', err);
+      });
+  };
+
   const currentKey = products.length === 2 ? `${products[0].id}-${products[1].id}` : null;
   const hasValidCache = cachedData && productsKey === currentKey && products.length === 2;
 
-  // Sync cached data khi có thay đổi
   useEffect(() => {
     if (hasValidCache && cachedData) {
       setComparisonDataLocal(cachedData);
@@ -46,12 +65,12 @@ export function ComparisonView() {
   useEffect(() => {
     if (hasValidCache) {
       lastRequestedKeyRef.current = currentKey;
-      return; // Đã xử lý ở useEffect trên
+      return;
     }
     
     if (products.length === 2 && currentKey) {
       if (lastRequestedKeyRef.current === currentKey) {
-        return; // Ngăn gọi lặp lại cùng một cặp sản phẩm (vd: StrictMode)
+        return;
       }
 
       lastRequestedKeyRef.current = currentKey;
@@ -79,7 +98,6 @@ export function ComparisonView() {
       setComparisonDataLocal(response.data);
       setComparisonData(response.data, currentKey);
 
-      // Gửi summary vào chatbot nếu chatbot đang mở và chưa gửi
       if (isChatbotOpen && response.data.summary && !hasValidCache) {
         const summaryMessage = `💡 **So sánh ${products[0].title} và ${products[1].title}:**\n\n${response.data.summary}\n\n${response.data.follow_up || ''}`;
         addPendingMessage({
@@ -94,20 +112,6 @@ export function ComparisonView() {
       setError(err.response?.data?.error || 'Không thể so sánh sản phẩm. Vui lòng thử lại.');
     } finally {
       setIsLoading(false);
-    }
-  };
-
-  const handleAddToCart = async (product: any) => {
-    try {
-      await AxiosAPI.post(`/api/carts/items`, {
-        productId: product.id,
-        quantity: 1,
-        unitPrice: product.sale || product.price
-      });
-      mutate();
-      showCartSheet();
-    } catch (err) {
-      console.error('Error adding to cart:', err);
     }
   };
 
@@ -130,30 +134,8 @@ export function ComparisonView() {
     );
   }
 
-  if (isLoading) {
-    return (
-      <div className="flex flex-col items-center justify-center h-full min-h-[400px] gap-4">
-        <Loader2 className="w-8 h-8 animate-spin text-primary" />
-        <p className="text-muted-foreground">Đang so sánh sản phẩm...</p>
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <div className="flex flex-col items-center justify-center h-full min-h-[400px] gap-4 text-center p-8">
-        <X className="w-8 h-8 text-destructive" />
-        <p className="text-destructive">{error}</p>
-        <Button onClick={fetchComparison} variant="outline">
-          Thử lại
-        </Button>
-      </div>
-    );
-  }
-
   return (
     <div className="space-y-6 p-4">
-      {/* Products Comparison Grid */}
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
         {products.map((product, index) => {
           const ribbonText = index === 0 ? 'Sản phẩm A' : 'Sản phẩm B';
@@ -200,7 +182,7 @@ export function ComparisonView() {
                     </div>
                   </div>
                   <button
-                    onClick={() => removeProduct(product.id)}
+                    onClick={() => { removeProduct(product.id); removeProductFromChatbot(product.id); }}
                     className="h-7 w-7 shrink-0 rounded-full bg-gray-500/90 hover:bg-red-500 text-white shadow-sm transition-colors duration-150 flex items-center justify-center"
                     aria-label="Xóa sản phẩm"
                     title="Xóa"
@@ -238,7 +220,6 @@ export function ComparisonView() {
                   </div>
                 </div>
 
-                {/* Actions */}
                 <div className="flex flex-col gap-3 sm:flex-row">
                   <Link href={`/product-details/${product.id}`} target="_blank" className="flex-1">
                     <Button variant="secondary" className="w-full rounded-xl border-border/80">
@@ -247,7 +228,7 @@ export function ComparisonView() {
                   </Link>
                   <Button 
                     className="flex-1 rounded-xl shadow-md"
-                    onClick={() => handleAddToCart(product)}
+                    onClick={() => addToCart(product)}
                   >
                     <ShoppingCart className="mr-2 h-4 w-4" />
                     Thêm vào giỏ
@@ -258,9 +239,22 @@ export function ComparisonView() {
           );
         })}
       </div>
-
-      {/* Detailed Comparison Table */}
-      {comparisonData?.comparison && (
+      {isLoading && ( 
+        <div className="flex flex-col items-center justify-center h-full min-h-[400px] gap-4">
+          <Loader2 className="w-8 h-8 animate-spin text-primary" />
+          <p className="text-muted-foreground">Đang so sánh sản phẩm...</p>
+        </div>
+      )}
+      {error && (
+        <div className="flex flex-col items-center justify-center h-full min-h-[400px] gap-4 text-center p-8">
+        <X className="w-8 h-8 text-destructive" />
+        <p className="text-destructive">{error}</p>
+        <Button onClick={fetchComparison} variant="outline">
+          Thử lại
+        </Button>
+      </div>
+      )}
+      {comparisonData?.comparison && !isLoading && !error && (
         <Card className="p-6">
           <h3 className="font-semibold text-lg mb-4 flex items-center gap-2">
             <ArrowUpDown className="w-5 h-5" />
@@ -351,7 +345,7 @@ export function ComparisonView() {
                       price: 'Giá',
                       rating: 'Đánh giá',
                       battery: 'Pin',
-                      chipset: 'Chipset',
+                      chipset: 'Chip xử lý',
                       screen: 'Màn hình',
                     };
                     
@@ -411,7 +405,10 @@ export function ComparisonView() {
 
       {/* Clear Button */}
       <div className="flex justify-end pt-4 border-t">
-        <Button variant="outline" onClick={clearProducts}>
+        <Button variant="outline" onClick={() => {
+          clearProducts();
+          clearProductInChatbot();
+        }}>
           <X className="w-4 h-4 mr-2" />
           Xóa tất cả
         </Button>

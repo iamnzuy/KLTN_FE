@@ -97,7 +97,7 @@ const RecentUploads = ({ title }: IRecentUploadsProps) => {
       </CardContent>
       <CardFooter className="justify-center">
         <Button mode="link" underlined="dashed" asChild>
-          <Link href="/account/integrations">All Files</Link>
+          <Link href="/account/integrations">Tất cả tệp</Link>
         </Button>
       </CardFooter>
     </Card>

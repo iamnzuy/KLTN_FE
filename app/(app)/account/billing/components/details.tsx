@@ -13,13 +13,13 @@ type IDetailsItems = Array<IDetailsItem>;
 
 const Details = () => {
   const tables: IDetailsItems = [
-    { status: 'Company Name', info: 'KeenThemes' },
+    { status: 'Tên công ty', info: 'KeenThemes' },
     {
-      status: 'Address',
+      status: 'Địa chỉ',
       info: 'Keizersgracht 136, 1015 CW Amsterdam, Netherlands',
     },
-    { status: 'Contact', info: 'Jason Tatum' },
-    { status: 'VAT ID', info: 'NL123456789B01' },
+    { status: 'Liên hệ', info: 'Jason Tatum' },
+    { status: 'Mã số thuế', info: 'NL123456789B01' },
   ];
 
   const renderItem = (table: IDetailsItem, index: number) => {
@@ -38,10 +38,10 @@ const Details = () => {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Billing Details</CardTitle>
+        <CardTitle>Chi tiết thanh toán</CardTitle>
         <Button variant="outline">
           <SquarePen size={16} />
-          Edit Billing
+          Chỉnh sửa thanh toán
         </Button>
       </CardHeader>
       <CardContent className="pt-4 pb-2">

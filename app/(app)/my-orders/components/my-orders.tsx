@@ -129,23 +129,23 @@ function OrderCard({ order }: { order: Order }) {
     <Card>
       <CardHeader className="flex flex-wrap gap-6 bg-muted/50 py-5">
         <div className="flex flex-col gap-1.5">
-          <span className="text-xs text-muted-foreground">Order ID</span>
+          <span className="text-xs text-muted-foreground">Mã đơn hàng</span>
           <span className="text-sm font-semibold text-foreground">{order.id}</span>
         </div>
         <div className="flex flex-col gap-1.5">
-          <span className="text-xs text-muted-foreground">Order placed</span>
+          <span className="text-xs text-muted-foreground">Thời gian đặt</span>
           <span className="text-sm font-medium text-foreground">{createdAt}</span>
         </div>
         <div className="flex flex-col gap-1.5">
-          <span className="text-xs text-muted-foreground">Total</span>
+          <span className="text-xs text-muted-foreground">Tổng cộng</span>
           <span className="text-sm font-semibold text-foreground">
             {formatCurrency(orderTotal)}
           </span>
         </div>
         <div className="flex flex-col gap-1.5">
-          <span className="text-xs text-muted-foreground">Status</span>
+          <span className="text-xs text-muted-foreground">Trạng thái</span>
           <Badge variant={getStatusVariant(order.status)} className="w-fit uppercase">
-            {order.status || 'PENDING'}
+            {order.status === 'PENDING' ? 'ĐANG CHỜ' : order.status || 'ĐANG CHỜ'}
           </Badge>
         </div>
       </CardHeader>
@@ -183,7 +183,7 @@ function OrderCard({ order }: { order: Order }) {
               Phương thức: {order.paymentMethod ?? 'PayOS'}
             </p>
             <p className="text-xs text-muted-foreground">
-              Trạng thái: {order.paymentStatus ?? order.status ?? 'Pending'}
+              Trạng thái: {order.paymentStatus ?? order.status ?? 'Đang chờ'}
             </p>
           </div>
         </div>

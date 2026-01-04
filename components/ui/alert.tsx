@@ -234,7 +234,7 @@ function Alert({ className, variant, size, icon, appearance, close = false, onCl
           variant="inverse"
           mode="icon"
           onClick={onClose}
-          aria-label="Dismiss"
+          aria-label="Đóng"
           data-alert-close="true"
           className={cn('group shrink-0 size-4')}
         >

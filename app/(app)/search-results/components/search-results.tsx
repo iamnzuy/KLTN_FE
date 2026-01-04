@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Funnel, LayoutGrid, List, Search as SearchIcon, Scale } from 'lucide-react';
+import { Funnel, LayoutGrid, List, Search as SearchIcon, Scale, ChevronLeft, ChevronRight } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
@@ -19,31 +19,41 @@ import useSWR from 'swr';
 import { useDebounceCallback } from 'usehooks-ts';
 import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from '@/components/ui/resizable-panel';
 import { ComparisonStore } from '@/app/(app)/search-results/hooks/comparison-store';
+import {
+  Pagination,
+  PaginationContent,
+  PaginationEllipsis,
+  PaginationItem,
+} from '@/components/ui/pagination';
 
 export function SearchResults() {
   const searchParams = useSearchParams();
   const isChatbotOpen = !!searchParams.get("chatbot");
 
-  const [searchInput, setSearchInput] = useState(searchParams.get("q") || '');
-  const [activePeriod, setActivePeriod] = useState('Week');
+  const [searchInput, setSearchInput] = useState(searchParams.get("search") || '');
+  const [activePeriod, setActivePeriod] = useState('Tuần này');
   const [activeTab, setActiveTab] = useState<'card' | 'list'>("card");
   const [activeViewTab, setActiveViewTab] = useState<'results' | 'comparison'>('results');
   const [chatbotProducts, setChatbotProducts] = useState<any[]>([]);
   const [filteredProducts, setFilteredProducts] = useState<any[]>([]);
   const [isFiltering, setIsFiltering] = useState(false);
   const [activeFilters, setActiveFilters] = useState<FilterState | null>(null);
-  
+  const [currentPage, setCurrentPage] = useState(1);
+  const pageSize = 24;
   const { products: comparisonProducts } = ComparisonStore();
 
-  const productsSWRKey = searchInput ? `/api/products/search?title=${searchInput}` : '/api/products?page=1&page_size=24';
+  const productsSWRKey = `/api/products/search?title=${searchInput || ""}&page=${currentPage}&page_size=${pageSize}`
 
   const { data } = useSWR(productsSWRKey, configSWR);
   const products = data?.data?.content;
+  const totalPages = data?.data?.totalPages || 0;
+  const totalElements = data?.data?.totalElements || 0;
 
   const handleSearch = useDebounceCallback((value: string) => {
     setSearchInput(value);
     setIsFiltering(false);
     setActiveFilters(null);
+    setCurrentPage(1);
   }, 2000);
 
   const handleApplyFilters = async (filters: FilterState) => {
@@ -106,12 +116,122 @@ export function SearchResults() {
     }
   }, [comparisonProducts.length]);
 
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+    const resultsContainer = document.querySelector('.search-results-container');
+    if (resultsContainer) {
+      resultsContainer.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  };
+
+  const renderPaginationItems = () => {
+    const items = [];
+    const maxVisiblePages = 5;
+
+    let startPage = Math.max(1, currentPage - Math.floor(maxVisiblePages / 2));
+    const endPage = Math.min(totalPages, startPage + maxVisiblePages - 1);
+
+    if (endPage - startPage + 1 < maxVisiblePages) {
+      startPage = Math.max(1, endPage - maxVisiblePages + 1);
+    }
+
+    items.push(
+      <PaginationItem key="prev">
+        <Button
+          variant="ghost"
+          size="sm"
+          disabled={currentPage === 1}
+          onClick={() => handlePageChange(currentPage - 1)}
+          className="gap-1 px-2"
+        >
+          <ChevronLeft className="h-4 w-4" />
+          <span>Trước</span>
+        </Button>
+      </PaginationItem>
+    );
+
+    if (startPage > 1) {
+      items.push(
+        <PaginationItem key={1}>
+          <Button
+            variant={currentPage === 1 ? 'outline' : 'ghost'}
+            size="sm"
+            onClick={() => handlePageChange(1)}
+            className="w-9 h-9"
+          >
+            1
+          </Button>
+        </PaginationItem>
+      );
+      if (startPage > 2) {
+        items.push(
+          <PaginationItem key="ellipsis-start">
+            <PaginationEllipsis />
+          </PaginationItem>
+        );
+      }
+    }
+
+    for (let i = startPage; i <= endPage; i++) {
+      items.push(
+        <PaginationItem key={i}>
+          <Button
+            variant={currentPage === i ? 'outline' : 'ghost'}
+            size="sm"
+            onClick={() => handlePageChange(i)}
+            className={cn("w-9 h-9", currentPage === i && "bg-accent text-accent-foreground")}
+          >
+            {i}
+          </Button>
+        </PaginationItem>
+      );
+    }
+
+    if (endPage < totalPages) {
+      if (endPage < totalPages - 1) {
+        items.push(
+          <PaginationItem key="ellipsis-end">
+            <PaginationEllipsis />
+          </PaginationItem>
+        );
+      }
+      items.push(
+        <PaginationItem key={totalPages}>
+          <Button
+            variant={currentPage === totalPages ? 'outline' : 'ghost'}
+            size="sm"
+            onClick={() => handlePageChange(totalPages)}
+            className="w-9 h-9"
+          >
+            {totalPages}
+          </Button>
+        </PaginationItem>
+      );
+    }
+
+    items.push(
+      <PaginationItem key="next">
+        <Button
+          variant="ghost"
+          size="sm"
+          disabled={currentPage === totalPages}
+          onClick={() => handlePageChange(currentPage + 1)}
+          className="gap-1 px-2"
+        >
+          <span>Sau</span>
+          <ChevronRight className="h-4 w-4" />
+        </Button>
+      </PaginationItem>
+    );
+
+    return items;
+  };
 
   return (
-    <ResizablePanelGroup autoSaveId="review-layout" direction="horizontal" className="flex z-0 h-full items-stretch">
-      <ResizablePanel className="w-full h-full flex flex-col" defaultSize={70} minSize={30}>
-        <div className={cn("flex flex-col h-full items-stretch gap-7 container", { "overflow-y-scroll": isChatbotOpen })}>
-          <div className="flex items-center gap-3 w-full">
+    <ResizablePanelGroup autoSaveId="review-layout" direction="horizontal" className="flex z-0 h-full items-stretch overflow-hidden">
+      <ResizablePanel className="w-full h-full flex flex-col overflow-hidden" defaultSize={70} minSize={30}>
+        <div className="flex flex-col h-full items-stretch gap-7 container min-h-0 search-results-container overflow-hidden">
+          <div className="flex items-center gap-3 w-full shrink-0">
             <div className="relative flex gap-3 border py-2 px-3 rounded-lg items-center w-full mx-auto  z-1">
               <SearchIcon
                 className="text-muted-foreground"
@@ -125,20 +245,12 @@ export function SearchResults() {
                 onChange={(e) => handleSearch(e.target.value)}
                 className="w-full focus:outline-none"
               />
-
-              <Badge
-                className="absolute end-2 gap-1"
-                appearance="outline"
-                size="sm"
-              >
-                ⌘ K
-              </Badge>
             </div>
 
             <StoreClientFiltersSheet
               trigger={
                 <Button className={activeFilters ? 'border-primary' : ''}>
-                  <Funnel /> Filter
+                  <Funnel /> Bộ lọc
                   {activeFilters && (
                     <Badge className="ml-2 h-5 w-5 p-0 flex items-center justify-center text-xs">
                       ✓
@@ -150,8 +262,8 @@ export function SearchResults() {
             />
           </div>
 
-          <Tabs value={activeViewTab} onValueChange={(v) => setActiveViewTab(v as 'results' | 'comparison')} className="w-full">
-            <div className="flex items-center justify-between w-full mt-3 mb-4">
+          <Tabs value={activeViewTab} onValueChange={(v) => setActiveViewTab(v as 'results' | 'comparison')} className="w-full flex-1 flex flex-col min-h-0">
+            <div className="flex items-center justify-between w-full mt-3 mb-4 shrink-0">
               <TabsList variant="line" className="border-b-0 p-0 h-auto">
                 <TabsTrigger value="results" className="data-[state=active]:border-b-2">
                   Kết quả tìm kiếm
@@ -171,17 +283,17 @@ export function SearchResults() {
                 <div className="flex items-center gap-5">
                   <h3 className="text-sm text-mono font-medium">
                     {isFiltering ? (
-                      <>1 - {filteredProducts?.length} filtered results</>
+                      <>1 - {filteredProducts?.length} kết quả đã lọc</>
                     ) : (
                       <>
-                        1 - {products?.length} over {data?.data?.totalElements} {searchInput && 'results for'}
+                        {(currentPage - 1) * pageSize + 1} - {Math.min(currentPage * pageSize, totalElements)} trên {totalElements} {searchInput && 'kết quả cho'}
                         <span className="text-destructive"> {searchInput}</span>
                       </>
                     )}
                   </h3>
                   <div className="flex items-center gap-2.5">
                     <div className='flex-1'>
-                      <Selection defaultValue={'Price: High to Low'} values={['Price: Low to High', 'Price: High to Low', '$0 - $50', '$50 - $100', '$100 - $200', '$200 - $500', '$500+']} />
+                      <Selection defaultValue={'Giá: Cao đến Thấp'} values={['Giá: Thấp đến Cao', 'Giá: Cao đến Thấp', '$0 - $50', '$50 - $100', '$100 - $200', '$200 - $500', '$500+']} />
                     </div>
                     <ToggleGroup
                       type="single"
@@ -192,7 +304,7 @@ export function SearchResults() {
                       }}
                       className="grid grid-cols-4"
                     >
-                      {['Today', 'Week', 'Month', 'All'].map((period) => (
+                      {['Hôm nay', 'Tuần này', 'Tháng này', 'Tất cả'].map((period) => (
                         <ToggleGroupItem key={period} value={period}>
                           {period}
                         </ToggleGroupItem>
@@ -219,7 +331,7 @@ export function SearchResults() {
               )}
             </div>
 
-            <TabsContent value="results" className="mt-0">
+            <TabsContent value="results" className="mt-0 flex-1 min-h-0 overflow-y-auto pr-2">
               <div
                 className={
                   activeTab == 'card'
@@ -243,9 +355,19 @@ export function SearchResults() {
                   );
                 })}
               </div>
+
+              {totalPages > 1 && (
+                <div className="py-10 border-t mt-10">
+                  <Pagination>
+                    <PaginationContent>
+                      {renderPaginationItems()}
+                    </PaginationContent>
+                  </Pagination>
+                </div>
+              )}
             </TabsContent>
 
-            <TabsContent value="comparison" className="mt-0">
+            <TabsContent value="comparison" className="mt-0 flex-1 min-h-0 overflow-y-auto">
               <ComparisonView />
             </TabsContent>
           </Tabs>
@@ -258,154 +380,3 @@ export function SearchResults() {
     </ResizablePanelGroup>
   );
 }
-
-
-
-// 'use client';
-
-// import { useState } from 'react';
-// import { Funnel, LayoutGrid, List, Search as SearchIcon } from 'lucide-react';
-// import { Badge } from '@/components/ui/badge';
-// import { Button } from '@/components/ui/button';
-// import { Input } from '@/components/ui/input';
-// import {
-//   Select,
-//   SelectContent,
-//   SelectItem,
-//   SelectTrigger,
-//   SelectValue,
-// } from '@/components/ui/select';
-// import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
-// import { Card2 } from '@/app/(app)/components/common/card2';
-// import { Card3 } from '@/app/(app)/components/common/card3';
-// import { StoreClientFiltersSheet } from '@/app/(app)/components/sheets/filters-sheet';
-// import ChatWindow from '@/components/chatbot/components/chat-window';
-// import { useSearchParams } from 'next/navigation';
-// import { cn, configSWR } from '@/lib/utils';
-// import Selection from '@/components/selection';
-// import useSWR from 'swr';
-// import { useDebounceCallback } from 'usehooks-ts';
-// import { ProductDetailsSheet } from '../../components/sheets/product-details-sheet';
-
-// export function SearchResults() {
-//   const searchParams = useSearchParams();
-//   const isChatbotOpen = !!searchParams.get("chatbot");
-
-//   const [searchInput, setSearchInput] = useState(searchParams.get("q") || '');
-//   const [activePeriod, setActivePeriod] = useState('Week');
-//   const [activeTab, setActiveTab] = useState<'card' | 'list'>("card");
-//   const [chatbotProducts, setChatbotProducts] = useState<any[]>([]);
-
-//   const productsSWRKey = searchInput ? `/api/products/search?title=${searchInput}` : '/api/products?page=1&page_size=24';
-
-//   const { data } = useSWR(productsSWRKey, configSWR);
-//   const products = data?.data?.content;
-
-//   const handleSearch = useDebounceCallback((value: string) => {
-//     setSearchInput(value);
-//   }, 2000);
-
-
-//   return (
-//     <div className='w-full h-full flex gap-4'>
-//       <div className={cn("flex flex-col h-full items-stretch gap-7 container", { "overflow-y-scroll": isChatbotOpen })}>
-//         <div className="flex items-center gap-3 w-full">
-//           <div className="relative flex gap-3 border py-2 px-3 rounded-lg items-center w-full mx-auto  z-1">
-//             <SearchIcon
-//               className="text-muted-foreground"
-//               size={16}
-//             />
-
-//             <input
-//               id="search-input"
-//               placeholder="Nhập sản phẩm tìm kiếm"
-//               defaultValue={searchInput}
-//               onChange={(e) => handleSearch(e.target.value)}
-//               className="w-full focus:outline-none"
-//             />
-
-//             <Badge
-//               className="absolute end-2 gap-1"
-//               appearance="outline"
-//               size="sm"
-//             >
-//               ⌘ K
-//             </Badge>
-//           </div>
-
-//           <StoreClientFiltersSheet
-//             trigger={
-//               <Button>
-//                 <Funnel /> Filter
-//               </Button>
-//             }
-//           />
-//         </div>
-
-//         <div className="flex flex-wrap items-center gap-5 justify-between mt-3">
-//           <h3 className="text-sm text-mono font-medium">
-//             1 - {products?.length} over {data?.data?.totalElements} {searchInput && 'results for'}
-//             <span className="text-destructive"> {searchInput}</span>
-//           </h3>
-
-//           <div className="flex items-center gap-2.5">
-//             <div className='flex-1'>
-//               <Selection defaultValue={'Price: High to Low'} values={['Price: Low to High', 'Price: High to Low', '$0 - $50', '$50 - $100', '$100 - $200', '$200 - $500', '$500+']} />
-//             </div>
-//             <ToggleGroup
-//               type="single"
-//               variant="outline"
-//               value={activePeriod}
-//               onValueChange={(value) => {
-//                 if (value) setActivePeriod(value);
-//               }}
-//               className="grid grid-cols-4"
-//             >
-//               {['Today', 'Week', 'Month', 'All'].map((period) => (
-//                 <ToggleGroupItem key={period} value={period}>
-//                   {period}
-//                 </ToggleGroupItem>
-//               ))}
-//             </ToggleGroup>
-
-//             <ToggleGroup
-//               type="single"
-//               variant="outline"
-//               value={activeTab}
-//               onValueChange={(value) => {
-//                 setActiveTab(value as 'card' | 'list');
-//               }}
-//             >
-//               <ToggleGroupItem value="card">
-//                 <LayoutGrid size={16} />
-//               </ToggleGroupItem>
-//               <ToggleGroupItem value="list">
-//                 <List size={16} />
-//               </ToggleGroupItem>
-//             </ToggleGroup>
-//           </div>
-//         </div>
-
-//         <div
-//           className={
-//             activeTab == 'card'
-//               // ? `grid ${isChatbotOpen ? "sm:grid-cols-3" : "sm:grid-cols-4"} gap-5 mb-2`
-//               ? "flex flex-wrap gap-5 mb-2"
-//               : 'grid grid-cols-1 gap-5'
-//           }
-//         >
-//           {(chatbotProducts.length > 0 ? chatbotProducts : products)?.map((item: any, index: number) => {
-//             return activeTab === 'card' ? (
-//               <div className='min-w-[265px] flex-1'>
-//               <Card2 key={index} item={item} />
-//               </div>
-//             ) : (
-//               <Card3 key={index} item={item} />
-//             );
-//           })}
-//         </div>
-//       </div>
-//       <ChatWindow setChatbotProducts={setChatbotProducts} />
-//     </div>
-//   );
-// }

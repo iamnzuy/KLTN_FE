@@ -63,7 +63,7 @@ const PaymentMethods = () => {
         <div className="flex items-center gap-5">
           {item.label && (
             <Badge variant="success" appearance="outline">
-              Primary
+              Mặc định
             </Badge>
           )}
           <div className="flex gap-0.5">
@@ -82,10 +82,10 @@ const PaymentMethods = () => {
   return (
     <Card className="grow">
       <CardHeader>
-        <CardTitle>Payment Methods</CardTitle>
+        <CardTitle>Phương thức thanh toán</CardTitle>
         <Button variant="outline">
           <SquarePlus size={16} />
-          Add New
+          Thêm mới
         </Button>
       </CardHeader>
       <CardContent className="lg:pb-7.5">

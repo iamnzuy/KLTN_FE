@@ -36,14 +36,14 @@ const BasicSettings = ({ title }: IGeneralSettingsProps) => {
         <CardTitle>{title}</CardTitle>
         <div className="flex items-center gap-2">
           <Label htmlFor="auto-update" className="text-sm">
-            Public Profile
+            Hồ sơ công khai
           </Label>
           <Switch defaultChecked size="sm" />
         </div>
       </CardHeader>
       <CardContent className="grid gap-5">
         <div className="flex items-center flex-wrap lg:flex-nowrap gap-2.5">
-          <Label className="flex w-full max-w-56">Photo</Label>
+          <Label className="flex w-full max-w-56">Ảnh</Label>
           <div className="flex items-center justify-between flex-wrap grow gap-2.5">
             <span className="text-sm font-medium text-secondary-foreground">
               150x150px JPEG, PNG Image
@@ -52,7 +52,7 @@ const BasicSettings = ({ title }: IGeneralSettingsProps) => {
           </div>
         </div>
         <div className="flex items-baseline flex-wrap lg:flex-nowrap gap-2.5">
-          <Label className="flex w-full max-w-56">Name</Label>
+          <Label className="flex w-full max-w-56">Họ và tên</Label>
           <Input
             type="text"
             value={nameInput}
@@ -62,7 +62,7 @@ const BasicSettings = ({ title }: IGeneralSettingsProps) => {
         <div className="w-full">
           <div className="flex items-baseline flex-wrap lg:flex-nowrap gap-2.5">
             <Label className="flex w-full items-center gap-1 max-w-56">
-              Birth Date
+              Ngày sinh
             </Label>
             <Popover>
               <PopoverTrigger asChild>
@@ -76,7 +76,7 @@ const BasicSettings = ({ title }: IGeneralSettingsProps) => {
                   )}
                 >
                   <CalendarDays className="-ms-0.5" />
-                  {date ? format(date, 'LLL dd, y') : <span>Pick a date</span>}
+                  {date ? format(date, 'LLL dd, y') : <span>Chọn ngày</span>}
                 </Button>
               </PopoverTrigger>
               <PopoverContent className="w-auto p-0" align="start">
@@ -93,8 +93,8 @@ const BasicSettings = ({ title }: IGeneralSettingsProps) => {
           </div>
         </div>
         <div className="flex items-baseline flex-wrap lg:flex-nowrap gap-2.5">
-          <Label className="flex w-full max-w-56">Phone number</Label>
-          <Input type="text" placeholder="Phone number" />
+          <Label className="flex w-full max-w-56">Số điện thoại</Label>
+          <Input type="text" placeholder="Số điện thoại" />
         </div>
         <div className="flex items-baseline flex-wrap lg:flex-nowrap gap-2.5">
           <Label className="flex w-full max-w-56">Email</Label>
@@ -105,7 +105,7 @@ const BasicSettings = ({ title }: IGeneralSettingsProps) => {
           />
         </div>
         <div className="flex items-baseline flex-wrap lg:flex-nowrap gap-2.5">
-          <Label className="flex w-full max-w-56">Address</Label>
+          <Label className="flex w-full max-w-56">Địa chỉ</Label>
           <Input
             type="text"
             value={addressInput}
@@ -113,15 +113,15 @@ const BasicSettings = ({ title }: IGeneralSettingsProps) => {
           />
         </div>
         <div className="flex items-baseline flex-wrap lg:flex-nowrap gap-2.5">
-          <Label className="flex w-full max-w-56">Country</Label>
-          <Selection defaultValue={'Spain'} values={['Spain', 'Option 2', 'Option 3']} />
+          <Label className="flex w-full max-w-56">Quốc gia</Label>
+          <Selection defaultValue={'Việt Nam'} values={['Việt Nam', 'Option 2', 'Option 3']} />
         </div>
         <div className="flex items-baseline flex-wrap lg:flex-nowrap gap-2.5">
-          <Label className="flex w-full max-w-56">State</Label>
-          <Input type="text" placeholder="State" />
+          <Label className="flex w-full max-w-56">Tỉnh/Thành</Label>
+          <Input type="text" placeholder="Tỉnh/Thành" />
         </div>
         <div className="flex items-baseline flex-wrap lg:flex-nowrap gap-2.5">
-          <Label className="flex w-full max-w-56">City</Label>
+          <Label className="flex w-full max-w-56">Quận/Huyện</Label>
           <Input
             type="text"
             value={cityInput}
@@ -129,7 +129,7 @@ const BasicSettings = ({ title }: IGeneralSettingsProps) => {
           />
         </div>
         <div className="flex items-baseline flex-wrap lg:flex-nowrap gap-2.5 mb-2.5">
-          <Label className="flex w-full max-w-56">Postcode</Label>
+          <Label className="flex w-full max-w-56">Mã bưu điện</Label>
           <Input
             type="text"
             value={postcodeInput}
@@ -137,7 +137,7 @@ const BasicSettings = ({ title }: IGeneralSettingsProps) => {
           />
         </div>
         <div className="flex justify-end">
-          <Button>Save Changes</Button>
+          <Button>Lưu thay đổi</Button>
         </div>
       </CardContent>
     </Card>

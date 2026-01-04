@@ -1,16 +1,12 @@
 'use client';
 
 import { Fragment } from 'react';
-import Link from 'next/link';
 import {
   Toolbar,
-  ToolbarActions,
   ToolbarDescription,
   ToolbarHeading,
   ToolbarPageTitle,
 } from '@/components/layouts/default/components/toolbar';
-import { WalletCards } from 'lucide-react';
-import { Button } from '@/components/ui/button';
 import { PaymentMethodContent } from '@/app/(app)/checkout/payment-method/content';
 import { Steps } from '@/app/(app)/checkout/steps';
 
@@ -22,14 +18,8 @@ export default function PaymentMethodPage() {
         <Toolbar>
           <ToolbarHeading>
             <ToolbarPageTitle />
-            <ToolbarDescription>Select how you want to pay</ToolbarDescription>
+            <ToolbarDescription>Chọn phương thức thanh toán</ToolbarDescription>
           </ToolbarHeading>
-          <ToolbarActions>
-            <Button variant="outline">
-              <WalletCards />
-              <Link href="#">Add Cart</Link>
-            </Button>
-          </ToolbarActions>
         </Toolbar>
       </div>
       <div className="container">
