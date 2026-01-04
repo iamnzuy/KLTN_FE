@@ -22,7 +22,7 @@ export function HeaderSearch() {
   const handleSearch = () => {
     const searchQuery = (document.getElementById('search-input') as HTMLInputElement)?.value;
     if (!searchQuery?.trim()) return;
-    router.push(`/search-results?q=${searchQuery.trim()}`);
+    router.push(`/search-results?search=${searchQuery.trim()}`);
   };
 
   useEffect(() => {
