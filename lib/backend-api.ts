@@ -237,6 +237,17 @@ export const userApi = {
   getAll: () => apiCall<any[]>('/users'),
   getById: (userId: number) => apiCall<any>(`/users/${userId}`),
   getByUsername: (username: string) => apiCall<any>(`/users/username/${encodeURIComponent(username)}`),
+  getCurrentUser: () => apiCall<any>('/api/users/me', {}, { enrichImages: false }),
+  updateCurrentUser: (user: Partial<{ username: string; email: string; preferences: string }>) =>
+    apiCall<any>('/api/users/me', {
+      method: 'PATCH',
+      body: JSON.stringify(user),
+    }, { enrichImages: false }),
+  changePassword: (currentPassword: string, newPassword: string) =>
+    apiCall<void>('/api/users/me/password', {
+      method: 'PATCH',
+      body: JSON.stringify({ currentPassword, newPassword }),
+    }, { enrichImages: false }),
   create: (user: { username: string; email?: string; preferences?: string }) =>
     apiCall<any>('/users', {
       method: 'POST',

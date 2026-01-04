@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { AvatarInput } from './avatar-input';
 import { format } from 'date-fns';
 import { CalendarDays } from 'lucide-react';
@@ -17,18 +17,67 @@ import {
 } from '@/components/ui/popover';
 import Selection from '@/components/selection';
 import { Switch } from '@/components/ui/switch';
+import useAuth from '@/hooks/use-auth';
+import { userApi } from '@/lib/backend-api';
+import { toast } from 'sonner';
 
 interface IGeneralSettingsProps {
   title: string;
 }
 
 const BasicSettings = ({ title }: IGeneralSettingsProps) => {
+  const { profile, mutate } = useAuth();
   const [date, setDate] = useState<Date | undefined>(new Date(1984, 0, 20));
-  const [nameInput, setNameInput] = useState('Jason Tatum');
-  const [emailInput, setEmailInput] = useState('jason@studio.io');
+  const [usernameInput, setUsernameInput] = useState('');
+  const [emailInput, setEmailInput] = useState('');
   const [addressInput, setAddressInput] = useState('Avinguda Imaginària, 789');
   const [cityInput, setCityInput] = useState('Barcelona');
   const [postcodeInput, setPostcodeInput] = useState('08012');
+  const [isLoading, setIsLoading] = useState(false);
+
+  // Load user data when profile is available
+  useEffect(() => {
+    if (profile) {
+      setUsernameInput(profile.username || '');
+      setEmailInput(profile.email || '');
+    }
+  }, [profile]);
+
+  const handleSaveChanges = async () => {
+    setIsLoading(true);
+    try {
+      const updateData: any = {};
+      
+      // Only include changed fields
+      if (usernameInput && usernameInput !== profile.username) {
+        updateData.username = usernameInput;
+      }
+      if (emailInput && emailInput !== profile.email) {
+        updateData.email = emailInput;
+      }
+
+      // If nothing changed, just show success
+      if (Object.keys(updateData).length === 0) {
+        toast.info('Không có thay đổi nào để lưu');
+        setIsLoading(false);
+        return;
+      }
+
+      const result = await userApi.updateCurrentUser(updateData);
+      
+      if (result.error) {
+        toast.error(result.error || 'Có lỗi xảy ra khi cập nhật thông tin');
+      } else {
+        toast.success('Cập nhật thông tin thành công');
+        // Refresh user profile
+        await mutate();
+      }
+    } catch (error: any) {
+      toast.error(error.message || 'Có lỗi xảy ra khi cập nhật thông tin');
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   return (
     <Card className="pb-2.5">
@@ -52,11 +101,12 @@ const BasicSettings = ({ title }: IGeneralSettingsProps) => {
           </div>
         </div>
         <div className="flex items-baseline flex-wrap lg:flex-nowrap gap-2.5">
-          <Label className="flex w-full max-w-56">Họ và tên</Label>
+          <Label className="flex w-full max-w-56">Tên đăng nhập</Label>
           <Input
             type="text"
-            value={nameInput}
-            onChange={(e) => setNameInput(e.target.value)}
+            value={usernameInput}
+            onChange={(e) => setUsernameInput(e.target.value)}
+            placeholder="Nhập tên đăng nhập"
           />
         </div>
         <div className="w-full">
@@ -99,9 +149,10 @@ const BasicSettings = ({ title }: IGeneralSettingsProps) => {
         <div className="flex items-baseline flex-wrap lg:flex-nowrap gap-2.5">
           <Label className="flex w-full max-w-56">Email</Label>
           <Input
-            type="text"
+            type="email"
             value={emailInput}
             onChange={(e) => setEmailInput(e.target.value)}
+            placeholder="Nhập email"
           />
         </div>
         <div className="flex items-baseline flex-wrap lg:flex-nowrap gap-2.5">
@@ -137,7 +188,9 @@ const BasicSettings = ({ title }: IGeneralSettingsProps) => {
           />
         </div>
         <div className="flex justify-end">
-          <Button>Lưu thay đổi</Button>
+          <Button onClick={handleSaveChanges} disabled={isLoading}>
+            {isLoading ? 'Đang lưu...' : 'Lưu thay đổi'}
+          </Button>
         </div>
       </CardContent>
     </Card>
