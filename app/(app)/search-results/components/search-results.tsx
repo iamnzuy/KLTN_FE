@@ -8,8 +8,9 @@ import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { Card2 } from '@/app/(app)/components/common/card2';
 import { Card3 } from '@/app/(app)/components/common/card3';
-import { StoreClientFiltersSheet } from '@/app/(app)/components/sheets/filters-sheet';
+import { StoreClientFiltersSheet, FilterState } from '@/app/(app)/components/sheets/filters-sheet';
 import { ComparisonView } from './comparison-view';
+import AxiosAPI from '@/lib/axios';
 import ChatWindow from '@/components/chatbot/components/chat-window';
 import { useSearchParams } from 'next/navigation';
 import { cn, configSWR } from '@/lib/utils';
@@ -28,6 +29,9 @@ export function SearchResults() {
   const [activeTab, setActiveTab] = useState<'card' | 'list'>("card");
   const [activeViewTab, setActiveViewTab] = useState<'results' | 'comparison'>('results');
   const [chatbotProducts, setChatbotProducts] = useState<any[]>([]);
+  const [filteredProducts, setFilteredProducts] = useState<any[]>([]);
+  const [isFiltering, setIsFiltering] = useState(false);
+  const [activeFilters, setActiveFilters] = useState<FilterState | null>(null);
   
   const { products: comparisonProducts } = ComparisonStore();
 
@@ -38,7 +42,62 @@ export function SearchResults() {
 
   const handleSearch = useDebounceCallback((value: string) => {
     setSearchInput(value);
+    setIsFiltering(false);
+    setActiveFilters(null);
   }, 2000);
+
+  const handleApplyFilters = async (filters: FilterState) => {
+    try {
+      setIsFiltering(true);
+      setActiveFilters(filters);
+
+      // Build filter request
+      const filterRequest: any = {};
+
+      // Add keyword if searching
+      if (searchInput) {
+        filterRequest.keyword = searchInput;
+      }
+
+      // Add categories
+      if (filters.selectedCategories.length > 0) {
+        filterRequest.categories = filters.selectedCategories;
+      }
+
+      // Add price range
+      if (filters.minPrice) {
+        filterRequest.minPrice = parseFloat(filters.minPrice);
+      }
+      if (filters.maxPrice) {
+        filterRequest.maxPrice = parseFloat(filters.maxPrice);
+      }
+
+      // Add rating (get minimum rating from selected ratings)
+      if (filters.selectedRatings.length > 0) {
+        filterRequest.minRating = Math.min(...filters.selectedRatings);
+      }
+
+      // Add status filters
+      if (filters.status === 'Sale') {
+        filterRequest.hasDiscount = true;
+      } else if (filters.status === 'New') {
+        filterRequest.seasonType = 1; // New Arrivals
+      } else if (filters.status === 'Trend') {
+        filterRequest.seasonType = 0; // Special Offers/Trending
+      }
+
+      // Call filter API
+      const response = await AxiosAPI.post('/api/products/filter?page=0&size=100', filterRequest);
+      
+      if (response.data?.data) {
+        const content = response.data.data.content || response.data.data;
+        setFilteredProducts(Array.isArray(content) ? content : []);
+      }
+    } catch (error) {
+      console.error('Filter error:', error);
+      setFilteredProducts([]);
+    }
+  };
 
   // Tự động chuyển sang tab so sánh khi có 2 sản phẩm
   useEffect(() => {
@@ -78,10 +137,16 @@ export function SearchResults() {
 
             <StoreClientFiltersSheet
               trigger={
-                <Button>
+                <Button className={activeFilters ? 'border-primary' : ''}>
                   <Funnel /> Filter
+                  {activeFilters && (
+                    <Badge className="ml-2 h-5 w-5 p-0 flex items-center justify-center text-xs">
+                      ✓
+                    </Badge>
+                  )}
                 </Button>
               }
+              onApplyFilters={handleApplyFilters}
             />
           </div>
 
@@ -105,8 +170,14 @@ export function SearchResults() {
               {activeViewTab === 'results' && (
                 <div className="flex items-center gap-5">
                   <h3 className="text-sm text-mono font-medium">
-                    1 - {products?.length} over {data?.data?.totalElements} {searchInput && 'results for'}
-                    <span className="text-destructive"> {searchInput}</span>
+                    {isFiltering ? (
+                      <>1 - {filteredProducts?.length} filtered results</>
+                    ) : (
+                      <>
+                        1 - {products?.length} over {data?.data?.totalElements} {searchInput && 'results for'}
+                        <span className="text-destructive"> {searchInput}</span>
+                      </>
+                    )}
                   </h3>
                   <div className="flex items-center gap-2.5">
                     <div className='flex-1'>
@@ -156,7 +227,12 @@ export function SearchResults() {
                     : 'flex flex-col gap-5'
                 }
               >
-                {(chatbotProducts.length > 0 ? chatbotProducts : products)?.map((item: any, index: number) => {
+                {(chatbotProducts.length > 0 
+                  ? chatbotProducts 
+                  : isFiltering 
+                    ? filteredProducts 
+                    : products
+                )?.map((item: any, index: number) => {
                   const key = item?.id ?? item?.productId ?? index;
                   return activeTab === 'card' ? (
                     <div key={key} className='min-w-[266px] max-w-[301px] flex-1'>
