@@ -39,10 +39,24 @@ export function SearchResults() {
   const [isFiltering, setIsFiltering] = useState(false);
   const [activeFilters, setActiveFilters] = useState<FilterState | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
+  const [sortOption, setSortOption] = useState('Độ liên quan');
   const pageSize = 24;
   const { products: comparisonProducts } = ComparisonStore();
 
-  const productsSWRKey = `/api/products/search?title=${searchInput || ""}&page=${currentPage}&page_size=${pageSize}`
+  // Map sort options to API parameters
+  const getSortParams = (option: string) => {
+    const sortMap: { [key: string]: { sortBy: string; sortDir: string } } = {
+      'Độ liên quan': { sortBy: 'id', sortDir: 'asc' }, // Default sorting when searching
+      'Giá: Thấp đến Cao': { sortBy: 'price', sortDir: 'asc' },
+      'Giá: Cao đến Thấp': { sortBy: 'price', sortDir: 'desc' },
+      'Đánh giá cao nhất': { sortBy: 'averageRating', sortDir: 'desc' },
+      'Mới nhất': { sortBy: 'createdAt', sortDir: 'desc' },
+    };
+    return sortMap[option] || sortMap['Độ liên quan'];
+  };
+
+  const { sortBy, sortDir } = getSortParams(sortOption);
+  const productsSWRKey = `/api/products/search?title=${searchInput || ""}&page=${currentPage - 1}&size=${pageSize}&sortBy=${sortBy}&sortDir=${sortDir}`
 
   const { data } = useSWR(productsSWRKey, configSWR);
   const products = data?.data?.content;
@@ -54,7 +68,14 @@ export function SearchResults() {
     setIsFiltering(false);
     setActiveFilters(null);
     setCurrentPage(1);
+    // Reset to relevance sort when searching
+    setSortOption('Độ liên quan');
   }, 2000);
+
+  const handleSortChange = (value: string | number) => {
+    setSortOption(value as string);
+    setCurrentPage(1); // Reset to first page when sorting changes
+  };
 
   const handleApplyFilters = async (filters: FilterState) => {
     try {
@@ -282,7 +303,11 @@ export function SearchResults() {
                       </h3>
                       <div className="flex items-center gap-2.5">
                         <div className='flex-1'>
-                          <Selection defaultValue={'Giá: Cao đến Thấp'} values={['Giá: Thấp đến Cao', 'Giá: Cao đến Thấp', '$0 - $50', '$50 - $100', '$100 - $200', '$200 - $500', '$500+']} />
+                          <Selection 
+                            defaultValue={sortOption} 
+                            values={['Độ liên quan', 'Giá: Thấp đến Cao', 'Giá: Cao đến Thấp', 'Đánh giá cao nhất', 'Mới nhất']} 
+                            onChange={handleSortChange}
+                          />
                         </div>
 
                         <ToggleGroup
@@ -389,7 +414,11 @@ export function SearchResults() {
                     </h3>
                     <div className="flex items-center gap-2.5">
                       <div className='flex-1'>
-                        <Selection defaultValue={'Giá: Cao đến Thấp'} values={['Giá: Thấp đến Cao', 'Giá: Cao đến Thấp', '$0 - $50', '$50 - $100', '$100 - $200', '$200 - $500', '$500+']} />
+                        <Selection 
+                          defaultValue={sortOption} 
+                          values={['Độ liên quan', 'Giá: Thấp đến Cao', 'Giá: Cao đến Thấp', 'Đánh giá cao nhất', 'Mới nhất']} 
+                          onChange={handleSortChange}
+                        />
                       </div>
 
                       <ToggleGroup
