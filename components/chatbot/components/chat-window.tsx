@@ -3,7 +3,7 @@ import { AnimatePresence, motion } from "framer-motion"
 import { MessageCircleIcon, SendHorizontal, X } from "lucide-react";
 import TextareaAutoResize from "react-textarea-autosize";
 import { useSearchParams, useRouter, usePathname } from "next/navigation";
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { AxiosChatbot } from "@/lib/axios";
 import { ChatbotStore } from "@/app/(app)/search-results/hooks/chatbot-store";
 import { ComparisonStore } from "@/app/(app)/search-results/hooks/comparison-store";
@@ -32,6 +32,8 @@ const ChatWindow = ({ setChatbotProducts }: { setChatbotProducts: (products: any
     const clearPendingMessage = ChatbotStore((state: any) => state.clearPendingMessage);
     const prefillComparison = ComparisonStore((state: any) => state.prefillComparison);
     const removeProduct = ComparisonStore((state: any) => state.removeProduct);
+    const [isSendingMessage, setIsSendingMessage] = useState(false);
+    const isSendingRef = useRef(false);
 
     const handleRemoveProductFromChatbot = (product: any, event: React.MouseEvent<HTMLElement>) => {
         event.preventDefault();
@@ -64,7 +66,11 @@ const ChatWindow = ({ setChatbotProducts }: { setChatbotProducts: (products: any
     };
 
     const sendMessage = async () => {
-        if (!chatElementRef.current?.value) return;
+        if (!chatElementRef.current?.value || isSendingRef.current) return;
+        
+        isSendingRef.current = true;
+        setIsSendingMessage(true);
+        
         const message = chatElementRef.current?.value;
         chatElementRef.current!.value = "";
         setMessages((prev) => [...prev, { role: "user", reply: message }]);
@@ -91,9 +97,14 @@ const ChatWindow = ({ setChatbotProducts }: { setChatbotProducts: (products: any
                     comparisonData: compareResponse.data
                 }]);
                 setIsLoading(false);
+                isSendingRef.current = false;
+                setIsSendingMessage(false);
                 return;
             } catch (err: any) {
                 console.error('Error comparing products:', err);
+                setIsLoading(false);
+                isSendingRef.current = false;
+                setIsSendingMessage(false);
             }
         }
 
@@ -111,19 +122,30 @@ const ChatWindow = ({ setChatbotProducts }: { setChatbotProducts: (products: any
             }).catch((err) => {
                 setIsLoading(false);
                 console.log(err);
-            })
+            }).finally(() => {
+                isSendingRef.current = false;
+                setIsSendingMessage(false);
+            });
     }
 
     useEffect(() => {
+        const textarea = chatElementRef.current;
+        if (!textarea) return;
+
         const handleKeyDown = (event: KeyboardEvent) => {
-            if (event.key === "Enter" && !event.shiftKey && !isLoading) {
+            // Kiểm tra isComposing để tránh kích hoạt khi đang gõ tiếng Việt
+            // Kiểm tra isSendingRef để tránh gửi nhiều lần
+            if (event.key === "Enter" && !event.shiftKey && !event.isComposing && !isSendingRef.current) {
                 event.preventDefault();
                 sendMessage();
             }
         };
-        document.addEventListener("keydown", handleKeyDown);
-        return () => document.removeEventListener("keydown", handleKeyDown);
-    }, []);
+        
+        textarea.addEventListener("keydown", handleKeyDown);
+        return () => {
+            textarea.removeEventListener("keydown", handleKeyDown);
+        };
+    }, [sendMessage]);
 
     return (
         <AnimatePresence>
