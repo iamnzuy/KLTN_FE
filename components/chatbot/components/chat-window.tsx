@@ -116,7 +116,7 @@ const ChatWindow = ({ setChatbotProducts }: { setChatbotProducts: (products: any
 
     useEffect(() => {
         const handleKeyDown = (event: KeyboardEvent) => {
-            if (event.key === "Enter" && !event.shiftKey) {
+            if (event.key === "Enter" && !event.shiftKey && !isLoading) {
                 event.preventDefault();
                 sendMessage();
             }
